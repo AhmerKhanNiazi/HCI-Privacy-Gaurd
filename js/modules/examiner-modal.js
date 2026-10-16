@@ -125,12 +125,15 @@ export class ExaminerModal {
     });
   }
 
-  show(patternIdToHighlight = null) {
+  show(target = null) {
     if (!this.modalEl) return;
     this.modalEl.classList.remove('hidden');
 
-    if (patternIdToHighlight) {
-      this.switchTab('taxonomies', patternIdToHighlight);
+    const validTabs = ['taxonomies', 'pbd', 'heuristics', 'viva-qa'];
+    if (validTabs.includes(target)) {
+      this.switchTab(target);
+    } else if (target) {
+      this.switchTab('taxonomies', target);
     } else {
       this.switchTab(this.activeTab);
     }

@@ -284,10 +284,10 @@ export class PrivacyRiskCalculator {
       document.getElementById(id)?.addEventListener('change', () => this.updateCalculation());
     });
 
-    // Retention Slider
+    // Retention Slider (input for drag, change for mobile touch release)
     const retentionSlider = document.getElementById('calc-retention');
-    retentionSlider?.addEventListener('input', () => {
-      this.updateCalculation();
+    ['input', 'change'].forEach(evt => {
+      retentionSlider?.addEventListener(evt, () => this.updateCalculation());
     });
 
     // Preset: Strict Privacy

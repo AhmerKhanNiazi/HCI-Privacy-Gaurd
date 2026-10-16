@@ -98,7 +98,7 @@ export class DarkPatternSimulator {
               <!-- Fake Urgency Bar -->
               <div class="bg-rose-950/40 border border-rose-900/40 px-3 py-1.5 rounded-lg flex items-center justify-between text-[11px] text-rose-300">
                 <span>⚠️ Session security credentials refresh in:</span>
-                <span class="font-mono font-bold text-rose-400 animate-pulse">01:42</span>
+                <span id="fake-urgency-timer" class="font-mono font-bold text-rose-400 animate-pulse">01:30</span>
               </div>
 
               <!-- Pre-checked Traps & Trick Questions -->
@@ -357,7 +357,61 @@ export class DarkPatternSimulator {
     `;
   }
 
+  startUrgencyTimer() {
+    this.stopUrgencyTimer();
+    let secondsLeft = 90; // 01:30
+    this.timerInterval = setInterval(() => {
+      secondsLeft--;
+      if (secondsLeft < 0) {
+        secondsLeft = 90;
+        const darkStatusMsg = document.getElementById('dark-status-msg');
+        if (darkStatusMsg) {
+          darkStatusMsg.className = "p-2.5 rounded-lg text-xs font-mono bg-amber-950/90 border border-amber-800 text-amber-300 block";
+          darkStatusMsg.innerHTML = `
+            <strong>⚠️ Fake Urgency Exposed:</strong> The countdown timer reached 00:00 and quietly reset to 01:30! This proves the session urgency was completely fabricated to pressure your consent.
+          `;
+        }
+      }
+      const timerEl = document.getElementById('fake-urgency-timer');
+      if (timerEl) {
+        const mins = String(Math.floor(secondsLeft / 60)).padStart(2, '0');
+        const secs = String(secondsLeft % 60).padStart(2, '0');
+        timerEl.textContent = `${mins}:${secs}`;
+      }
+    }, 1000);
+  }
+
+  stopUrgencyTimer() {
+    if (this.timerInterval) {
+      clearInterval(this.timerInterval);
+      this.timerInterval = null;
+    }
+  }
+
+  updateAuditTelemetry() {
+    const darkClicksEl = document.getElementById('audit-dark-clicks');
+    const ethicalClicksEl = document.getElementById('audit-ethical-clicks');
+    if (darkClicksEl) {
+      if (this.metrics.darkPattern.clicks === 0) {
+        darkClicksEl.textContent = '0 / 428 Clicks';
+      } else {
+        darkClicksEl.textContent = `${this.metrics.darkPattern.clicks} Click${this.metrics.darkPattern.clicks > 1 ? 's' : ''} (Trapped)`;
+      }
+    }
+    if (ethicalClicksEl) {
+      if (this.metrics.ethicalUX.clicks === 0) {
+        ethicalClicksEl.textContent = '1 Click Required';
+      } else {
+        ethicalClicksEl.textContent = `${this.metrics.ethicalUX.clicks} Click (Opted Out)`;
+      }
+    }
+  }
+
   attachEventListeners() {
+    // Start live fake urgency countdown
+    this.startUrgencyTimer();
+    this.updateAuditTelemetry();
+
     // Inspect Element buttons
     this.container.querySelectorAll('[data-inspect]').forEach(btn => {
       btn.addEventListener('click', (e) => {
@@ -377,6 +431,7 @@ export class DarkPatternSimulator {
       this.metrics.darkPattern.clicks++;
       this.metrics.darkPattern.resolved = true;
       this.metrics.darkPattern.outcome = 'Accepted Exploitative Tracking';
+      this.updateAuditTelemetry();
 
       darkStatusMsg.className = "p-2.5 rounded-lg text-xs font-mono bg-rose-950/90 border border-rose-800 text-rose-300 block";
       darkStatusMsg.innerHTML = `
@@ -394,6 +449,7 @@ export class DarkPatternSimulator {
       this.metrics.darkPattern.clicks++;
       this.isNestedSettingsOpen = !this.isNestedSettingsOpen;
       darkNestedSettings?.classList.toggle('hidden', !this.isNestedSettingsOpen);
+      this.updateAuditTelemetry();
       
       darkStatusMsg.className = "p-2.5 rounded-lg text-xs font-mono bg-amber-950/80 border border-amber-800 text-amber-300 block";
       darkStatusMsg.innerHTML = `
@@ -407,10 +463,32 @@ export class DarkPatternSimulator {
       const darkStatusMsg = document.getElementById('dark-status-msg');
       if (!darkStatusMsg) return;
       this.metrics.darkPattern.clicks++;
+      this.updateAuditTelemetry();
       darkStatusMsg.className = "p-2.5 rounded-lg text-xs font-mono bg-rose-950/90 border border-rose-800 text-rose-300 block";
       darkStatusMsg.innerHTML = `
         <strong>⚠️ Confirmshaming Identified:</strong> The user was forced to read a self-deprecating statement ("No thanks, I dislike safe browsing") just to exercise a legal privacy right.
       `;
+    });
+
+    // Dark Banner: Vendor Checkboxes in Roach Motel
+    const vendorCheckboxes = this.container.querySelectorAll('.vendor-chk');
+    vendorCheckboxes.forEach((chk, idx) => {
+      chk.addEventListener('change', () => {
+        this.metrics.darkPattern.clicks++;
+        this.updateAuditTelemetry();
+        const darkStatusMsg = document.getElementById('dark-status-msg');
+        const saveBtn = document.getElementById('dark-save-vendors-btn');
+        const remaining = 427 - this.metrics.darkPattern.clicks;
+        if (saveBtn) {
+          saveBtn.textContent = `Save Vendor Choices (Requires ${Math.max(1, remaining)} more clicks)`;
+        }
+        if (darkStatusMsg) {
+          darkStatusMsg.className = "p-2.5 rounded-lg text-xs font-mono bg-amber-950/80 border border-amber-800 text-amber-300 block";
+          darkStatusMsg.innerHTML = `
+            <strong>⚠️ Roach Motel Friction:</strong> You unchecked 1 vendor. <em>${remaining} more vendors</em> are still tracking you in the background!
+          `;
+        }
+      });
     });
 
     // Dark Banner: Roach motel save vendors
@@ -419,19 +497,49 @@ export class DarkPatternSimulator {
       const darkStatusMsg = document.getElementById('dark-status-msg');
       if (!darkStatusMsg) return;
       this.metrics.darkPattern.clicks += 4;
+      this.updateAuditTelemetry();
       darkStatusMsg.className = "p-2.5 rounded-lg text-xs font-mono bg-amber-950/80 border border-amber-800 text-amber-300 block";
       darkStatusMsg.innerHTML = `
         <strong>⚠️ Cognitive Fatigue:</strong> After multiple clicks, legitimate interest loop-holes still keep tracking active.
       `;
     });
 
+    // Dark Banner: Double Negative Trick Question Checkbox
+    const darkOptNegative = document.getElementById('dark-opt-negative');
+    darkOptNegative?.addEventListener('change', (e) => {
+      this.metrics.darkPattern.clicks++;
+      this.updateAuditTelemetry();
+      const darkStatusMsg = document.getElementById('dark-status-msg');
+      if (darkStatusMsg) {
+        darkStatusMsg.className = "p-2.5 rounded-lg text-xs font-mono bg-rose-950/90 border border-rose-800 text-rose-300 block";
+        darkStatusMsg.innerHTML = `
+          <strong>⚠️ Double Negative Manipulation:</strong> Prompt states <em>"Uncheck if you do NOT wish to avoid NOT participating"</em>. By interacting with this confusing phrasing, you were manipulated!
+        `;
+      }
+    });
+
+    // Dark Banner: Pre-selected Checkboxes
+    const darkOptPartners = document.getElementById('dark-opt-partners');
+    darkOptPartners?.addEventListener('change', () => {
+      this.metrics.darkPattern.clicks++;
+      this.updateAuditTelemetry();
+      const darkStatusMsg = document.getElementById('dark-status-msg');
+      if (darkStatusMsg) {
+        darkStatusMsg.className = "p-2.5 rounded-lg text-xs font-mono bg-amber-950/80 border border-amber-800 text-amber-300 block";
+        darkStatusMsg.innerHTML = `
+          <strong>⚠️ Pre-Selection Violation:</strong> This box was pre-checked to exploit status-quo inertia. CJEU Planet49 ruling mandates affirmative active opt-in.
+        `;
+      }
+    });
+
     // Ethical Banner: Reject All (1-click)
     const ethicalRejectBtn = document.getElementById('ethical-reject-btn');
     const ethicalStatusMsg = document.getElementById('ethical-status-msg');
     ethicalRejectBtn?.addEventListener('click', () => {
-      this.metrics.ethicalUX.clicks++;
+      this.metrics.ethicalUX.clicks = 1;
       this.metrics.ethicalUX.resolved = true;
       this.metrics.ethicalUX.outcome = 'Full Privacy Preserved';
+      this.updateAuditTelemetry();
 
       // Ensure optional toggles stay off
       const analyticsToggle = document.getElementById('ethical-opt-analytics');
@@ -450,6 +558,7 @@ export class DarkPatternSimulator {
     const ethicalSaveBtn = document.getElementById('ethical-save-btn');
     ethicalSaveBtn?.addEventListener('click', () => {
       this.metrics.ethicalUX.clicks++;
+      this.updateAuditTelemetry();
       const analyticsVal = document.getElementById('ethical-opt-analytics')?.checked;
       const marketingVal = document.getElementById('ethical-opt-marketing')?.checked;
 
@@ -463,13 +572,13 @@ export class DarkPatternSimulator {
     // Reset Comparison
     const resetBtn = document.getElementById('reset-simulator-btn');
     resetBtn?.addEventListener('click', () => {
+      this.stopUrgencyTimer();
       this.metrics = {
         darkPattern: { clicks: 0, timeStarted: Date.now(), resolved: false, outcome: 'Pending' },
         ethicalUX: { clicks: 0, timeStarted: Date.now(), resolved: false, outcome: 'Pending' }
       };
       this.isNestedSettingsOpen = false;
-      this.init(); // Re-render HTML
-      // BUGFIX: After re-render, notify app.js to re-apply examiner highlights on new DOM badges
+      this.init(); // Re-render HTML & restart timer
       if (this.onResetCallback) this.onResetCallback();
     });
   }

@@ -103,11 +103,18 @@
     </div>
 
     <!-- Mobile Navigation Drawer -->
-    <div id="mobile-nav" class="hidden md:hidden border-b border-slate-800 bg-slate-950 px-4 pt-2 pb-4 space-y-2 text-xs font-mono">
-      <a href="#simulator-section" class="block py-2 text-slate-300 hover:text-cyan-400 border-b border-slate-900">⚡ Dark Pattern Simulator (Topic 12)</a>
-      <a href="#calculator-section" class="block py-2 text-slate-300 hover:text-emerald-400 border-b border-slate-900">📊 Privacy Risk Calculator (Topic 12)</a>
-      <a href="#ai-matrix-section" class="block py-2 text-slate-300 hover:text-violet-400 border-b border-slate-900">🧠 Ethical AI Consent Matrix (Topic 5)</a>
-      <a href="#academic-theory-section" class="block py-2 text-slate-300 hover:text-amber-400">📚 Academic Heuristics & Frameworks</a>
+    <div id="mobile-nav" class="hidden md:hidden border-b border-slate-800 bg-slate-950 px-4 pt-2 pb-4 space-y-3 text-xs font-mono">
+      <div class="flex items-center justify-between py-2 border-b border-slate-800">
+        <span class="text-slate-300 font-semibold">Examiner Mode Highlights:</span>
+        <label class="cyber-toggle scale-75 origin-center">
+          <input type="checkbox" id="mobile-examiner-toggle" checked>
+          <span class="cyber-toggle-slider"></span>
+        </label>
+      </div>
+      <a href="#simulator-section" class="block py-1.5 text-slate-300 hover:text-cyan-400 border-b border-slate-900">⚡ Dark Pattern Simulator (Topic 12)</a>
+      <a href="#calculator-section" class="block py-1.5 text-slate-300 hover:text-emerald-400 border-b border-slate-900">📊 Privacy Risk Calculator (Topic 12)</a>
+      <a href="#ai-matrix-section" class="block py-1.5 text-slate-300 hover:text-violet-400 border-b border-slate-900">🧠 Ethical AI Consent Matrix (Topic 5)</a>
+      <a href="#academic-theory-section" class="block py-1.5 text-slate-300 hover:text-amber-400">📚 Academic Heuristics & Frameworks</a>
     </div>
   </header>
 

@@ -53,12 +53,19 @@ class PrivacyGuardApp {
   }
 
   setupGlobalControls() {
-    // Global Examiner Mode Toggle in Header
+    // Global Examiner Mode Toggle in Header & Mobile
     const examinerToggle = document.getElementById('global-examiner-toggle');
-    examinerToggle?.addEventListener('change', (e) => {
-      this.examinerModeActive = e.target.checked;
+    const mobileExaminerToggle = document.getElementById('mobile-examiner-toggle');
+    
+    const handleExaminerToggle = (checked) => {
+      this.examinerModeActive = checked;
+      if (examinerToggle) examinerToggle.checked = checked;
+      if (mobileExaminerToggle) mobileExaminerToggle.checked = checked;
       this.updateExaminerHighlights();
-    });
+    };
+
+    examinerToggle?.addEventListener('change', (e) => handleExaminerToggle(e.target.checked));
+    mobileExaminerToggle?.addEventListener('change', (e) => handleExaminerToggle(e.target.checked));
 
     // Global "HCI Theory & Viva Dossier" button
     document.getElementById('open-dossier-btn')?.addEventListener('click', () => {
@@ -110,9 +117,15 @@ class PrivacyGuardApp {
   }
 }
 
-// Bootstrap once DOM is ready
-document.addEventListener('DOMContentLoaded', () => {
+// Bootstrap reliably in ES modules
+function bootstrap() {
   const app = new PrivacyGuardApp();
   app.init();
   window.privacyGuardApp = app; // Expose for presentation/debugging
-});
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', bootstrap);
+} else {
+  bootstrap();
+}
