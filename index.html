@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PrivacyGuard UX | HCI Privacy & Ethical AI Research Sandbox</title>
+  
+  <!-- Meta SEO & Academic Presentation Context -->
+  <meta name="description" content="Interactive HCI Research Simulator demonstrating Privacy & Data Ethics in UX (Topic 12) and Ethical AI in HCI (Topic 5).">
+  <meta name="author" content="HCI Student Research Project">
+  
+  <!-- Tailwind CSS via CDN (Zero-build GitHub Pages deployment) -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            cyber: {
+              950: '#07090E',
+              900: '#0D131F',
+              800: '#151D2E',
+              cyan: '#06B6D4',
+              emerald: '#10B981',
+              rose: '#F43F5E',
+              violet: '#8B5CF6'
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Custom Cyber-Clean Stylesheet -->
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body class="min-h-screen flex flex-col bg-cyber-grid selection:bg-cyan-500/30 selection:text-cyan-200">
+
+  <!-- ========================================================================= -->
+  <!-- HEADER & NAVIGATION -->
+  <!-- ========================================================================= -->
+  <header class="sticky top-0 z-40 backdrop-blur-xl bg-slate-950/80 border-b border-slate-800/80 transition-all">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      
+      <!-- Brand Logo & University Topic Badge -->
+      <a href="#" class="flex items-center gap-3 group">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-cyan-500/20 to-emerald-500/20 border border-cyan-500/40 flex items-center justify-center text-cyan-400 group-hover:border-cyan-400 transition shadow-lg shadow-cyan-950/40">
+          <svg class="w-6 h-6 transform group-hover:scale-110 transition duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="text-base sm:text-lg font-black tracking-tight text-white font-mono">
+              PrivacyGuard<span class="text-cyan-400">UX</span>
+            </span>
+            <span class="hidden sm:inline-block px-2 py-0.2 text-[10px] font-mono font-bold bg-cyan-950/80 text-cyan-300 border border-cyan-800 rounded">
+              HCI Research
+            </span>
+          </div>
+          <p class="text-[10px] text-slate-400 hidden sm:block">Topics 12 & 5: Data Ethics & Ethical AI</p>
+        </div>
+      </a>
+
+      <!-- Desktop Navigation Menu -->
+      <nav class="hidden md:flex items-center gap-6 text-xs font-mono font-medium">
+        <a href="#simulator-section" class="text-slate-300 hover:text-cyan-400 transition flex items-center gap-1.5">
+          <span>⚡ Simulator</span>
+        </a>
+        <a href="#calculator-section" class="text-slate-300 hover:text-emerald-400 transition flex items-center gap-1.5">
+          <span>📊 Risk Meter</span>
+        </a>
+        <a href="#ai-matrix-section" class="text-slate-300 hover:text-violet-400 transition flex items-center gap-1.5">
+          <span>🧠 Ethical AI</span>
+        </a>
+        <a href="#academic-theory-section" class="text-slate-300 hover:text-amber-400 transition flex items-center gap-1.5">
+          <span>📚 Frameworks</span>
+        </a>
+      </nav>
+
+      <!-- Examiner Mode Controls & CTA -->
+      <div class="flex items-center gap-3">
+        <!-- Examiner Mode Switcher -->
+        <div class="hidden sm:flex items-center gap-2 bg-slate-900/90 border border-slate-700/80 px-2.5 py-1 rounded-xl">
+          <span id="examiner-mode-label" class="text-[11px] font-mono font-bold text-cyan-400">Examiner Mode: ON</span>
+          <label class="cyber-toggle scale-75 origin-center">
+            <input type="checkbox" id="global-examiner-toggle" checked>
+            <span class="cyber-toggle-slider"></span>
+          </label>
+        </div>
+
+        <!-- Academic Dossier Modal Trigger Button -->
+        <button id="open-dossier-btn" class="px-3 py-1.5 sm:px-4 sm:py-2 bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 rounded-xl font-mono text-xs font-semibold flex items-center gap-1.5 transition shadow-lg shadow-cyan-950/30">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
+          <span class="hidden sm:inline">Examiner</span> Dossier
+        </button>
+
+        <!-- Mobile Menu Toggle Button -->
+        <button id="mobile-menu-btn" class="md:hidden p-2 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800 focus:outline-none">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"/></svg>
+        </button>
+      </div>
+
+    </div>
+
+    <!-- Mobile Navigation Drawer -->
+    <div id="mobile-nav" class="hidden md:hidden border-b border-slate-800 bg-slate-950 px-4 pt-2 pb-4 space-y-2 text-xs font-mono">
+      <a href="#simulator-section" class="block py-2 text-slate-300 hover:text-cyan-400 border-b border-slate-900">⚡ Dark Pattern Simulator (Topic 12)</a>
+      <a href="#calculator-section" class="block py-2 text-slate-300 hover:text-emerald-400 border-b border-slate-900">📊 Privacy Risk Calculator (Topic 12)</a>
+      <a href="#ai-matrix-section" class="block py-2 text-slate-300 hover:text-violet-400 border-b border-slate-900">🧠 Ethical AI Consent Matrix (Topic 5)</a>
+      <a href="#academic-theory-section" class="block py-2 text-slate-300 hover:text-amber-400">📚 Academic Heuristics & Frameworks</a>
+    </div>
+  </header>
+
+  <!-- ========================================================================= -->
+  <!-- HERO BANNER & ACADEMIC OBJECTIVES -->
+  <!-- ========================================================================= -->
+  <section class="relative py-10 md:py-14 border-b border-slate-800/60 overflow-hidden">
+    <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-cyan-900/10 via-slate-950/0 to-transparent pointer-events-none"></div>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
+      <div class="max-w-3xl space-y-4">
+        
+        <!-- Academic Pill Badges -->
+        <div class="flex flex-wrap items-center gap-2">
+          <span class="px-2.5 py-1 text-xs font-mono font-semibold rounded-full bg-cyan-500/10 text-cyan-400 border border-cyan-500/30">
+            🎓 HCI 5th Semester Research Lab
+          </span>
+          <span class="px-2.5 py-1 text-xs font-mono font-semibold rounded-full bg-rose-500/10 text-rose-400 border border-rose-500/30">
+            HCI Topic 12: Privacy & Data Ethics in UX
+          </span>
+          <span class="px-2.5 py-1 text-xs font-mono font-semibold rounded-full bg-violet-500/10 text-violet-400 border border-violet-500/30">
+            HCI Topic 5: Ethical AI in HCI
+          </span>
+        </div>
+
+        <h1 class="text-3xl sm:text-4xl lg:text-5xl font-black text-white tracking-tight leading-tight">
+          Deconstructing Deceptive Patterns through <span class="bg-gradient-to-r from-cyan-400 via-teal-300 to-emerald-400 bg-clip-text text-transparent">Privacy-by-Design</span>
+        </h1>
+
+        <p class="text-sm sm:text-base text-slate-400 leading-relaxed">
+          An interactive pairing of empirical HCI research and ethical UX engineering. Demonstrating 
+          <strong>Harry Brignull's Deceptive Patterns Taxonomy</strong>, <strong>Ann Cavoukian's 7 Privacy by Design Principles</strong>, and <strong>IEEE/EU AI Act transparency standards</strong> through side-by-side live simulators and dynamic threat calculations.
+        </p>
+
+        <!-- Quick Heuristic Metric Pills -->
+        <div class="pt-2 flex flex-wrap gap-2 text-xs font-mono text-slate-400">
+          <span class="bg-slate-900 border border-slate-800 px-3 py-1 rounded-lg">🛡️ GDPR Art. 7(3) & 7(4)</span>
+          <span class="bg-slate-900 border border-slate-800 px-3 py-1 rounded-lg">📐 Nielsen Heuristics #1, #3, #8</span>
+          <span class="bg-slate-900 border border-slate-800 px-3 py-1 rounded-lg">🤖 IEEE 7000-2021 Ethical AI</span>
+          <span class="bg-slate-900 border border-slate-800 px-3 py-1 rounded-lg">⚖️ EDPB Equal Prominence Standard</span>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ========================================================================= -->
+  <!-- MAIN CONTENT CONTAINER -->
+  <!-- ========================================================================= -->
+  <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-16">
+
+    <!-- FEATURE 1: DARK PATTERN VS ETHICAL UX SIMULATOR -->
+    <section id="simulator-section" class="scroll-mt-24">
+      <div id="simulator-container">
+        <!-- Rendered dynamically by js/modules/dark-pattern-sim.js -->
+      </div>
+    </section>
+
+    <!-- FEATURE 2: DYNAMIC PRIVACY RISK SCORE CALCULATOR -->
+    <section id="calculator-section" class="scroll-mt-24">
+      <div id="calculator-container">
+        <!-- Rendered dynamically by js/modules/privacy-calc.js -->
+      </div>
+    </section>
+
+    <!-- FEATURE 3: ETHICAL AI CONSENT MATRIX -->
+    <section id="ai-matrix-section" class="scroll-mt-24">
+      <div id="ai-matrix-container">
+        <!-- Rendered dynamically by js/modules/ai-consent-matrix.js -->
+      </div>
+    </section>
+
+    <!-- FEATURE 4 (INLINE SUMMARY): ACADEMIC HEURISTICS & FRAMEWORKS REFERENCE -->
+    <section id="academic-theory-section" class="scroll-mt-24">
+      <div class="cyber-card rounded-2xl p-6 md:p-8 space-y-6">
+        
+        <div class="flex flex-col md:flex-row md:items-center justify-between pb-4 border-b border-slate-800 gap-3">
+          <div>
+            <span class="px-2.5 py-0.5 text-xs font-mono font-semibold rounded-full bg-amber-500/20 text-amber-400 border border-amber-500/30">
+              Theoretical Foundation
+            </span>
+            <h3 class="text-xl md:text-2xl font-bold text-white mt-1">
+              HCI Heuristics & Ethical Frameworks Reference
+            </h3>
+            <p class="text-xs md:text-sm text-slate-400 mt-0.5">
+              Theoretical frameworks utilized to design and audit the PrivacyGuard UX architecture.
+            </p>
+          </div>
+
+          <button onclick="window.privacyGuardApp?.examinerModal?.show('taxonomies')" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-cyan-300 border border-slate-700 rounded-xl text-xs font-mono font-semibold transition flex items-center gap-2 self-start md:self-auto">
+            <span>Open Complete Viva Dossier</span>
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+          </button>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          
+          <!-- Card 1: Harry Brignull Taxonomy -->
+          <div class="bg-slate-950/80 p-5 rounded-xl border border-slate-800 space-y-3">
+            <div class="flex items-center gap-2 text-rose-400 font-bold text-sm">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+              <span>Brignull's Deceptive Patterns</span>
+            </div>
+            <p class="text-xs text-slate-400 leading-relaxed">
+              Taxonomy of manipulative interface mechanics including <em>Confirmshaming</em> (emotional guilt), <em>Visual Interference</em> (contrast asymmetry), and <em>Obstruction</em> (Roach Motel cancellation friction).
+            </p>
+            <div class="text-[11px] font-mono text-slate-500 pt-1 border-t border-slate-900">
+              Ref: Brignull, H. (2010). Deceptive Design.
+            </div>
+          </div>
+
+          <!-- Card 2: Ann Cavoukian PbD -->
+          <div class="bg-slate-950/80 p-5 rounded-xl border border-slate-800 space-y-3">
+            <div class="flex items-center gap-2 text-emerald-400 font-bold text-sm">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+              <span>7 Privacy by Design (PbD) Principles</span>
+            </div>
+            <p class="text-xs text-slate-400 leading-relaxed">
+              Embeds privacy directly into system architecture. Enforces <em>Privacy as the Default</em> (Principle 2) and <em>Positive-Sum UX</em> (Principle 4: zero functionality penalties for exercising user privacy rights).
+            </p>
+            <div class="text-[11px] font-mono text-slate-500 pt-1 border-t border-slate-900">
+              Ref: Cavoukian, A. (2009). Information & Privacy Commissioner.
+            </div>
+          </div>
+
+          <!-- Card 3: Topic 5 Ethical AI -->
+          <div class="bg-slate-950/80 p-5 rounded-xl border border-slate-800 space-y-3">
+            <div class="flex items-center gap-2 text-violet-400 font-bold text-sm">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+              <span>IEEE 7000 & EU AI Act</span>
+            </div>
+            <p class="text-xs text-slate-400 leading-relaxed">
+              Establishes human agency, algorithmic explainability, client-side differential privacy, and unbundled consent for foundation model training datasets.
+            </p>
+            <div class="text-[11px] font-mono text-slate-500 pt-1 border-t border-slate-900">
+              Ref: IEEE 7000-2021 & Regulation (EU) 2024/1689.
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ========================================================================= -->
+  <!-- FOOTER -->
+  <!-- ========================================================================= -->
+  <footer class="border-t border-slate-800 bg-slate-950 py-8 text-xs font-mono text-slate-500">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+      <div>
+        <span class="text-slate-300 font-bold">PrivacyGuard UX</span> &bull; Human-Computer Interaction (HCI) Academic Project
+        <p class="text-[11px] text-slate-500 mt-0.5">Topic 12: Privacy & Data Ethics in UX &bull; Topic 5: Ethical AI in HCI</p>
+      </div>
+
+      <div class="flex items-center gap-4 text-slate-400">
+        <a href="#simulator-section" class="hover:text-cyan-400 transition">Simulator</a>
+        <a href="#calculator-section" class="hover:text-emerald-400 transition">Risk Meter</a>
+        <a href="#ai-matrix-section" class="hover:text-violet-400 transition">AI Matrix</a>
+        <button onclick="window.scrollTo({top:0, behavior:'smooth'})" class="hover:text-white transition">Back to Top ↑</button>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ========================================================================= -->
+  <!-- MODULAR JAVASCRIPT BOOTSTRAP -->
+  <!-- ========================================================================= -->
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>
