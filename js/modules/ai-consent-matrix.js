@@ -333,8 +333,14 @@ export class AIConsentMatrix {
       <div class="text-slate-500">X-AI-Consent-Policy: ${this.aiConsentState.modelTraining ? 'HARVEST_PERMITTED' : 'STRICT_NO_TRAIN'}</div>
       <div class="text-slate-500">X-Data-Retention: ${this.aiConsentState.ephemeralMemory ? 'EPHEMERAL_WIPE_ON_CLOSE' : 'PERMANENT_STORAGE'}</div>
       <div class="mt-2 text-slate-200">
-        {\n  <span class="text-cyan-400">"model_retraining"</span>: <span class="${this.aiConsentState.modelTraining ? 'text-rose-400' : 'text-emerald-400'}">${payload.model_training_allowed}</span>,\n  <span class="text-cyan-400">"human_annotators"</span>: <span class="${this.aiConsentState.humanAnnotation ? 'text-rose-400' : 'text-emerald-400'}">${payload.human_review_permitted}</span>,\n  <span class="text-cyan-400">"ttl_seconds"</span>: ${payload.ephemeral_session_seconds},\n  <span class="text-cyan-400">"prompt"</span>: "${payload.sanitized_prompt}"\n}
+        {<br>
+        &nbsp;&nbsp;<span class="text-cyan-400">"model_retraining"</span>: <span class="${this.aiConsentState.modelTraining ? 'text-rose-400' : 'text-emerald-400'}">${payload.model_training_allowed}</span>,<br>
+        &nbsp;&nbsp;<span class="text-cyan-400">"human_annotators"</span>: <span class="${this.aiConsentState.humanAnnotation ? 'text-rose-400' : 'text-emerald-400'}">${payload.human_review_permitted}</span>,<br>
+        &nbsp;&nbsp;<span class="text-cyan-400">"ttl_seconds"</span>: <span class="text-amber-300">${payload.ephemeral_session_seconds}</span>,<br>
+        &nbsp;&nbsp;<span class="text-cyan-400">"prompt"</span>: <span class="text-slate-300">"</span>
       </div>
+      <div class="pl-4 pb-1 text-[11px] leading-relaxed border-l-2 border-slate-700 ml-2">${processedText}</div>
+      <div class="text-slate-200">&nbsp;&nbsp;<span class="text-slate-300">"</span> }</div>
     `;
   }
 }

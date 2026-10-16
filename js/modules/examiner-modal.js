@@ -130,8 +130,7 @@ export class ExaminerModal {
     this.modalEl.classList.remove('hidden');
 
     if (patternIdToHighlight) {
-      this.switchTab('taxonomies');
-      this.renderTaxonomiesTab(patternIdToHighlight);
+      this.switchTab('taxonomies', patternIdToHighlight);
     } else {
       this.switchTab(this.activeTab);
     }
@@ -142,7 +141,7 @@ export class ExaminerModal {
     this.modalEl.classList.add('hidden');
   }
 
-  switchTab(tabName) {
+  switchTab(tabName, highlightPatternId = null) {
     this.activeTab = tabName;
 
     // Update tab bar styles
@@ -158,7 +157,7 @@ export class ExaminerModal {
     if (!container) return;
 
     if (tabName === 'taxonomies') {
-      this.renderTaxonomiesTab();
+      this.renderTaxonomiesTab(highlightPatternId);
     } else if (tabName === 'pbd') {
       this.renderPbDTab();
     } else if (tabName === 'heuristics') {

@@ -27,10 +27,16 @@ class PrivacyGuardApp {
     this.examinerModal = new ExaminerModal();
     this.examinerModal.init();
 
-    // 2. Initialize Feature 1: Dark Pattern Simulator with callback to open modal
-    this.simulator = new DarkPatternSimulator('simulator-container', (patternId) => {
-      this.examinerModal.show(patternId);
-    });
+    // 2. Initialize Feature 1: Dark Pattern Simulator with modal callback and reset highlight refresher
+    this.simulator = new DarkPatternSimulator(
+      'simulator-container',
+      (patternId) => {
+        this.examinerModal.show(patternId);
+      },
+      () => {
+        this.updateExaminerHighlights();
+      }
+    );
     this.simulator.init();
 
     // 3. Initialize Feature 2: Dynamic Privacy Risk Calculator

@@ -11,9 +11,10 @@
 import { HCI_KNOWLEDGE_BASE } from '../data/hci-ethics-data.js';
 
 export class DarkPatternSimulator {
-  constructor(containerId, onInspectElement) {
+  constructor(containerId, onInspectElement, onResetCallback) {
     this.container = document.getElementById(containerId);
     this.onInspectElement = onInspectElement;
+    this.onResetCallback = onResetCallback; // Fired after reset so app.js can re-run examiner highlights
     
     // User interaction metrics for comparison
     this.metrics = {
@@ -370,8 +371,9 @@ export class DarkPatternSimulator {
 
     // Dark Banner: Accept All CTA
     const darkAcceptBtn = document.getElementById('dark-accept-btn');
-    const darkStatusMsg = document.getElementById('dark-status-msg');
     darkAcceptBtn?.addEventListener('click', () => {
+      const darkStatusMsg = document.getElementById('dark-status-msg');
+      if (!darkStatusMsg) return;
       this.metrics.darkPattern.clicks++;
       this.metrics.darkPattern.resolved = true;
       this.metrics.darkPattern.outcome = 'Accepted Exploitative Tracking';
@@ -387,9 +389,11 @@ export class DarkPatternSimulator {
     const darkSettingsBtn = document.getElementById('dark-settings-btn');
     const darkNestedSettings = document.getElementById('dark-nested-settings');
     darkSettingsBtn?.addEventListener('click', () => {
+      const darkStatusMsg = document.getElementById('dark-status-msg');
+      if (!darkStatusMsg) return;
       this.metrics.darkPattern.clicks++;
       this.isNestedSettingsOpen = !this.isNestedSettingsOpen;
-      darkNestedSettings.classList.toggle('hidden', !this.isNestedSettingsOpen);
+      darkNestedSettings?.classList.toggle('hidden', !this.isNestedSettingsOpen);
       
       darkStatusMsg.className = "p-2.5 rounded-lg text-xs font-mono bg-amber-950/80 border border-amber-800 text-amber-300 block";
       darkStatusMsg.innerHTML = `
@@ -400,6 +404,8 @@ export class DarkPatternSimulator {
     // Dark Banner: Confirmshaming Button
     const darkConfirmshameBtn = document.getElementById('dark-confirmshame-btn');
     darkConfirmshameBtn?.addEventListener('click', () => {
+      const darkStatusMsg = document.getElementById('dark-status-msg');
+      if (!darkStatusMsg) return;
       this.metrics.darkPattern.clicks++;
       darkStatusMsg.className = "p-2.5 rounded-lg text-xs font-mono bg-rose-950/90 border border-rose-800 text-rose-300 block";
       darkStatusMsg.innerHTML = `
@@ -410,6 +416,8 @@ export class DarkPatternSimulator {
     // Dark Banner: Roach motel save vendors
     const darkSaveVendorsBtn = document.getElementById('dark-save-vendors-btn');
     darkSaveVendorsBtn?.addEventListener('click', () => {
+      const darkStatusMsg = document.getElementById('dark-status-msg');
+      if (!darkStatusMsg) return;
       this.metrics.darkPattern.clicks += 4;
       darkStatusMsg.className = "p-2.5 rounded-lg text-xs font-mono bg-amber-950/80 border border-amber-800 text-amber-300 block";
       darkStatusMsg.innerHTML = `
@@ -459,7 +467,10 @@ export class DarkPatternSimulator {
         darkPattern: { clicks: 0, timeStarted: Date.now(), resolved: false, outcome: 'Pending' },
         ethicalUX: { clicks: 0, timeStarted: Date.now(), resolved: false, outcome: 'Pending' }
       };
-      this.init();
+      this.isNestedSettingsOpen = false;
+      this.init(); // Re-render HTML
+      // BUGFIX: After re-render, notify app.js to re-apply examiner highlights on new DOM badges
+      if (this.onResetCallback) this.onResetCallback();
     });
   }
 }
