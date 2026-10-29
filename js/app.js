@@ -125,70 +125,135 @@ class PrivacyGuardApp {
 
   /**
    * Command Router for Two-Way Voice System
-   * IDs must exactly match what voice-system.js fires via triggerCommand()
+   * Executes visual, audible, and DOM state updates for every recognized voice command
    */
   handleVoiceCommand(commandId) {
-    console.log(`[Voice Router] Executing: ${commandId}`);
+    console.log(`[Voice Router] Executing action: ${commandId}`);
 
     switch (commandId) {
       case 'start-audit':
         this.runPrivacyScan();
         break;
+
       case 'block-trackers':
         this.blockTrackers();
         break;
-      case 'show-consent':
-        this.scrollToSection('ai-matrix-section', 'Scrolled to Ethical AI Consent Matrix');
-        break;
+
       case 'audit-cookies':
         this.scrollToSection('simulator-section', 'Scrolled to Deceptive Dark Pattern Simulator');
+        this.highlightElement(document.getElementById('simulator-container'), 'ring-4 ring-cyan-400 ring-offset-4 ring-offset-slate-950');
         break;
+
+      case 'show-consent':
+        this.scrollToSection('ai-matrix-section', 'Scrolled to Ethical AI Consent Matrix');
+        this.highlightElement(document.getElementById('ai-matrix-container'), 'ring-4 ring-violet-400 ring-offset-4 ring-offset-slate-950');
+        // Demonstrate client-side PII sanitization in real-time
+        this.demonstrateAISanitization();
+        break;
+
+      case 'show-calculator':
+        this.scrollToSection('calculator-section', 'Scrolled to Privacy Risk Score Meter');
+        this.highlightElement(document.getElementById('calculator-container'), 'ring-4 ring-emerald-400 ring-offset-4 ring-offset-slate-950');
+        break;
+
+      case 'show-dossier':
+        this.audio?.playChirp(true);
+        this.examinerModal?.show('taxonomies');
+        break;
+
       case 'high-contrast':
         this.accessibility?.toggleHighContrast();
+        this.audio?.playClick();
         break;
+
       case 'increase-font':
         this.accessibility?.cycleFontScale();
+        this.audio?.playClick();
         break;
+
       case 'mute-sound':
-        this.toggleAudioMute();
+        if (!this.audio?.isMuted) {
+          this.toggleAudioMute();
+        }
         break;
+
+      case 'unmute-sound':
+        if (this.audio?.isMuted) {
+          this.toggleAudioMute();
+        }
+        break;
+
       case 'open-inspector':
         this.privacyInspectorDrawer?.open();
         break;
+
+      case 'stop-voice':
+        if (this.voiceSystem?.isListening) {
+          this.voiceSystem.toggleListening();
+        }
+        break;
+
       case 'close-overlays':
       case 'close-dialog':
         this.closeAllOverlays();
         break;
+
       case 'help':
       case 'show-help':
         this.accessibility?.openHelpModal();
         break;
+
       default:
         console.warn(`[Voice Router] Unmapped voice command: "${commandId}"`);
     }
   }
 
   runPrivacyScan() {
+    // Open Academic Inspector Drawer with backdrop
     if (!this.privacyInspectorDrawer.isOpen) {
       this.privacyInspectorDrawer.open();
     }
-    // Small delay so the drawer is visible before animation starts
+    // Run automated 14-vector scan after drawer animation
     setTimeout(() => {
       this.privacyInspectorDrawer.runFastAudit();
-    }, 350);
+    }, 300);
   }
 
   blockTrackers() {
-    // Apply Privacy-by-Default preset in Risk Calculator (button always in DOM after init)
+    // 1. Scroll smoothly to the Risk Calculator & Simulator so user SEES the update
+    this.scrollToSection('calculator-section');
+
+    // 2. Apply Privacy-by-Default preset in Risk Calculator (gauge drops to 0 Fortified live)
     document.getElementById('preset-strict-btn')?.click();
 
-    // Apply 1-click ethical reject in Simulator (rendered dynamically; re-query each time)
+    // 3. Apply 1-click ethical reject in Simulator (ethical message turns green)
     document.getElementById('ethical-reject-btn')?.click();
+
+    // 4. Highlight both sections with animated cyber rings
+    this.highlightElement(document.getElementById('calculator-container'), 'ring-4 ring-emerald-400 ring-offset-4 ring-offset-slate-950');
+    this.highlightElement(document.getElementById('simulator-container'), 'ring-4 ring-emerald-400 ring-offset-4 ring-offset-slate-950');
 
     this.audio?.playShieldEngage();
     this.accessibility?.announcePolite(
       'Third-party tracking blocked across all vectors. Privacy by default restored.'
     );
+  }
+
+  demonstrateAISanitization() {
+    const input = document.getElementById('ai-sandbox-input');
+    if (input && this.aiMatrix) {
+      input.value = "Patient John Doe with SSN 000-12-3456 prescribed Metformin for Diabetes. Key: sk_live_948274a.";
+      this.aiMatrix.updateSandboxPreview();
+    }
+  }
+
+  highlightElement(el, ringClass = 'ring-4 ring-cyan-400 ring-offset-4 ring-offset-slate-950') {
+    if (!el) return;
+    const classes = ringClass.split(' ');
+    el.classList.add(...classes, 'transition-all', 'duration-500');
+    setTimeout(() => {
+      el.classList.remove(...classes);
+    }, 2200);
   }
 
   scrollToSection(id, announceText) {

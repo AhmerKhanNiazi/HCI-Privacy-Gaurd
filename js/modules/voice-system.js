@@ -13,6 +13,10 @@ export class VoiceSystem {
 
     this.recognition = null;
     this.isListening = false;
+    this.isSpeakingTTS = false; // Microphone suppression during spoken output
+    this.restartTimer = null;
+    this.hudTimer = null;
+
     this.speechSynthesis = window.speechSynthesis || null;
     this.ttsMuted = localStorage.getItem('privacyguard_tts_muted') === 'true';
 
@@ -20,13 +24,14 @@ export class VoiceSystem {
     this.floatingBadge = null;
     this.transcriptEl = null;
     this.stateDot = null;
-    this.headerMicBtn = null;
+    this.actionHudEl = null;
 
     this.lastSpokenText = '';
     this.lastSpokenTime = 0;
 
     this.initRecognition();
     this.injectFloatingWidget();
+    this.injectActionHUD();
   }
 
   initRecognition() {
@@ -52,14 +57,18 @@ export class VoiceSystem {
       };
 
       this.recognition.onend = () => {
-        // If meant to keep listening, restart smoothly
+        // Debounced smooth restart to avoid Chrome InvalidStateError crashes
         if (this.isListening) {
-          try {
-            this.recognition.start();
-          } catch (e) {
-            this.isListening = false;
-            this.updateUIState();
-          }
+          clearTimeout(this.restartTimer);
+          this.restartTimer = setTimeout(() => {
+            if (this.isListening) {
+              try {
+                this.recognition.start();
+              } catch (e) {
+                // Ignore transient duplicate start attempts
+              }
+            }
+          }, 200);
         } else {
           this.updateUIState();
           if (this.audio) this.audio.playChirp(false);
@@ -71,11 +80,14 @@ export class VoiceSystem {
         if (event.error === 'not-allowed' || event.error === 'service-not-allowed') {
           this.isListening = false;
           this.updateUIState();
-          this.speak('Microphone access was denied. Please allow microphone permissions to use voice control.');
+          this.speak('Microphone access was denied. Please allow microphone permissions in browser settings.');
         }
       };
 
       this.recognition.onresult = (event) => {
+        // CRITICAL FIX: If system TTS is speaking, discard incoming speech to prevent self-looping
+        if (this.isSpeakingTTS) return;
+
         let interimTranscript = '';
         let finalTranscript = '';
 
@@ -103,21 +115,25 @@ export class VoiceSystem {
 
   toggleListening() {
     if (!this.recognition) {
-      this.speak('Speech recognition is not supported in this browser. Please use Chrome, Edge, or Safari.');
+      this.speak('Speech recognition is not supported in this browser. Please use Google Chrome or Microsoft Edge.');
       return false;
     }
 
     if (this.isListening) {
       this.isListening = false;
+      clearTimeout(this.restartTimer);
       try {
         this.recognition.stop();
       } catch (e) {}
       this.updateUIState();
       this.speak('Voice control deactivated.');
+      this.showActionHUD('🎤 Voice Control Off', 'Microphone listening has stopped', 'info');
       return false;
     } else {
       try {
+        this.isListening = true;
         this.recognition.start();
+        this.showActionHUD('🎤 Voice Control Active', 'Listening for commands... (Say "Help" for list)', 'success');
         return true;
       } catch (e) {
         console.warn('[VoiceSystem] Error starting recognition:', e);
@@ -126,45 +142,90 @@ export class VoiceSystem {
     }
   }
 
+  /**
+   * Robust Natural Language Processing (NLP) / regex command router
+   * Matches wide speech variations and ESL student accents
+   */
   handleVoiceCommand(rawTranscript) {
     const text = rawTranscript.toLowerCase().trim();
-    console.log('[VoiceSystem] Recognized command:', text);
+    console.log('[VoiceSystem] Recognized speech:', text);
 
-    // Command mapping matrix — IDs must match app.js handleVoiceCommand() switch cases exactly
-    if (text.includes('start privacy scan') || text.includes('privacy scan') || text.includes('scan privacy') || text.includes('run scan')) {
-      this.triggerCommand('start-audit', 'Privacy audit initiated. Scanning 14 tracking vectors across network pipelines.');
-    } else if (text.includes('block tracker') || text.includes('block tracking') || text.includes('block all')) {
-      this.triggerCommand('block-trackers', 'Third-party tracking blocked. Privacy-by-Design default parameters enforced.');
-    } else if (text.includes('consent log') || text.includes('show consent') || text.includes('ai consent')) {
-      this.triggerCommand('show-consent', 'Navigating to Ethical AI Consent Matrix and prompt telemetry log.');
-    } else if (text.includes('audit cookie') || text.includes('cookie audit') || text.includes('simulator')) {
-      this.triggerCommand('audit-cookies', 'Navigating to Cookie Banner Simulator. Deceptive versus Ethical patterns active.');
-    } else if (text.includes('high contrast') || text.includes('contrast mode')) {
-      this.triggerCommand('high-contrast', 'High contrast mode toggled. Contrast ratio elevated to WCAG AAA standard.');
-    } else if (text.includes('increase font') || text.includes('larger font') || text.includes('bigger text') || text.includes('font size')) {
-      this.triggerCommand('increase-font', 'Typography scaled up for enhanced readability.');
-    } else if (text.includes('mute sound') || text.includes('mute audio') || (text.includes('mute') && !text.includes('unmute'))) {
-      this.triggerCommand('mute-sound', 'Procedural acoustic sound effects muted.');
-    } else if (text.includes('unmute sound') || text.includes('unmute audio') || text.includes('sound on') || text.includes('unmute')) {
-      this.triggerCommand('mute-sound', 'Procedural acoustic sound effects enabled.');
-    } else if (text.includes('open inspector') || text.includes('show inspector') || text.includes('inspector') || text.includes('telemetry')) {
-      this.triggerCommand('open-inspector', 'Academic Privacy Inspector drawer opened. Contextual Integrity metrics loaded.');
-    } else if (text.includes('close') || text.includes('exit') || text.includes('dismiss')) {
-      this.triggerCommand('close-overlays', 'Dialog closed.');
-    } else if (text.includes('help') || text.includes('command') || text.includes('shortcut')) {
-      this.triggerCommand('help', 'Opening voice commands and keyboard switch navigation help palette.');
-    } else {
+    // 1. Privacy Scan / Threat Audit
+    if (/\b(scan|audit|telemetry)\b/.test(text) || text.includes('start scan') || text.includes('run scan')) {
+      this.triggerCommand('start-audit', 'Privacy audit initiated. Scanning 14 tracking vectors across network pipelines.', '⚡ Running Deep Privacy Scan');
+    }
+    // 2. Block Trackers / Privacy by Default
+    else if (/\b(block|protect|shield|stop tracking|default)\b/.test(text) || text.includes('block all')) {
+      this.triggerCommand('block-trackers', 'Third-party tracking blocked. Privacy-by-Design default parameters enforced.', '🛡️ All 427 Trackers Blocked');
+    }
+    // 3. Dark Pattern Simulator / Cookie Audit
+    else if (/\b(cookie|cookies|simulator|dark pattern|dark patterns|banner)\b/.test(text)) {
+      this.triggerCommand('audit-cookies', 'Navigating to Cookie Banner Simulator. Deceptive versus Ethical patterns active.', '🍪 Deceptive Pattern Simulator');
+    }
+    // 4. AI Consent Matrix / Ethical AI
+    else if (/\b(ai|consent|matrix|llm|retraining)\b/.test(text)) {
+      this.triggerCommand('show-consent', 'Navigating to Ethical AI Consent Matrix and prompt telemetry log.', '🧠 Ethical AI Consent Matrix');
+    }
+    // 5. Privacy Risk Calculator / Threat Meter
+    else if (/\b(risk|calculator|meter|threat|score|gauge)\b/.test(text)) {
+      this.triggerCommand('show-calculator', 'Displaying Quantitative Privacy Risk Score Meter.', '📊 Privacy Risk Score Meter');
+    }
+    // 6. Academic Dossier / Viva / Theory
+    else if (/\b(dossier|viva|theory|examiner|heuristics|framework|frameworks)\b/.test(text)) {
+      this.triggerCommand('show-dossier', 'Opening Examiner Viva Dossier and Academic Heuristics.', '🎓 Examiner Viva Dossier');
+    }
+    // 7. High Contrast Mode
+    else if (/\b(contrast|high contrast|black and white|accessibility)\b/.test(text)) {
+      this.triggerCommand('high-contrast', 'High contrast mode toggled. Contrast ratio elevated to WCAG AAA standard.', '🌓 WCAG AAA High Contrast');
+    }
+    // 8. Typography / Font Scaling
+    else if (/\b(font|zoom|larger|bigger|text size|scale)\b/.test(text)) {
+      this.triggerCommand('increase-font', 'Typography scaled up for enhanced readability.', '🔤 Dynamic Typography Scaling');
+    }
+    // 9. Mute / Unmute Sound
+    else if (text.includes('unmute') || text.includes('sound on') || text.includes('enable audio')) {
+      this.triggerCommand('unmute-sound', 'Procedural acoustic sound effects enabled.', '🔊 Sound Effects Active');
+    }
+    else if (/\b(mute|silent|silence)\b/.test(text)) {
+      this.triggerCommand('mute-sound', 'Procedural acoustic sound effects muted.', '🔇 Sound Effects Muted');
+    }
+    // 10. Inspector Drawer
+    else if (/\b(inspector|drawer)\b/.test(text)) {
+      this.triggerCommand('open-inspector', 'Academic Privacy Inspector drawer opened. Contextual Integrity metrics loaded.', '📋 Academic Privacy Inspector');
+    }
+    // 11. Stop Voice Control
+    else if (text.includes('stop voice') || text.includes('turn off voice') || text.includes('stop listening') || text.includes('deactivate voice') || text.includes('stop mic')) {
+      this.triggerCommand('stop-voice', 'Voice control deactivated.', '🎤 Voice Control Deactivated');
+    }
+    // 12. Close Overlays / Dialogs
+    else if (/\b(close|exit|dismiss|cancel|hide)\b/.test(text)) {
+      this.triggerCommand('close-overlays', 'Overlays and active dialogs closed.', '✕ Dialogs Closed');
+    }
+    // 13. Help / Shortcuts
+    else if (/\b(help|commands|shortcuts|what can i say)\b/.test(text)) {
+      this.triggerCommand('help', 'Opening voice commands and keyboard switch navigation help palette.', '❓ Voice & Switch Access Help');
+    }
+    else {
       // Unrecognized fallback feedback
       if (this.transcriptEl) {
         this.transcriptEl.textContent = `Unrecognized: "${text}" (Say "Help")`;
       }
+      this.showActionHUD('⚠️ Unrecognized Command', `You said: "${text}". Say "Help" for options.`, 'warning');
     }
   }
 
-  triggerCommand(commandId, spokenFeedback) {
+  triggerCommand(commandId, spokenFeedback, hudTitle = '') {
     if (this.audio) this.audio.playShieldEngage();
+
+    // Show visual HUD notification immediately
+    if (hudTitle) {
+      this.showActionHUD(hudTitle, spokenFeedback, 'action');
+    }
+
+    // Audible confirmation
     this.speak(spokenFeedback);
 
+    // Execute application action
     if (this.onCommand) {
       this.onCommand(commandId);
     }
@@ -172,7 +233,7 @@ export class VoiceSystem {
 
   /**
    * Spoken Text-to-Speech Output (window.speechSynthesis)
-   * Handles cancellation, rate-limiting, and screen reader collision prevention.
+   * Suppresses microphone input while speaking to prevent feedback loops.
    */
   speak(text) {
     if (!this.speechSynthesis || this.ttsMuted || !text) return;
@@ -189,11 +250,24 @@ export class VoiceSystem {
       this.speechSynthesis.cancel(); // Cancel any stalled utterance
 
       const utterance = new SpeechSynthesisUtterance(text);
-      utterance.rate = 1.05; // Slightly brisk, clear pace
+      utterance.rate = 1.05;
       utterance.pitch = 1.0;
       utterance.volume = 0.95;
 
-      // Helper to select voice after they are guaranteed loaded
+      // Suppress mic input while computer is speaking
+      this.isSpeakingTTS = true;
+
+      utterance.onend = () => {
+        // Resume listening 300ms after audio finishes
+        setTimeout(() => {
+          this.isSpeakingTTS = false;
+        }, 300);
+      };
+
+      utterance.onerror = () => {
+        this.isSpeakingTTS = false;
+      };
+
       const applyVoice = () => {
         const voices = this.speechSynthesis.getVoices();
         const preferredVoice = voices.find(v =>
@@ -204,7 +278,6 @@ export class VoiceSystem {
         if (preferredVoice) utterance.voice = preferredVoice;
       };
 
-      // Chrome loads voices asynchronously — wait for onvoiceschanged if empty
       if (this.speechSynthesis.getVoices().length > 0) {
         applyVoice();
         this.speechSynthesis.speak(utterance);
@@ -212,27 +285,97 @@ export class VoiceSystem {
         this.speechSynthesis.onvoiceschanged = () => {
           applyVoice();
           this.speechSynthesis.speak(utterance);
-          this.speechSynthesis.onvoiceschanged = null; // Fire only once
+          this.speechSynthesis.onvoiceschanged = null;
         };
-        // Fallback: speak without preferred voice after 400ms if event never fires
         setTimeout(() => {
-          if (utterance.voice === null || utterance.voice === undefined) {
+          if (!utterance.voice) {
             this.speechSynthesis.speak(utterance);
           }
-        }, 400);
+        }, 350);
       }
     } catch (e) {
+      this.isSpeakingTTS = false;
       console.warn('[VoiceSystem] Speech synthesis error:', e);
     }
   }
 
   toggleTTSMute() {
     this.ttsMuted = !this.ttsMuted;
-    localStorage.setItem('privacyguard_tts_muted', this.ttsMuted);
+    localStorage.setItem('privacyguard_tts_muted', String(this.ttsMuted));
     if (this.ttsMuted && this.speechSynthesis) {
       this.speechSynthesis.cancel();
+      this.isSpeakingTTS = false;
     }
     return this.ttsMuted;
+  }
+
+  /**
+   * On-Screen Live Action Notification (HUD Toast)
+   * Visually displays the voice action executing in real-time
+   */
+  injectActionHUD() {
+    const hud = document.createElement('div');
+    hud.id = 'voice-action-hud';
+    hud.className = 'fixed top-20 left-1/2 transform -translate-x-1/2 z-50 pointer-events-none transition-all duration-300 opacity-0 -translate-y-4';
+    hud.innerHTML = `
+      <div id="voice-hud-card" class="px-5 py-3 rounded-2xl bg-slate-950/95 border-2 border-cyan-400 text-white shadow-2xl backdrop-blur-xl flex items-center gap-3 font-mono">
+        <div id="voice-hud-icon" class="w-8 h-8 rounded-xl bg-cyan-500/20 text-cyan-400 flex items-center justify-center font-bold text-base shrink-0">
+          ⚡
+        </div>
+        <div>
+          <div id="voice-hud-title" class="text-xs sm:text-sm font-bold text-cyan-300">
+            Voice Action Executing
+          </div>
+          <div id="voice-hud-subtitle" class="text-[11px] text-slate-300 font-sans max-w-sm sm:max-w-md truncate">
+            Details loading...
+          </div>
+        </div>
+      </div>
+    `;
+    document.body.appendChild(hud);
+    this.actionHudEl = hud;
+  }
+
+  showActionHUD(title, subtitle, type = 'action') {
+    if (!this.actionHudEl) return;
+
+    const titleEl = document.getElementById('voice-hud-title');
+    const subtitleEl = document.getElementById('voice-hud-subtitle');
+    const cardEl = document.getElementById('voice-hud-card');
+    const iconEl = document.getElementById('voice-hud-icon');
+
+    if (titleEl) titleEl.textContent = title;
+    if (subtitleEl) subtitleEl.textContent = subtitle;
+
+    // Visual styles based on type
+    if (cardEl && iconEl) {
+      if (type === 'warning') {
+        cardEl.className = 'px-5 py-3 rounded-2xl bg-slate-950/95 border-2 border-amber-400 text-white shadow-2xl backdrop-blur-xl flex items-center gap-3 font-mono';
+        iconEl.className = 'w-8 h-8 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center font-bold text-base shrink-0';
+        iconEl.textContent = '⚠️';
+      } else if (type === 'info') {
+        cardEl.className = 'px-5 py-3 rounded-2xl bg-slate-950/95 border-2 border-slate-600 text-white shadow-2xl backdrop-blur-xl flex items-center gap-3 font-mono';
+        iconEl.className = 'w-8 h-8 rounded-xl bg-slate-800 text-slate-400 flex items-center justify-center font-bold text-base shrink-0';
+        iconEl.textContent = 'ℹ️';
+      } else {
+        cardEl.className = 'px-5 py-3 rounded-2xl bg-slate-950/95 border-2 border-cyan-400 text-white shadow-2xl backdrop-blur-xl flex items-center gap-3 font-mono ring-4 ring-cyan-500/20';
+        iconEl.className = 'w-8 h-8 rounded-xl bg-cyan-500/20 text-cyan-400 flex items-center justify-center font-bold text-base shrink-0 animate-pulse';
+        iconEl.textContent = '⚡';
+      }
+    }
+
+    // Reveal HUD
+    this.actionHudEl.classList.remove('opacity-0', '-translate-y-4');
+    this.actionHudEl.classList.add('opacity-100', 'translate-y-0');
+
+    // Auto-dismiss after 3.2 seconds
+    clearTimeout(this.hudTimer);
+    this.hudTimer = setTimeout(() => {
+      if (this.actionHudEl) {
+        this.actionHudEl.classList.remove('opacity-100', 'translate-y-0');
+        this.actionHudEl.classList.add('opacity-0', '-translate-y-4');
+      }
+    }, 3200);
   }
 
   injectFloatingWidget() {
@@ -275,7 +418,7 @@ export class VoiceSystem {
     });
 
     widget.querySelector('#floating-voice-help-btn')?.addEventListener('click', () => {
-      if (this.onCommand) this.onCommand('show-help');
+      if (this.onCommand) this.onCommand('help');
     });
 
     this.updateUIState();
@@ -310,7 +453,7 @@ export class VoiceSystem {
     } else {
       if (this.stateDot) this.stateDot.className = 'w-2 h-2 rounded-full bg-slate-500';
       if (label) {
-        label.textContent = 'Voice Inactive (Key \'V\')';
+        label.textContent = "Voice Inactive (Key 'V')";
         label.className = 'text-[11px] font-mono font-bold text-slate-300';
       }
       if (this.floatingBadge) {

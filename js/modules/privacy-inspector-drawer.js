@@ -29,9 +29,17 @@ export class PrivacyInspectorDrawer {
   }
 
   injectDrawerMarkup() {
+    // Backdrop for mobile & desktop drawer visibility
+    const backdrop = document.createElement('div');
+    backdrop.id = 'privacy-inspector-backdrop';
+    backdrop.className = 'fixed inset-0 z-40 bg-black/75 backdrop-blur-sm transition-opacity duration-300 opacity-0 pointer-events-none';
+    backdrop.setAttribute('aria-hidden', 'true');
+    document.body.appendChild(backdrop);
+    this.backdropEl = backdrop;
+
     const drawer = document.createElement('aside');
     drawer.id = 'privacy-inspector-drawer';
-    drawer.className = 'fixed inset-y-0 right-0 z-50 w-full sm:w-[480px] bg-slate-950/95 border-l border-cyan-500/30 backdrop-blur-2xl shadow-2xl flex flex-col transform translate-x-full transition-transform duration-300 ease-in-out';
+    drawer.className = 'fixed inset-y-0 right-0 z-50 w-full sm:w-[480px] bg-slate-950/98 border-l border-cyan-500/40 backdrop-blur-2xl shadow-2xl flex flex-col transform translate-x-full transition-transform duration-300 ease-in-out';
     drawer.setAttribute('role', 'dialog');
     drawer.setAttribute('aria-modal', 'true');
     drawer.setAttribute('aria-label', 'Academic Privacy Inspector Drawer');
@@ -187,6 +195,11 @@ export class PrivacyInspectorDrawer {
   }
 
   attachEventListeners() {
+    // Backdrop click closes drawer
+    this.backdropEl?.addEventListener('click', () => {
+      this.close();
+    });
+
     // Close button
     this.drawerEl?.querySelector('#close-inspector-drawer-btn')?.addEventListener('click', () => {
       this.close();
@@ -229,7 +242,15 @@ export class PrivacyInspectorDrawer {
     if (!this.drawerEl) return;
     this.isOpen = true;
     this.drawerEl.classList.remove('translate-x-full');
-    // Lock body scroll on mobile to prevent scrolling behind the drawer
+    this.drawerEl.classList.add('translate-x-0');
+
+    // Reveal dimmed backdrop
+    if (this.backdropEl) {
+      this.backdropEl.classList.remove('opacity-0', 'pointer-events-none');
+      this.backdropEl.classList.add('opacity-100');
+    }
+
+    // Lock body scroll to prevent disorientation
     document.body.style.overflow = 'hidden';
     if (this.accessibility) {
       this.accessibility.trapFocus(this.drawerEl);
@@ -241,7 +262,15 @@ export class PrivacyInspectorDrawer {
   close() {
     if (!this.drawerEl) return;
     this.isOpen = false;
+    this.drawerEl.classList.remove('translate-x-0');
     this.drawerEl.classList.add('translate-x-full');
+
+    // Hide backdrop
+    if (this.backdropEl) {
+      this.backdropEl.classList.remove('opacity-100');
+      this.backdropEl.classList.add('opacity-0', 'pointer-events-none');
+    }
+
     // Restore body scroll
     document.body.style.overflow = '';
     if (this.accessibility) {
