@@ -2,12 +2,34 @@
  * PrivacyGuard UX - Two-Way Voice System (Speech Recognition & Spoken TTS)
  * 
  * God-Level Hands-Free Multimodal Interaction Engine:
- * - Phonetic & fuzzy tolerance for headphone noise & ESL accents
+ * - Algorithmic Fuzzy Levenshtein & Phonetic Tolerance for noisy mics & accents
  * - Full hands-free voice control across Simulator, Risk Calculator, AI Matrix, and Examiner Dossier
- * - Interactive visual Action HUD with glowing real-time feedback
+ * - Interactive visual Action HUD with real-time cyber status
  * - Microphone feedback loop suppression during TTS playback
  * - Crash-proof debounced auto-reconnection in Chromium
  */
+
+function levenshteinDistance(s1, s2) {
+  if (s1 === s2) return 0;
+  if (s1.length === 0) return s2.length;
+  if (s2.length === 0) return s1.length;
+
+  const v0 = new Int32Array(s2.length + 1);
+  const v1 = new Int32Array(s2.length + 1);
+
+  for (let i = 0; i <= s2.length; i++) v0[i] = i;
+
+  for (let i = 0; i < s1.length; i++) {
+    v1[0] = i + 1;
+    for (let j = 0; j < s2.length; j++) {
+      const cost = s1[i] === s2[j] ? 0 : 1;
+      v1[j + 1] = Math.min(v1[j] + 1, v0[j + 1] + 1, v0[j] + cost);
+    }
+    for (let j = 0; j <= s2.length; j++) v0[j] = v1[j];
+  }
+
+  return v1[s2.length];
+}
 
 export class VoiceSystem {
   constructor(options = {}) {
@@ -20,6 +42,7 @@ export class VoiceSystem {
     this.isSpeakingTTS = false;
     this.restartTimer = null;
     this.hudTimer = null;
+    this.interimDebounceTimer = null;
 
     this.speechSynthesis = window.speechSynthesis || null;
     this.ttsMuted = localStorage.getItem('privacyguard_tts_muted') === 'true';
@@ -32,10 +55,315 @@ export class VoiceSystem {
 
     this.lastSpokenText = '';
     this.lastSpokenTime = 0;
+    this.lastExecutedCommand = '';
+    this.lastExecutedTime = 0;
 
+    this.buildKnowledgeBase();
     this.initRecognition();
     this.injectFloatingWidget();
     this.injectActionHUD();
+  }
+
+  buildKnowledgeBase() {
+    this.commandCatalog = [
+      // 1. SPECIFIC COOKIE SIMULATOR ACTIONS
+      {
+        id: 'sim-accept-trap',
+        title: '⚠️ Dark Pattern Accepted (+427 Trackers)',
+        spoken: 'Triggered deceptive trap: accepted 427 ad trackers with 1 click.',
+        keywords: ['accept all', 'accept cookie', 'accept cookies', 'fall in trap', 'accept trap', 'trigger trap', 'eksept', 'aksept', 'accept']
+      },
+      {
+        id: 'sim-reject-ethical',
+        title: '✅ Ethical Reject (Zero Telemetry)',
+        spoken: 'Ethical Privacy Preserved: all optional tracking rejected in one click.',
+        keywords: ['reject all', 'reject cookie', 'reject cookies', 'reject non-essential', 'ethical reject', 'reject optional', 'reject', 'riject', 'rejact', 'opt out']
+      },
+      {
+        id: 'sim-open-settings',
+        title: '⚠️ Roach Motel Obstruction Opened',
+        spoken: 'Roach Motel preferences opened. Manual unticking of 427 vendors required.',
+        keywords: ['open settings', 'show preference', 'cookie preference', 'preferences', 'roach motel', 'vendor choices', 'options']
+      },
+      {
+        id: 'sim-confirmshame',
+        title: '⚠️ Confirmshaming Identified',
+        spoken: 'Confirmshaming triggered: emotional guilt applied to privacy refusal.',
+        keywords: ['confirm shame', 'confirmshame', 'dislike safe', 'shame', 'shaming', 'guilt']
+      },
+      {
+        id: 'sim-reset',
+        title: '🔄 Simulator Reset',
+        spoken: 'Cookie Banner Simulator reset to initial benchmark.',
+        keywords: ['reset simulator', 'restart simulator', 'clear simulator', 'reset cookie']
+      },
+      {
+        id: 'audit-cookies',
+        title: '🍪 Deceptive Pattern Simulator',
+        spoken: 'Navigating to Deceptive Banner Simulator. Inspecting manipulative UX patterns.',
+        keywords: ['audit cookie', 'audit cookies', 'cookies', 'cookie', 'cokie', 'cooky', 'simulator', 'dark pattern', 'dark patterns', 'banner', 'deceptive']
+      },
+
+      // 2. BLOCK TRACKERS / PRIVACY BY DEFAULT
+      {
+        id: 'block-trackers',
+        title: '🛡️ All 427 Trackers Blocked',
+        spoken: 'Third-party tracking blocked across all vectors. Privacy-by-Design default parameters enforced.',
+        keywords: ['block tracker', 'block trackers', 'tracker', 'trackers', 'low crackers', 'lock trackers', 'jack tracker', 'black tracker', 'block all', 'protect', 'shield', 'privacy by default', 'stop tracking', 'roko', 'band karo']
+      },
+
+      // 3. RISK CALCULATOR PRESETS & SENSORS
+      {
+        id: 'calc-preset-strict',
+        title: '🛡️ Preset: Privacy-by-Default (0%)',
+        spoken: 'Privacy-by-Default preset active. All invasive sensors disabled.',
+        keywords: ['preset strict', 'strict mode', 'fortified', 'zero risk', 'strict preset', 'clean preset', 'strict']
+      },
+      {
+        id: 'calc-preset-balanced',
+        title: '⚖️ Preset: Balanced (45%)',
+        spoken: 'Balanced preset active: standard telemetry with 30-day retention.',
+        keywords: ['preset balanced', 'balanced preset', 'moderate preset', 'balanced mode', 'moderate', 'balanced']
+      },
+      {
+        id: 'calc-preset-social',
+        title: '🚨 Preset: Predatory Social (100%)',
+        spoken: 'Predatory social media preset active: maximum surveillance score.',
+        keywords: ['preset social', 'preset predatory', 'social media preset', 'max risk', 'maximum risk', 'social preset', 'predatory']
+      },
+      {
+        id: 'calc-toggle-biometric',
+        title: '👁️ Biometric Profiling Toggled',
+        spoken: 'Biometric & Facial Emotion mesh permission toggled.',
+        keywords: ['toggle biometric', 'biometrics', 'biometric', 'facial emotion', 'face scan', 'camera']
+      },
+      {
+        id: 'calc-toggle-location',
+        title: '📍 Geolocation Sensor Toggled',
+        spoken: 'High-Precision GPS location telemetry toggled.',
+        keywords: ['toggle location', 'location', 'gps', 'geolocation', 'triangulation']
+      },
+      {
+        id: 'calc-toggle-audio',
+        title: '🎙️ Audio Eavesdropping Toggled',
+        spoken: 'Continuous ambient microphone capture toggled.',
+        keywords: ['toggle audio', 'ambient audio', 'microphone stream', 'audio capture', 'listening']
+      },
+      {
+        id: 'calc-toggle-broker',
+        title: '💰 Data Broker Selling Toggled',
+        spoken: 'Third-party data brokerage syndication toggled.',
+        keywords: ['toggle broker', 'data broker', 'brokerage', 'data brokers', 'broker']
+      },
+      {
+        id: 'calc-toggle-fingerprint',
+        title: '🖥️ Canvas Fingerprint Toggled',
+        spoken: 'Browser canvas fingerprinting vector toggled.',
+        keywords: ['toggle fingerprint', 'canvas fingerprint', 'fingerprinting', 'fingerprint']
+      },
+      {
+        id: 'show-calculator',
+        title: '📊 Privacy Risk Score Meter',
+        spoken: 'Displaying Quantitative Privacy Risk Score Meter.',
+        keywords: ['risk meter', 'calculator', 'risk calculator', 'threat score', 'risk score', 'threat meter', 'gauge']
+      },
+
+      // 4. ETHICAL AI CONSENT MATRIX (TOPIC 5)
+      {
+        id: 'ai-toggle-training',
+        title: '🤖 Model Retraining Toggled',
+        spoken: 'LLM training dataset scraping permission toggled.',
+        keywords: ['toggle training', 'model training', 'retraining', 'train model', 'dataset ingestion']
+      },
+      {
+        id: 'ai-toggle-human',
+        title: '👥 Human Review Toggled',
+        spoken: 'Third-party human RLHF review permission toggled.',
+        keywords: ['toggle human review', 'human review', 'human annotation', 'contractor review', 'rlhf']
+      },
+      {
+        id: 'ai-toggle-diffprivacy',
+        title: '🔒 Differential Privacy Toggled',
+        spoken: 'Client-side differential privacy & PII masking toggled.',
+        keywords: ['toggle differential privacy', 'differential privacy', 'pii masking', 'masking', 'anonymization']
+      },
+      {
+        id: 'ai-toggle-ephemeral',
+        title: '⏳ Ephemeral Memory Toggled',
+        spoken: 'Zero-persistence ephemeral context cache toggled.',
+        keywords: ['toggle ephemeral', 'ephemeral context', 'session wipe', 'ephemeral memory', 'auto delete']
+      },
+      {
+        id: 'ai-sample-medical',
+        title: '🩺 Medical PII Sample Loaded',
+        spoken: 'Injected sensitive medical prompt with doctor name and health vectors.',
+        keywords: ['sample medical', 'medical prompt', 'test medical', 'doctor prompt', 'health prompt']
+      },
+      {
+        id: 'ai-sample-key',
+        title: '🔑 Secret Key Sample Loaded',
+        spoken: 'Injected secret API token prompt for client-side redaction test.',
+        keywords: ['sample key', 'secret key', 'api key', 'sample api key', 'token prompt']
+      },
+      {
+        id: 'show-consent',
+        title: '🧠 Ethical AI Consent Matrix',
+        spoken: 'Navigating to Ethical AI Consent Matrix and prompt telemetry log.',
+        keywords: ['show consent', 'ai matrix', 'ai consent', 'consent matrix', 'consent log', 'ethical ai', 'ai', 'artificial intelligence']
+      },
+
+      // 5. ACADEMIC INSPECTOR & TELEMETRY
+      {
+        id: 'fast-audit',
+        title: '⚡ 60x Fast Audit Running',
+        spoken: 'Fast-forward audit running at 60x speed across 14 telemetry pipelines.',
+        keywords: ['fast scan', '60x scan', 'fast audit', 'run fast scan', 'speed scan', 'quick scan']
+      },
+      {
+        id: 'inject-tracker',
+        title: '🚨 Rogue Tracker Injected',
+        spoken: 'Injected rogue third-party tracking beacon. Contextual Integrity alert raised.',
+        keywords: ['inject tracker', 'tracker alert', 'simulate tracker', 'trigger tracker', 'add tracker']
+      },
+      {
+        id: 'simulate-breach',
+        title: '⚠️ Breach Mitigation Tested',
+        spoken: 'Simulated data breach intercepted and mitigated client-side.',
+        keywords: ['simulate breach', 'trigger breach', 'breach simulation', 'data breach', 'breach']
+      },
+      {
+        id: 'reset-telemetry',
+        title: '🔄 Telemetry Reset',
+        spoken: 'Academic inspector telemetry reset to baseline.',
+        keywords: ['reset telemetry', 'reset inspector', 'clear telemetry']
+      },
+      {
+        id: 'open-inspector',
+        title: '📋 Academic Privacy Inspector',
+        spoken: 'Academic Privacy Inspector drawer opened. Contextual Integrity metrics loaded.',
+        keywords: ['open inspector', 'show inspector', 'inspector', 'drawer', 'telemetry', 'contextual integrity']
+      },
+      {
+        id: 'start-audit',
+        title: '⚡ Running Deep Privacy Scan',
+        spoken: 'Privacy audit initiated. Scanning 14 tracking vectors across network pipelines.',
+        keywords: ['start scan', 'privacy scan', 'scan', 'audit', 'run scan', 'deep scan', 'threat audit', 'scan now', 'chalao', 'shuru']
+      },
+
+      // 6. EXAMINER DOSSIER & TABS
+      {
+        id: 'dossier-tab-patterns',
+        title: '😈 Brignull Taxonomy Tab',
+        spoken: 'Opened Deceptive Patterns taxonomy tab.',
+        keywords: ['tab pattern', 'tab patterns', 'deceptive patterns tab', 'dark patterns tab']
+      },
+      {
+        id: 'dossier-tab-pbd',
+        title: '🛡️ 7 Principles of PbD Tab',
+        spoken: 'Opened 7 Privacy by Design Principles tab.',
+        keywords: ['tab pbd', 'privacy by design tab', 'tab principles', 'pbd tab']
+      },
+      {
+        id: 'dossier-tab-heuristics',
+        title: '📐 Nielsen Heuristics Tab',
+        spoken: 'Opened Jakob Nielsen Usability Heuristics tab.',
+        keywords: ['tab heuristic', 'tab heuristics', 'nielsen tab', 'usability tab']
+      },
+      {
+        id: 'dossier-tab-viva',
+        title: '🎓 Examiner Viva Q&A Tab',
+        spoken: 'Opened Examiner Viva Defense Q&A tab.',
+        keywords: ['tab viva', 'viva qa', 'questions tab', 'viva tab']
+      },
+      {
+        id: 'show-dossier',
+        title: '🎓 Examiner Viva Dossier',
+        spoken: 'Opening Examiner Viva Dossier and Academic Heuristics.',
+        keywords: ['open dossier', 'dossier', 'viva dossier', 'viva', 'examiner', 'theory', 'frameworks', 'docier', 'dosier']
+      },
+      {
+        id: 'toggle-examiner-mode',
+        title: '🔍 Examiner Mode Toggled',
+        spoken: 'Global Examiner Mode highlights toggled.',
+        keywords: ['toggle examiner mode', 'examiner mode', 'examiner mode on', 'examiner mode off']
+      },
+
+      // 7. PAGE SCROLLING & NAVIGATION
+      {
+        id: 'scroll-top',
+        title: '⬆️ Scrolled to Top',
+        spoken: 'Scrolling to top of page.',
+        keywords: ['scroll top', 'go to top', 'top of page', 'back to top', 'upar', 'top']
+      },
+      {
+        id: 'scroll-bottom',
+        title: '⬇️ Scrolled to Bottom',
+        spoken: 'Scrolling to page footer.',
+        keywords: ['scroll bottom', 'go to bottom', 'bottom of page', 'footer', 'neeche', 'bottom']
+      },
+      {
+        id: 'scroll-down',
+        title: '⬇️ Page Down',
+        spoken: 'Scrolling down page.',
+        keywords: ['scroll down', 'go down', 'page down', 'down']
+      },
+      {
+        id: 'scroll-up',
+        title: '⬆️ Page Up',
+        spoken: 'Scrolling up page.',
+        keywords: ['scroll up', 'go up', 'page up', 'up']
+      },
+
+      // 8. ACCESSIBILITY, SOUND & SYSTEM
+      {
+        id: 'high-contrast',
+        title: '🌓 WCAG AAA High Contrast',
+        spoken: 'High contrast mode toggled. Contrast ratio elevated to WCAG AAA standard.',
+        keywords: ['contrast', 'high contrast', 'contrast mode', 'black and white', 'dark mode', 'accessibility mode']
+      },
+      {
+        id: 'increase-font',
+        title: '🔤 Font Scaled Up',
+        spoken: 'Typography scaled up for enhanced readability.',
+        keywords: ['increase font', 'larger font', 'bigger text', 'zoom text', 'scale text', 'font size', 'bada font', 'zoom']
+      },
+      {
+        id: 'decrease-font',
+        title: '🔤 Font Reset to 100%',
+        spoken: 'Typography scale restored to 100 percent baseline.',
+        keywords: ['decrease font', 'smaller font', 'reset font', 'normal font', '100 percent']
+      },
+      {
+        id: 'unmute-sound',
+        title: '🔊 Sound Effects Active',
+        spoken: 'Procedural acoustic sound effects enabled.',
+        keywords: ['unmute', 'unmute sound', 'unmute audio', 'sound on', 'enable audio', 'audio on']
+      },
+      {
+        id: 'mute-sound',
+        title: '🔇 Sound Effects Muted',
+        spoken: 'Procedural acoustic sound effects muted.',
+        keywords: ['mute', 'mute sound', 'mute audio', 'silence', 'silent', 'quiet']
+      },
+      {
+        id: 'stop-voice',
+        title: '🎤 Voice Control Deactivated',
+        spoken: 'Voice control deactivated.',
+        keywords: ['stop voice', 'turn off voice', 'stop listening', 'deactivate voice', 'stop mic', 'chup', 'band']
+      },
+      {
+        id: 'close-overlays',
+        title: '✕ Dialogs Closed',
+        spoken: 'Overlays and active dialogs closed.',
+        keywords: ['close', 'exit', 'dismiss', 'cancel', 'hide', 'back', 'band']
+      },
+      {
+        id: 'help',
+        title: '❓ Voice & Switch Access Help',
+        spoken: 'Opening voice commands and keyboard switch navigation help palette.',
+        keywords: ['help', 'commands', 'shortcuts', 'what can i say', 'voice help', 'madad', 'options']
+      }
+    ];
   }
 
   initRecognition() {
@@ -109,7 +437,16 @@ export class VoiceSystem {
         }
 
         if (finalTranscript) {
+          clearTimeout(this.interimDebounceTimer);
           this.handleVoiceCommand(finalTranscript);
+        } else if (interimTranscript) {
+          // Fallback debounce for noisy headsets where final transcript is delayed
+          clearTimeout(this.interimDebounceTimer);
+          this.interimDebounceTimer = setTimeout(() => {
+            if (!this.isSpeakingTTS && interimTranscript.trim()) {
+              this.handleVoiceCommand(interimTranscript);
+            }
+          }, 850);
         }
       };
     } catch (err) {
@@ -152,299 +489,101 @@ export class VoiceSystem {
   normalizeNoise(raw) {
     let t = raw.toLowerCase().trim();
 
+    // Remove filler noise words
+    t = t.replace(/\b(please|can you|hey|could you|just|the|a|an)\b/g, '').trim();
+
     // Common phonetic distortions from headphone background noise
     t = t.replace(/\b(low crackers|lock trackers|jack tracker|black tracker|block track|low tracker|lock tracker)\b/g, 'block trackers');
     t = t.replace(/\b(start can|dart scan|tart scan|star scan)\b/g, 'start scan');
-    t = t.replace(/\b(privy scan|private scan|preview scan)\b/g, 'privacy scan');
-    t = t.replace(/\b(cokie|cooky|coke)\b/g, 'cookie');
-    t = t.replace(/\b(battery|metrics|matter)\b/g, 'matrix');
-    t = t.replace(/\b(dosier|docier)\b/g, 'dossier');
+    t = t.replace(/\b(privy scan|private scan|preview scan|skan)\b/g, 'privacy scan');
+    t = t.replace(/\b(cokie|cooky|coke|kooki|kukie)\b/g, 'cookie');
+    t = t.replace(/\b(battery|metrics|matter|metrix)\b/g, 'matrix');
+    t = t.replace(/\b(dosier|docier|dosiyar)\b/g, 'dossier');
     t = t.replace(/\b(resect|re set)\b/g, 'reset');
+    t = t.replace(/\b(riject|rejact|rject)\b/g, 'reject');
+    t = t.replace(/\b(eksept|aksept|axcept)\b/g, 'accept');
 
-    return t;
+    return t.replace(/\s+/g, ' ');
+  }
+
+  /**
+   * Algorithmic Intent Finder with Levenshtein & Soundex Fuzzy Tolerance
+   */
+  matchIntent(text) {
+    if (!text || text.length < 2) return null;
+
+    // --- PASS 1: Exact Substring Matching (Prioritized Order) ---
+    for (const cmd of this.commandCatalog) {
+      for (const kw of cmd.keywords) {
+        if (text.includes(kw)) {
+          return cmd;
+        }
+      }
+    }
+
+    // --- PASS 2: Token-Level Fuzzy Levenshtein Distance ---
+    const spokenTokens = text.split(/\s+/).filter(w => w.length >= 3);
+
+    let bestMatch = null;
+    let highestScore = 0;
+
+    for (const cmd of this.commandCatalog) {
+      let cmdScore = 0;
+
+      for (const kw of cmd.keywords) {
+        const kwTokens = kw.split(/\s+/).filter(w => w.length >= 3);
+
+        for (const sToken of spokenTokens) {
+          for (const kToken of kwTokens) {
+            const dist = levenshteinDistance(sToken, kToken);
+            const maxLen = Math.max(sToken.length, kToken.length);
+
+            // Distance threshold: allow 1 error for 4-5 chars, 2 errors for 6+ chars
+            const allowedDist = maxLen >= 6 ? 2 : (maxLen >= 4 ? 1 : 0);
+
+            if (dist <= allowedDist) {
+              const similarity = (maxLen - dist) / maxLen;
+              cmdScore += similarity * 2;
+            }
+          }
+        }
+      }
+
+      if (cmdScore > highestScore && cmdScore >= 1.5) {
+        highestScore = cmdScore;
+        bestMatch = cmd;
+      }
+    }
+
+    return bestMatch;
   }
 
   /**
    * God-Level Multi-Modal Voice Router
-   * Maps spoken speech to every interactive UI feature of the application
    */
   handleVoiceCommand(rawTranscript) {
     const text = this.normalizeNoise(rawTranscript);
     console.log('[VoiceSystem] Normalized speech:', text, `(Raw: "${rawTranscript}")`);
 
-    // =========================================================================
-    // 1. SPECIFIC COOKIE SIMULATOR COMMANDS (Checked before generic "audit")
-    // =========================================================================
-    if (/\b(cookie|cookies|dark pattern|dark patterns|simulator banner)\b/.test(text) &&
-        !text.includes('accept') && !text.includes('reject') && !text.includes('preference') && !text.includes('shame')) {
-      this.triggerCommand('audit-cookies', 'Navigating to Deceptive Banner Simulator. Inspecting manipulative UX patterns.', '🍪 Deceptive Pattern Simulator');
+    // Prevent immediate duplicate executions within 1.2s
+    const now = Date.now();
+    if (now - this.lastExecutedTime < 1200 && text === this.lastExecutedCommand) {
       return;
     }
 
-    if (text.includes('accept all') || text.includes('accept cookie') || text.includes('accept cookies') || text.includes('accept trap') || text.includes('fall in trap')) {
-      this.triggerCommand('sim-accept-trap', 'Triggered deceptive trap: accepted 427 ad trackers with 1 click.', '⚠️ Dark Pattern Accepted (+427 Trackers)');
-      return;
-    }
+    const matched = this.matchIntent(text);
 
-    if (text.includes('reject all') || text.includes('reject cookie') || text.includes('reject cookies') || text.includes('reject optional') || text.includes('ethical reject') || text.includes('reject non-essential')) {
-      this.triggerCommand('sim-reject-ethical', 'Ethical Privacy Preserved: all optional tracking rejected in one click.', '✅ Ethical Reject (Zero Telemetry)');
-      return;
+    if (matched) {
+      this.lastExecutedCommand = text;
+      this.lastExecutedTime = now;
+      this.triggerCommand(matched.id, matched.spoken, matched.title);
+    } else {
+      // Unrecognized fallback feedback
+      if (this.transcriptEl) {
+        this.transcriptEl.textContent = `Unrecognized: "${text}" (Say "Help")`;
+      }
+      this.showActionHUD('⚠️ Command Not Recognized', `Heard: "${text}". Say "Help" for all commands.`, 'warning');
     }
-
-    if (text.includes('open settings') || text.includes('show preference') || text.includes('cookie preference') || text.includes('show options') || text.includes('roach motel')) {
-      this.triggerCommand('sim-open-settings', 'Roach Motel preferences opened. Manual unticking of 427 vendors required.', '⚠️ Roach Motel Obstruction Opened');
-      return;
-    }
-
-    if (text.includes('confirm shame') || text.includes('confirmshame') || text.includes('dislike safe') || text.includes('shame')) {
-      this.triggerCommand('sim-confirmshame', 'Confirmshaming triggered: emotional guilt applied to privacy refusal.', '⚠️ Confirmshaming Identified');
-      return;
-    }
-
-    if (text.includes('reset simulator') || text.includes('restart simulator') || text.includes('clear simulator')) {
-      this.triggerCommand('sim-reset', 'Cookie Banner Simulator reset to initial benchmark.', '🔄 Simulator Reset');
-      return;
-    }
-
-    // =========================================================================
-    // 2. BLOCK TRACKERS / PRIVACY BY DEFAULT (Noise-resilient)
-    // =========================================================================
-    if (text.includes('block tracker') || text.includes('block trackers') ||
-        /\b(trackers?|crackers?)\b/.test(text) ||
-        /\b(block|protect|shield|stop tracking|privacy by default)\b/.test(text)) {
-      this.triggerCommand('block-trackers', 'Third-party tracking blocked across all vectors. Privacy-by-Design default parameters enforced.', '🛡️ All 427 Trackers Blocked');
-      return;
-    }
-
-    // =========================================================================
-    // 3. PRIVACY RISK CALCULATOR & THREAT SENSORS
-    // =========================================================================
-    if (text.includes('preset strict') || text.includes('strict mode') || text.includes('fortified')) {
-      this.triggerCommand('calc-preset-strict', 'Privacy-by-Default preset active. All invasive sensors disabled.', '🛡️ Preset: Privacy-by-Default');
-      return;
-    }
-
-    if (text.includes('preset balanced') || text.includes('balanced preset') || text.includes('moderate')) {
-      this.triggerCommand('calc-preset-balanced', 'Balanced preset active: standard telemetry with 30-day retention.', '⚖️ Preset: Balanced');
-      return;
-    }
-
-    if (text.includes('preset social') || text.includes('preset predatory') || text.includes('social media preset') || text.includes('maximum risk') || text.includes('max risk')) {
-      this.triggerCommand('calc-preset-social', 'Predatory social media preset active: maximum surveillance score.', '🚨 Preset: Predatory Social Media');
-      return;
-    }
-
-    if (text.includes('toggle biometric') || text.includes('biometric') || text.includes('facial emotion')) {
-      this.triggerCommand('calc-toggle-biometric', 'Biometric & Facial Emotion mesh permission toggled.', '👁️ Biometric Profiling Toggled');
-      return;
-    }
-
-    if (text.includes('toggle location') || text.includes('location') || text.includes('gps')) {
-      this.triggerCommand('calc-toggle-location', 'High-Precision GPS location telemetry toggled.', '📍 Geolocation Sensor Toggled');
-      return;
-    }
-
-    if (text.includes('toggle audio') || text.includes('microphone stream') || text.includes('ambient audio')) {
-      this.triggerCommand('calc-toggle-audio', 'Continuous ambient microphone capture toggled.', '🎙️ Audio Eavesdropping Toggled');
-      return;
-    }
-
-    if (text.includes('toggle broker') || text.includes('data broker') || text.includes('brokerage')) {
-      this.triggerCommand('calc-toggle-broker', 'Third-party data brokerage syndication toggled.', '💰 Data Broker Selling Toggled');
-      return;
-    }
-
-    if (text.includes('toggle fingerprint') || text.includes('canvas fingerprint') || text.includes('fingerprint')) {
-      this.triggerCommand('calc-toggle-fingerprint', 'Browser canvas fingerprinting vector toggled.', '🖥️ Canvas Fingerprint Toggled');
-      return;
-    }
-
-    if (/\b(risk|calculator|meter|threat score|gauge)\b/.test(text)) {
-      this.triggerCommand('show-calculator', 'Displaying Quantitative Privacy Risk Score Meter.', '📊 Privacy Risk Score Meter');
-      return;
-    }
-
-    // =========================================================================
-    // 4. ETHICAL AI CONSENT MATRIX (Topic 5)
-    // =========================================================================
-    if (text.includes('toggle training') || text.includes('model training') || text.includes('retraining')) {
-      this.triggerCommand('ai-toggle-training', 'LLM training dataset scraping permission toggled.', '🤖 Model Retraining Toggled');
-      return;
-    }
-
-    if (text.includes('toggle human review') || text.includes('human annotation') || text.includes('human reviewer')) {
-      this.triggerCommand('ai-toggle-human', 'Third-party human RLHF review permission toggled.', '👥 Human Review Toggled');
-      return;
-    }
-
-    if (text.includes('toggle differential privacy') || text.includes('pii masking') || text.includes('differential privacy')) {
-      this.triggerCommand('ai-toggle-diffprivacy', 'Client-side differential privacy & PII masking toggled.', '🔒 Differential Privacy Toggled');
-      return;
-    }
-
-    if (text.includes('toggle ephemeral') || text.includes('ephemeral context') || text.includes('session wipe')) {
-      this.triggerCommand('ai-toggle-ephemeral', 'Zero-persistence ephemeral context cache toggled.', '⏳ Ephemeral Memory Toggled');
-      return;
-    }
-
-    if (text.includes('sample medical') || text.includes('medical prompt') || text.includes('test medical')) {
-      this.triggerCommand('ai-sample-medical', 'Injected sensitive medical prompt with doctor name and health vectors.', '🩺 Medical PII Sample Loaded');
-      return;
-    }
-
-    if (text.includes('sample key') || text.includes('secret key') || text.includes('api key')) {
-      this.triggerCommand('ai-sample-key', 'Injected secret API token prompt for client-side redaction test.', '🔑 Secret Key Sample Loaded');
-      return;
-    }
-
-    if (/\b(ai|consent|matrix|llm|consent log)\b/.test(text)) {
-      this.triggerCommand('show-consent', 'Navigating to Ethical AI Consent Matrix and prompt telemetry log.', '🧠 Ethical AI Consent Matrix');
-      return;
-    }
-
-    // =========================================================================
-    // 5. ACADEMIC INSPECTOR DRAWER & SIMULATION ACTIONS
-    // =========================================================================
-    if (text.includes('fast scan') || text.includes('60x scan') || text.includes('run fast scan') || text.includes('fast audit')) {
-      this.triggerCommand('fast-audit', 'Fast-forward audit running at 60x speed across 14 telemetry pipelines.', '⚡ 60x Fast Audit Running');
-      return;
-    }
-
-    if (text.includes('inject tracker') || text.includes('tracker alert') || text.includes('simulate tracker')) {
-      this.triggerCommand('inject-tracker', 'Injected rogue third-party tracking beacon. Contextual Integrity alert raised.', '🚨 Rogue Tracker Injected');
-      return;
-    }
-
-    if (text.includes('simulate breach') || text.includes('trigger breach') || text.includes('breach simulation')) {
-      this.triggerCommand('simulate-breach', 'Simulated data breach intercepted and mitigated client-side.', '⚠️ Breach Mitigation Tested');
-      return;
-    }
-
-    if (text.includes('reset telemetry') || text.includes('reset inspector')) {
-      this.triggerCommand('reset-telemetry', 'Academic inspector telemetry reset to baseline.', '🔄 Telemetry Reset');
-      return;
-    }
-
-    if (/\b(open inspector|inspector|drawer|telemetry)\b/.test(text)) {
-      this.triggerCommand('open-inspector', 'Academic Privacy Inspector drawer opened. Contextual Integrity metrics loaded.', '📋 Academic Privacy Inspector');
-      return;
-    }
-
-    // Generic Privacy Scan / Deep Audit
-    if (/\b(scan|audit|start scan|run scan|privacy scan|deep scan)\b/.test(text)) {
-      this.triggerCommand('start-audit', 'Privacy audit initiated. Scanning 14 tracking vectors across network pipelines.', '⚡ Running Deep Privacy Scan');
-      return;
-    }
-
-    // =========================================================================
-    // 6. EXAMINER VIVA DOSSIER & TAB NAVIGATION
-    // =========================================================================
-    if (text.includes('tab pattern') || text.includes('deceptive patterns tab')) {
-      this.triggerCommand('dossier-tab-patterns', 'Opened Deceptive Patterns taxonomy tab.', '😈 Brignull Taxonomy Tab');
-      return;
-    }
-
-    if (text.includes('tab pbd') || text.includes('privacy by design tab') || text.includes('tab principles')) {
-      this.triggerCommand('dossier-tab-pbd', 'Opened 7 Privacy by Design Principles tab.', '🛡️ 7 Principles of PbD Tab');
-      return;
-    }
-
-    if (text.includes('tab heuristic') || text.includes('nielsen tab') || text.includes('usability tab')) {
-      this.triggerCommand('dossier-tab-heuristics', 'Opened Jakob Nielsen Usability Heuristics tab.', '📐 Nielsen Heuristics Tab');
-      return;
-    }
-
-    if (text.includes('tab viva') || text.includes('viva qa') || text.includes('questions tab')) {
-      this.triggerCommand('dossier-tab-viva', 'Opened Examiner Viva Defense Q&A tab.', '🎓 Examiner Viva Q&A Tab');
-      return;
-    }
-
-    if (/\b(dossier|viva|theory|examiner|framework|frameworks)\b/.test(text)) {
-      this.triggerCommand('show-dossier', 'Opening Examiner Viva Dossier and Academic Heuristics.', '🎓 Examiner Viva Dossier');
-      return;
-    }
-
-    // =========================================================================
-    // 7. PAGE NAVIGATION & SMOOTH SCROLLING
-    // =========================================================================
-    if (text.includes('scroll top') || text.includes('go to top') || text.includes('top of page') || text.includes('back to top')) {
-      this.triggerCommand('scroll-top', 'Scrolling to top of page.', '⬆️ Scrolled to Top');
-      return;
-    }
-
-    if (text.includes('scroll bottom') || text.includes('go to bottom') || text.includes('footer')) {
-      this.triggerCommand('scroll-bottom', 'Scrolling to page footer.', '⬇️ Scrolled to Bottom');
-      return;
-    }
-
-    if (text.includes('scroll down') || text.includes('go down') || text.includes('page down')) {
-      this.triggerCommand('scroll-down', 'Scrolling down page.', '⬇️ Page Down');
-      return;
-    }
-
-    if (text.includes('scroll up') || text.includes('go up') || text.includes('page up')) {
-      this.triggerCommand('scroll-up', 'Scrolling up page.', '⬆️ Page Up');
-      return;
-    }
-
-    // =========================================================================
-    // 8. ACCESSIBILITY, AUDIO & SYSTEM CONTROLS
-    // =========================================================================
-    if (/\b(contrast|high contrast|black and white|accessibility)\b/.test(text)) {
-      this.triggerCommand('high-contrast', 'High contrast mode toggled. Contrast ratio elevated to WCAG AAA standard.', '🌓 WCAG AAA High Contrast');
-      return;
-    }
-
-    if (/\b(increase font|larger font|bigger text|zoom text|scale text)\b/.test(text)) {
-      this.triggerCommand('increase-font', 'Typography scaled up for enhanced readability.', '🔤 Font Scaled Up');
-      return;
-    }
-
-    if (/\b(decrease font|smaller font|reduce font)\b/.test(text)) {
-      this.triggerCommand('decrease-font', 'Typography scale reduced.', '🔤 Font Scaled Down');
-      return;
-    }
-
-    if (/\b(reset font|normal font|100 percent)\b/.test(text)) {
-      this.triggerCommand('reset-font', 'Typography scale restored to 100 percent baseline.', '🔤 Font Reset to 100%');
-      return;
-    }
-
-    if (text.includes('unmute') || text.includes('sound on') || text.includes('enable audio')) {
-      this.triggerCommand('unmute-sound', 'Procedural acoustic sound effects enabled.', '🔊 Sound Effects Active');
-      return;
-    }
-
-    if (/\b(mute|silent|silence)\b/.test(text)) {
-      this.triggerCommand('mute-sound', 'Procedural acoustic sound effects muted.', '🔇 Sound Effects Muted');
-      return;
-    }
-
-    if (text.includes('toggle examiner mode') || text.includes('examiner mode')) {
-      this.triggerCommand('toggle-examiner-mode', 'Global Examiner Mode highlights toggled.', '🔍 Examiner Mode Toggled');
-      return;
-    }
-
-    if (text.includes('stop voice') || text.includes('turn off voice') || text.includes('stop listening') || text.includes('deactivate voice') || text.includes('stop mic')) {
-      this.triggerCommand('stop-voice', 'Voice control deactivated.', '🎤 Voice Control Deactivated');
-      return;
-    }
-
-    if (/\b(close|exit|dismiss|cancel|hide)\b/.test(text)) {
-      this.triggerCommand('close-overlays', 'Overlays and active dialogs closed.', '✕ Dialogs Closed');
-      return;
-    }
-
-    if (/\b(help|commands|shortcuts|what can i say|voice help)\b/.test(text)) {
-      this.triggerCommand('help', 'Opening voice commands and keyboard switch navigation help palette.', '❓ Voice & Switch Access Help');
-      return;
-    }
-
-    // Unrecognized fallback feedback
-    if (this.transcriptEl) {
-      this.transcriptEl.textContent = `Unrecognized: "${text}" (Say "Help")`;
-    }
-    this.showActionHUD('⚠️ Unrecognized Command', `Heard: "${text}". Say "Help" for all commands.`, 'warning');
   }
 
   triggerCommand(commandId, spokenFeedback, hudTitle = '') {
