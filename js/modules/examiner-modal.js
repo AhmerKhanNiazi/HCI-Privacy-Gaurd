@@ -15,6 +15,7 @@ export class ExaminerModal {
   constructor() {
     this.modalEl = null;
     this.activeTab = 'taxonomies';
+    this.isOpen = false;
   }
 
   init() {
@@ -127,6 +128,7 @@ export class ExaminerModal {
 
   show(target = null) {
     if (!this.modalEl) return;
+    this.isOpen = true;
     this.modalEl.classList.remove('hidden');
 
     const validTabs = ['taxonomies', 'pbd', 'heuristics', 'viva-qa'];
@@ -141,6 +143,7 @@ export class ExaminerModal {
 
   hide() {
     if (!this.modalEl) return;
+    this.isOpen = false;
     this.modalEl.classList.add('hidden');
   }
 

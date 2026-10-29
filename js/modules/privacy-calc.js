@@ -59,6 +59,9 @@ export class PrivacyRiskCalculator {
             <button id="preset-strict-btn" class="px-2.5 py-1 text-xs font-mono bg-emerald-950/80 hover:bg-emerald-900 text-emerald-300 border border-emerald-800/60 rounded-lg transition">
               🛡️ Privacy-by-Default
             </button>
+            <button id="preset-moderate-btn" class="px-2.5 py-1 text-xs font-mono bg-amber-950/80 hover:bg-amber-900 text-amber-300 border border-amber-800/60 rounded-lg transition">
+              ⚖️ Balanced
+            </button>
             <button id="preset-social-btn" class="px-2.5 py-1 text-xs font-mono bg-rose-950/80 hover:bg-rose-900 text-rose-300 border border-rose-800/60 rounded-lg transition">
               🚨 Predatory Social Media
             </button>
@@ -297,6 +300,16 @@ export class PrivacyRiskCalculator {
         if (el) el.checked = false;
       });
       if (retentionSlider) retentionSlider.value = "0"; // Ephemeral
+      this.updateCalculation();
+    });
+
+    // Preset: Balanced (location + fingerprint only, 30-day retention)
+    document.getElementById('preset-moderate-btn')?.addEventListener('click', () => {
+      toggleIds.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.checked = (id === 'calc-location' || id === 'calc-fingerprint');
+      });
+      if (retentionSlider) retentionSlider.value = "1"; // 30 days
       this.updateCalculation();
     });
 

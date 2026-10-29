@@ -25,13 +25,13 @@ export class AudioFeedback {
 
   toggleMute() {
     this.isMuted = !this.isMuted;
-    localStorage.setItem('privacyguard_audio_muted', this.isMuted);
+    localStorage.setItem('privacyguard_audio_muted', String(this.isMuted));
     return this.isMuted;
   }
 
   setMute(state) {
     this.isMuted = Boolean(state);
-    localStorage.setItem('privacyguard_audio_muted', this.isMuted);
+    localStorage.setItem('privacyguard_audio_muted', String(this.isMuted));
   }
 
   /**

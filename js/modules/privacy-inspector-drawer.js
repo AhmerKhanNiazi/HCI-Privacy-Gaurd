@@ -229,6 +229,8 @@ export class PrivacyInspectorDrawer {
     if (!this.drawerEl) return;
     this.isOpen = true;
     this.drawerEl.classList.remove('translate-x-full');
+    // Lock body scroll on mobile to prevent scrolling behind the drawer
+    document.body.style.overflow = 'hidden';
     if (this.accessibility) {
       this.accessibility.trapFocus(this.drawerEl);
       this.accessibility.announcePolite('Academic Privacy Inspector drawer opened.');
@@ -240,6 +242,8 @@ export class PrivacyInspectorDrawer {
     if (!this.drawerEl) return;
     this.isOpen = false;
     this.drawerEl.classList.add('translate-x-full');
+    // Restore body scroll
+    document.body.style.overflow = '';
     if (this.accessibility) {
       this.accessibility.releaseFocus(this.drawerEl);
       this.accessibility.announcePolite('Academic Privacy Inspector drawer closed.');

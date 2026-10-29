@@ -156,15 +156,16 @@ export class AccessibilityManager {
           break;
         case 'I':
           e.preventDefault();
-          if (this.onAction) this.onAction('open-inspector');
+          if (this.onAction) this.onAction('toggle-inspector');
           break;
         case 'M':
           e.preventDefault();
           if (this.onAction) this.onAction('toggle-audio');
+          if (this.audio) this.audio.playClick();
           break;
         case 'ESCAPE':
           e.preventDefault();
-          if (this.onAction) this.onAction('close-all');
+          if (this.onAction) this.onAction('close-overlays');
           this.closeHelpModal();
           break;
         case '?':

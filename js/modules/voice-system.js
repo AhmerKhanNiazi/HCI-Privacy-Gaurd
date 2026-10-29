@@ -130,33 +130,29 @@ export class VoiceSystem {
     const text = rawTranscript.toLowerCase().trim();
     console.log('[VoiceSystem] Recognized command:', text);
 
-    // Command mapping matrix
+    // Command mapping matrix — IDs must match app.js handleVoiceCommand() switch cases exactly
     if (text.includes('start privacy scan') || text.includes('privacy scan') || text.includes('scan privacy') || text.includes('run scan')) {
-      this.triggerCommand('privacy-scan', 'Privacy audit initiated. Scanning 14 tracking vectors across network pipelines.');
+      this.triggerCommand('start-audit', 'Privacy audit initiated. Scanning 14 tracking vectors across network pipelines.');
     } else if (text.includes('block tracker') || text.includes('block tracking') || text.includes('block all')) {
       this.triggerCommand('block-trackers', 'Third-party tracking blocked. Privacy-by-Design default parameters enforced.');
     } else if (text.includes('consent log') || text.includes('show consent') || text.includes('ai consent')) {
       this.triggerCommand('show-consent', 'Navigating to Ethical AI Consent Matrix and prompt telemetry log.');
     } else if (text.includes('audit cookie') || text.includes('cookie audit') || text.includes('simulator')) {
       this.triggerCommand('audit-cookies', 'Navigating to Cookie Banner Simulator. Deceptive versus Ethical patterns active.');
-    } else if (text.includes('high contrast') || text.includes('contrast')) {
-      this.triggerCommand('toggle-contrast', 'High contrast mode toggled. Contrast ratio elevated to WCAG AAA standard.');
-    } else if (text.includes('increase font') || text.includes('larger font') || text.includes('bigger text')) {
+    } else if (text.includes('high contrast') || text.includes('contrast mode')) {
+      this.triggerCommand('high-contrast', 'High contrast mode toggled. Contrast ratio elevated to WCAG AAA standard.');
+    } else if (text.includes('increase font') || text.includes('larger font') || text.includes('bigger text') || text.includes('font size')) {
       this.triggerCommand('increase-font', 'Typography scaled up for enhanced readability.');
-    } else if (text.includes('decrease font') || text.includes('smaller font') || text.includes('reduce font')) {
-      this.triggerCommand('decrease-font', 'Typography size reduced.');
-    } else if (text.includes('reset font') || text.includes('normal font')) {
-      this.triggerCommand('reset-font', 'Typography scale restored to 100 percent.');
     } else if (text.includes('mute sound') || text.includes('mute audio') || (text.includes('mute') && !text.includes('unmute'))) {
       this.triggerCommand('mute-sound', 'Procedural acoustic sound effects muted.');
-    } else if (text.includes('unmute sound') || text.includes('unmute audio') || text.includes('sound on')) {
-      this.triggerCommand('unmute-sound', 'Procedural acoustic sound effects enabled.');
-    } else if (text.includes('open inspector') || text.includes('show inspector') || text.includes('inspector')) {
+    } else if (text.includes('unmute sound') || text.includes('unmute audio') || text.includes('sound on') || text.includes('unmute')) {
+      this.triggerCommand('mute-sound', 'Procedural acoustic sound effects enabled.');
+    } else if (text.includes('open inspector') || text.includes('show inspector') || text.includes('inspector') || text.includes('telemetry')) {
       this.triggerCommand('open-inspector', 'Academic Privacy Inspector drawer opened. Contextual Integrity metrics loaded.');
     } else if (text.includes('close') || text.includes('exit') || text.includes('dismiss')) {
-      this.triggerCommand('close-dialog', 'Dialog closed.');
+      this.triggerCommand('close-overlays', 'Dialog closed.');
     } else if (text.includes('help') || text.includes('command') || text.includes('shortcut')) {
-      this.triggerCommand('show-help', 'Opening voice commands and keyboard switch navigation help palette.');
+      this.triggerCommand('help', 'Opening voice commands and keyboard switch navigation help palette.');
     } else {
       // Unrecognized fallback feedback
       if (this.transcriptEl) {
@@ -197,14 +193,34 @@ export class VoiceSystem {
       utterance.pitch = 1.0;
       utterance.volume = 0.95;
 
-      // Select natural English voice if available
-      const voices = this.speechSynthesis.getVoices();
-      const preferredVoice = voices.find(v => v.lang.startsWith('en') && (v.name.includes('Natural') || v.name.includes('Google') || v.name.includes('Samantha') || v.name.includes('Daniel')));
-      if (preferredVoice) {
-        utterance.voice = preferredVoice;
-      }
+      // Helper to select voice after they are guaranteed loaded
+      const applyVoice = () => {
+        const voices = this.speechSynthesis.getVoices();
+        const preferredVoice = voices.find(v =>
+          v.lang.startsWith('en') &&
+          (v.name.includes('Natural') || v.name.includes('Google') ||
+           v.name.includes('Samantha') || v.name.includes('Daniel'))
+        );
+        if (preferredVoice) utterance.voice = preferredVoice;
+      };
 
-      this.speechSynthesis.speak(utterance);
+      // Chrome loads voices asynchronously — wait for onvoiceschanged if empty
+      if (this.speechSynthesis.getVoices().length > 0) {
+        applyVoice();
+        this.speechSynthesis.speak(utterance);
+      } else {
+        this.speechSynthesis.onvoiceschanged = () => {
+          applyVoice();
+          this.speechSynthesis.speak(utterance);
+          this.speechSynthesis.onvoiceschanged = null; // Fire only once
+        };
+        // Fallback: speak without preferred voice after 400ms if event never fires
+        setTimeout(() => {
+          if (utterance.voice === null || utterance.voice === undefined) {
+            this.speechSynthesis.speak(utterance);
+          }
+        }, 400);
+      }
     } catch (e) {
       console.warn('[VoiceSystem] Speech synthesis error:', e);
     }
@@ -223,9 +239,8 @@ export class VoiceSystem {
     const widget = document.createElement('div');
     widget.id = 'floating-voice-widget';
     widget.className = 'fixed bottom-5 right-5 z-40 flex items-center gap-2.5 px-3.5 py-2.5 rounded-2xl cyber-card border border-slate-700/80 shadow-2xl transition-all duration-300';
-    widget.setAttribute('role', 'status');
-    widget.setAttribute('aria-live', 'polite');
-    widget.setAttribute('aria-label', 'Voice control status');
+    widget.setAttribute('role', 'region');
+    widget.setAttribute('aria-label', 'Voice control status indicator');
 
     widget.innerHTML = `
       <button id="floating-mic-toggle-btn" class="w-9 h-9 rounded-xl flex items-center justify-center transition-all focus:outline-none" aria-label="Toggle hands-free speech recognition (Hotkey: V)">

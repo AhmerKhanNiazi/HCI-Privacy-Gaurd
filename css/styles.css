@@ -376,6 +376,21 @@ html[data-high-contrast="true"] .text-rose-400 {
 html[data-high-contrast="true"] #floating-voice-widget {
   background: #000000 !important;
   border: 2px solid #FFE600 !important;
+  color: #FFFFFF !important;
+}
+
+html[data-high-contrast="true"] #floating-voice-widget * {
+  color: inherit !important;
+}
+
+html[data-high-contrast="true"] #privacy-inspector-drawer {
+  background: #000000 !important;
+  border-left: 2px solid #FFE600 !important;
+}
+
+html[data-high-contrast="true"] #accessibility-help-modal .cyber-card {
+  background: #000000 !important;
+  border: 2px solid #FFE600 !important;
 }
 
 /* ========================================================================= */
