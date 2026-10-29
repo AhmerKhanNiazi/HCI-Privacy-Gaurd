@@ -254,7 +254,133 @@ input[type=range].cyber-slider::-webkit-slider-thumb:hover {
   -webkit-backdrop-filter: blur(16px);
 }
 
-/* Print/Presentation Media Queries for Teacher Submission */
+/* ========================================================================= */
+/* WCAG 2.1 AAA ACCESSIBILITY & FOCUS RINGS */
+/* ========================================================================= */
+
+/* High-Visibility Focus Rings (WCAG 2.1 AAA 7:1+ Contrast) */
+*:focus-visible {
+  outline: 3px solid #FFE600 !important;
+  outline-offset: 3px !important;
+  box-shadow: 0 0 0 5px rgba(0, 0, 0, 0.85) !important;
+}
+
+/* Skip-to-Content Link for Keyboard & Screen Reader Users */
+.skip-link {
+  position: absolute;
+  top: -120px;
+  left: 16px;
+  background: #FFE600;
+  color: #000000;
+  padding: 12px 20px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  font-weight: 800;
+  border: 2px solid #000000;
+  border-radius: 8px;
+  z-index: 9999;
+  text-decoration: none;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.7);
+  transition: top 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.skip-link:focus {
+  top: 16px;
+  outline: 3px solid #00FFFF !important;
+}
+
+/* Screen reader only utility */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* ========================================================================= */
+/* DYNAMIC TYPOGRAPHY SCALING (100% / 125% / 150%) */
+/* ========================================================================= */
+
+html[data-font-size="125"] {
+  font-size: 118%;
+}
+
+html[data-font-size="150"] {
+  font-size: 135%;
+}
+
+/* ========================================================================= */
+/* WCAG 2.1 AAA HIGH-CONTRAST MODE (7:1+ CONTRAST RATIO) */
+/* ========================================================================= */
+
+html[data-high-contrast="true"] body {
+  background-color: #000000 !important;
+  background-image: none !important;
+  color: #FFFFFF !important;
+}
+
+html[data-high-contrast="true"] .cyber-card {
+  background: #000000 !important;
+  border: 2px solid #FFE600 !important;
+  box-shadow: none !important;
+}
+
+html[data-high-contrast="true"] .cyber-card-danger {
+  border: 2px solid #FF3366 !important;
+  background: #000000 !important;
+}
+
+html[data-high-contrast="true"] .cyber-card-safe {
+  border: 2px solid #00FF88 !important;
+  background: #000000 !important;
+}
+
+html[data-high-contrast="true"] header {
+  background-color: #000000 !important;
+  border-bottom: 2px solid #FFE600 !important;
+}
+
+html[data-high-contrast="true"] footer {
+  background-color: #000000 !important;
+  border-top: 2px solid #FFE600 !important;
+}
+
+html[data-high-contrast="true"] button, 
+html[data-high-contrast="true"] input, 
+html[data-high-contrast="true"] textarea {
+  border-width: 2px !important;
+}
+
+html[data-high-contrast="true"] .text-slate-400,
+html[data-high-contrast="true"] .text-slate-500 {
+  color: #E2E8F0 !important;
+}
+
+html[data-high-contrast="true"] .text-cyan-400 {
+  color: #00FFFF !important;
+}
+
+html[data-high-contrast="true"] .text-emerald-400 {
+  color: #00FF88 !important;
+}
+
+html[data-high-contrast="true"] .text-rose-400 {
+  color: #FF5577 !important;
+}
+
+html[data-high-contrast="true"] #floating-voice-widget {
+  background: #000000 !important;
+  border: 2px solid #FFE600 !important;
+}
+
+/* ========================================================================= */
+/* PRINT / PRESENTATION MEDIA QUERIES */
+/* ========================================================================= */
 @media print {
   body {
     background: #FFFFFF !important;

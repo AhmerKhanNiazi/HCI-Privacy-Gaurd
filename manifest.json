@@ -1,0 +1,25 @@
+{
+  "name": "PrivacyGuard UX | Ethical Privacy & AI HCI Sandbox",
+  "short_name": "PrivacyGuard",
+  "description": "Interactive HCI Research Sandbox on Privacy by Design, Anti-Dark Patterns, and Ethical AI Transparency with Two-Way Voice and AAA Accessibility.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#07090E",
+  "theme_color": "#07090E",
+  "orientation": "any",
+  "icons": [
+    {
+      "src": "favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "favicon.ico",
+      "sizes": "16x16 32x32",
+      "type": "image/x-icon"
+    }
+  ],
+  "categories": ["education", "developer tools", "utilities"]
+}

@@ -6,8 +6,27 @@
   <title>PrivacyGuard UX | HCI Privacy & Ethical AI Research Sandbox</title>
   
   <!-- Meta SEO & Academic Presentation Context -->
-  <meta name="description" content="Interactive HCI Research Simulator demonstrating Privacy & Data Ethics in UX (Topic 12) and Ethical AI in HCI (Topic 5).">
+  <meta name="description" content="Interactive HCI Research Simulator demonstrating Privacy & Data Ethics in UX (Topic 12) and Ethical AI in HCI (Topic 5) with Two-Way Voice System and WCAG 2.1 AAA Accessibility.">
   <meta name="author" content="HCI Student Research Project">
+  <meta name="theme-color" content="#07090E">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+  <!-- Icons & PWA Manifest -->
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="alternate icon" href="favicon.ico">
+  <link rel="manifest" href="manifest.json">
+
+  <!-- Console warning filter for Tailwind CDN in production presentation -->
+  <script>
+    (function() {
+      const origWarn = console.warn;
+      console.warn = function(...args) {
+        if (typeof args[0] === 'string' && args[0].includes('cdn.tailwindcss.com should not be used in production')) return;
+        origWarn.apply(console, args);
+      };
+    })();
+  </script>
   
   <!-- Tailwind CSS via CDN (Zero-build GitHub Pages deployment) -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -37,65 +56,98 @@
 </head>
 <body class="min-h-screen flex flex-col bg-cyber-grid selection:bg-cyan-500/30 selection:text-cyan-200">
 
+  <!-- WCAG 2.1 AAA Skip-to-Content Link for Screen Readers and Keyboard Motor Navigation -->
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+
   <!-- ========================================================================= -->
   <!-- HEADER & NAVIGATION -->
   <!-- ========================================================================= -->
-  <header class="sticky top-0 z-40 backdrop-blur-xl bg-slate-950/80 border-b border-slate-800/80 transition-all">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+  <header class="sticky top-0 z-40 backdrop-blur-xl bg-slate-950/85 border-b border-slate-800/80 transition-all">
+    <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-2">
       
       <!-- Brand Logo & University Topic Badge -->
-      <a href="#" class="flex items-center gap-3 group">
-        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-cyan-500/20 to-emerald-500/20 border border-cyan-500/40 flex items-center justify-center text-cyan-400 group-hover:border-cyan-400 transition shadow-lg shadow-cyan-950/40">
-          <svg class="w-6 h-6 transform group-hover:scale-110 transition duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+      <a href="#" class="flex items-center gap-2.5 sm:gap-3 group shrink-0" aria-label="PrivacyGuard UX Home">
+        <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-br from-cyan-500/20 to-emerald-500/20 border border-cyan-500/40 flex items-center justify-center text-cyan-400 group-hover:border-cyan-400 transition shadow-lg shadow-cyan-950/40">
+          <svg class="w-5 h-5 sm:w-6 sm:h-6 transform group-hover:scale-110 transition duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
         </div>
         <div>
-          <div class="flex items-center gap-2">
-            <span class="text-base sm:text-lg font-black tracking-tight text-white font-mono">
+          <div class="flex items-center gap-1.5 sm:gap-2">
+            <span class="text-sm sm:text-lg font-black tracking-tight text-white font-mono">
               PrivacyGuard<span class="text-cyan-400">UX</span>
             </span>
-            <span class="hidden sm:inline-block px-2 py-0.2 text-[10px] font-mono font-bold bg-cyan-950/80 text-cyan-300 border border-cyan-800 rounded">
+            <span class="hidden md:inline-block px-1.5 py-0.2 text-[9px] font-mono font-bold bg-cyan-950/80 text-cyan-300 border border-cyan-800 rounded">
               HCI Research
             </span>
           </div>
-          <p class="text-[10px] text-slate-400 hidden sm:block">Topics 12 & 5: Data Ethics & Ethical AI</p>
+          <p class="text-[10px] text-slate-400 hidden lg:block">Topics 12 & 5: Data Ethics & Ethical AI</p>
         </div>
       </a>
 
       <!-- Desktop Navigation Menu -->
-      <nav class="hidden md:flex items-center gap-6 text-xs font-mono font-medium">
-        <a href="#simulator-section" class="text-slate-300 hover:text-cyan-400 transition flex items-center gap-1.5">
+      <nav class="hidden xl:flex items-center gap-5 text-xs font-mono font-medium">
+        <a href="#simulator-section" class="text-slate-300 hover:text-cyan-400 transition flex items-center gap-1">
           <span>⚡ Simulator</span>
         </a>
-        <a href="#calculator-section" class="text-slate-300 hover:text-emerald-400 transition flex items-center gap-1.5">
+        <a href="#calculator-section" class="text-slate-300 hover:text-emerald-400 transition flex items-center gap-1">
           <span>📊 Risk Meter</span>
         </a>
-        <a href="#ai-matrix-section" class="text-slate-300 hover:text-violet-400 transition flex items-center gap-1.5">
+        <a href="#ai-matrix-section" class="text-slate-300 hover:text-violet-400 transition flex items-center gap-1">
           <span>🧠 Ethical AI</span>
         </a>
-        <a href="#academic-theory-section" class="text-slate-300 hover:text-amber-400 transition flex items-center gap-1.5">
+        <a href="#academic-theory-section" class="text-slate-300 hover:text-amber-400 transition flex items-center gap-1">
           <span>📚 Frameworks</span>
         </a>
       </nav>
 
-      <!-- Examiner Mode Controls & CTA -->
-      <div class="flex items-center gap-3">
-        <!-- Examiner Mode Switcher -->
-        <div class="hidden sm:flex items-center gap-2 bg-slate-900/90 border border-slate-700/80 px-2.5 py-1 rounded-xl">
-          <span id="examiner-mode-label" class="text-[11px] font-mono font-bold text-cyan-400">Examiner Mode: ON</span>
-          <label class="cyber-toggle scale-75 origin-center">
-            <input type="checkbox" id="global-examiner-toggle" checked>
-            <span class="cyber-toggle-slider"></span>
-          </label>
-        </div>
+      <!-- Accessibility Toolbar & Examiner Controls -->
+      <div class="flex items-center gap-1.5 sm:gap-2">
+        
+        <!-- Two-Way Voice Control Toggle (Key: V) -->
+        <button id="header-mic-btn" type="button" class="p-2 sm:px-2.5 sm:py-1.5 bg-slate-900/90 hover:bg-cyan-950/50 text-slate-300 hover:text-cyan-400 border border-slate-700/80 rounded-xl text-xs font-mono flex items-center gap-1.5 transition" title="Toggle Two-Way Voice System (Hotkey: V)" aria-label="Toggle Two-Way Voice System (Hotkey V)">
+          <svg class="w-4 h-4 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"/></svg>
+          <span class="hidden sm:inline text-[11px] font-semibold">Voice</span>
+          <span class="hidden md:inline text-[9px] px-1 py-0.2 bg-slate-800 text-slate-400 rounded border border-slate-700">V</span>
+        </button>
 
-        <!-- Academic Dossier Modal Trigger Button -->
-        <button id="open-dossier-btn" class="px-3 py-1.5 sm:px-4 sm:py-2 bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 rounded-xl font-mono text-xs font-semibold flex items-center gap-1.5 transition shadow-lg shadow-cyan-950/30">
+        <!-- High-Contrast Mode Toggle (Key: C) -->
+        <button id="header-contrast-btn" type="button" class="p-2 sm:px-2.5 sm:py-1.5 bg-slate-900/90 hover:bg-amber-950/40 text-slate-300 hover:text-amber-300 border border-slate-700/80 rounded-xl text-xs font-mono flex items-center gap-1.5 transition" title="Toggle High Contrast Mode WCAG AAA (Hotkey: C)" aria-label="Toggle High Contrast Mode (Hotkey C)">
+          <svg class="w-4 h-4 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg>
+          <span class="hidden sm:inline text-[11px] font-semibold">AAA</span>
+          <span class="hidden md:inline text-[9px] px-1 py-0.2 bg-slate-800 text-slate-400 rounded border border-slate-700">C</span>
+        </button>
+
+        <!-- Typography Scaling (Key: F) -->
+        <button id="header-font-scale-btn" type="button" class="p-2 sm:px-2.5 sm:py-1.5 bg-slate-900/90 hover:bg-slate-800 text-slate-300 hover:text-white border border-slate-700/80 rounded-xl text-xs font-mono flex items-center gap-1.5 transition" title="Cycle Typography Scaling: 100% / 125% / 150% (Hotkey: F)" aria-label="Cycle Font Size Scaling (Hotkey F)">
+          <span class="font-bold text-xs">A<span class="text-[10px] text-cyan-400">±</span></span>
+          <span id="header-font-scale-text" class="hidden sm:inline text-[11px] text-slate-300 font-semibold">100%</span>
+          <span class="hidden md:inline text-[9px] px-1 py-0.2 bg-slate-800 text-slate-400 rounded border border-slate-700">F</span>
+        </button>
+
+        <!-- Procedural Audio Mute Toggle (Key: M) -->
+        <button id="header-audio-btn" type="button" class="p-2 bg-slate-900/90 hover:bg-slate-800 text-slate-300 hover:text-white border border-slate-700/80 rounded-xl transition" title="Toggle Procedural Audio Sensory Chimes (Hotkey: M)" aria-label="Toggle Procedural Audio Chimes (Hotkey M)">
+          <svg id="header-audio-icon" class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"/></svg>
+        </button>
+
+        <!-- Academic Privacy Inspector Drawer (Key: I) -->
+        <button id="header-inspector-btn" type="button" class="px-2.5 py-1.5 bg-cyan-950/60 hover:bg-cyan-900/60 text-cyan-300 border border-cyan-500/40 rounded-xl font-mono text-xs font-semibold flex items-center gap-1.5 transition shadow-sm" title="Open Academic Privacy Inspector Drawer (Hotkey: I)" aria-label="Open Academic Privacy Inspector Drawer (Hotkey I)">
+          <svg class="w-3.5 h-3.5 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+          <span class="hidden sm:inline">Inspector</span>
+          <span class="text-[9px] px-1 py-0.2 bg-cyan-900 text-cyan-200 rounded border border-cyan-700 font-mono">I</span>
+        </button>
+
+        <!-- Keyboard Help Modal Trigger (Key: ?) -->
+        <button id="header-help-btn" type="button" class="p-2 bg-slate-900/90 hover:bg-slate-800 text-slate-300 hover:text-white border border-slate-700/80 rounded-xl transition" title="Accessibility & Keyboard Shortcuts (Hotkey: ?)" aria-label="Accessibility & Keyboard Shortcuts (Hotkey ?)">
+          <span class="font-mono font-bold text-xs">?</span>
+        </button>
+
+        <!-- Examiner Dossier Modal Trigger Button -->
+        <button id="open-dossier-btn" class="hidden sm:flex px-3 py-1.5 bg-slate-900/90 hover:bg-slate-800 text-slate-300 hover:text-cyan-300 border border-slate-700/80 rounded-xl font-mono text-xs font-semibold items-center gap-1.5 transition">
           <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
-          <span class="hidden sm:inline">Examiner</span> Dossier
+          <span>Dossier</span>
         </button>
 
         <!-- Mobile Menu Toggle Button -->
-        <button id="mobile-menu-btn" class="md:hidden p-2 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800 focus:outline-none">
+        <button id="mobile-menu-btn" class="xl:hidden p-2 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800 focus:outline-none" aria-label="Toggle navigation menu">
           <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"/></svg>
         </button>
       </div>
@@ -103,7 +155,7 @@
     </div>
 
     <!-- Mobile Navigation Drawer -->
-    <div id="mobile-nav" class="hidden md:hidden border-b border-slate-800 bg-slate-950 px-4 pt-2 pb-4 space-y-3 text-xs font-mono">
+    <div id="mobile-nav" class="hidden xl:hidden border-b border-slate-800 bg-slate-950 px-4 pt-3 pb-4 space-y-3 text-xs font-mono">
       <div class="flex items-center justify-between py-2 border-b border-slate-800">
         <span class="text-slate-300 font-semibold">Examiner Mode Highlights:</span>
         <label class="cyber-toggle scale-75 origin-center">
@@ -111,10 +163,27 @@
           <span class="cyber-toggle-slider"></span>
         </label>
       </div>
+
+      <!-- Mobile Accessibility Quick Buttons -->
+      <div class="grid grid-cols-3 gap-2 py-2 border-b border-slate-800">
+        <button id="mobile-voice-btn" class="py-2 px-1 bg-slate-900 border border-slate-700 rounded-lg text-cyan-300 text-[11px] font-bold text-center">
+          🎤 Voice (V)
+        </button>
+        <button id="mobile-contrast-btn" class="py-2 px-1 bg-slate-900 border border-slate-700 rounded-lg text-amber-300 text-[11px] font-bold text-center">
+          🌓 AAA (C)
+        </button>
+        <button id="mobile-inspector-btn" class="py-2 px-1 bg-slate-900 border border-slate-700 rounded-lg text-emerald-300 text-[11px] font-bold text-center">
+          📊 Drawer (I)
+        </button>
+      </div>
+
       <a href="#simulator-section" class="block py-1.5 text-slate-300 hover:text-cyan-400 border-b border-slate-900">⚡ Dark Pattern Simulator (Topic 12)</a>
       <a href="#calculator-section" class="block py-1.5 text-slate-300 hover:text-emerald-400 border-b border-slate-900">📊 Privacy Risk Calculator (Topic 12)</a>
       <a href="#ai-matrix-section" class="block py-1.5 text-slate-300 hover:text-violet-400 border-b border-slate-900">🧠 Ethical AI Consent Matrix (Topic 5)</a>
-      <a href="#academic-theory-section" class="block py-1.5 text-slate-300 hover:text-amber-400">📚 Academic Heuristics & Frameworks</a>
+      <a href="#academic-theory-section" class="block py-1.5 text-slate-300 hover:text-amber-400 border-b border-slate-900">📚 Academic Heuristics & Frameworks</a>
+      <button onclick="window.privacyGuardApp?.examinerModal?.show()" class="w-full text-left py-1.5 text-cyan-400 font-bold">
+        📖 Open Examiner Viva Dossier
+      </button>
     </div>
   </header>
 
@@ -164,7 +233,7 @@
   <!-- ========================================================================= -->
   <!-- MAIN CONTENT CONTAINER -->
   <!-- ========================================================================= -->
-  <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-16">
+  <main id="main-content" class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-16">
 
     <!-- FEATURE 1: DARK PATTERN VS ETHICAL UX SIMULATOR -->
     <section id="simulator-section" class="scroll-mt-24">
