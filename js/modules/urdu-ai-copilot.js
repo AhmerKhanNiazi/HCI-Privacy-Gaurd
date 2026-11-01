@@ -164,27 +164,27 @@ Rules:
       {
         patterns: ['camera face scanning', 'camera scanning', 'biometric emotion mesh', 'face scanning', 'camera profiling', 'biometric sensor', 'camera sensor', 'biometric', 'camera', 'face biometric', 'chehra'],
         action: 'calc-toggle-biometric',
-        reply: 'Ji bhai! Camera aur Face Biometrics vector screen par toggle kardiya gaya hai. Dekhein live risk meter par score update hogaya hai.'
+        reply: 'Camera & Face Scanning phone ke front camera se aapke chehre ke expressions aur jazbaat secretly scan karta hai (+30 Danger Points).'
       },
       {
         patterns: ['exact gps location', 'gps location tracking', 'location tracking', 'gps tracking', 'wifi triangulation', 'location sensor', 'gps sensor', 'location', 'gps', 'jaga'],
         action: 'calc-toggle-location',
-        reply: 'Ji bhai! Exact GPS Location tracking vector screen par toggle kardiya gaya hai. Live threat meter screen par update hotay dekhein.'
+        reply: 'Exact GPS Tracking aapki live physical location ko 24/7 background mein track karta hai aur aapke ghar aur office ka exact pata brokers ko deta hai (+25 Danger Points).'
       },
       {
         patterns: ['background microphone listening', 'ambient microphone stream', 'mic listening', 'microphone listening', 'ambient audio', 'awaz sensor', 'mic sensor', 'audio sensor', 'continuous audio', 'audio', 'microphone', 'mic'],
         action: 'calc-toggle-audio',
-        reply: 'Ji bhai! Background microphone audio listening sensor toggle kardiya gaya hai. Live risk gauge calculation update hogayi hai.'
+        reply: 'Background Microphone Listening aapke kamray ki baatain, TV aur mahaul secretly record karti hai taake targeted ads dikhaye ja sakein (+20 Danger Points).'
       },
       {
         patterns: ['selling personal data to brokers', 'data brokerage syndication', 'data brokers', 'selling data to brokers', 'selling data', 'brokerage'],
         action: 'calc-toggle-brokerage',
-        reply: 'Ji bhai! Data Broker Exfiltration vector screen par toggle kardiya gaya hai. Risk breakdown chart mein live points update hotay dekhein.'
+        reply: 'Selling Data to Brokers aapki search aur khareedari ki history data broker companies aur insurance agencies ko bechta hai (+20 Danger Points).'
       },
       {
         patterns: ['secret device fingerprint id', 'browser canvas fingerprinting', 'canvas fingerprint', 'device fingerprint', 'fingerprinting sensor'],
         action: 'calc-toggle-fingerprint',
-        reply: 'Ji bhai! Secret Device Fingerprinting vector screen par toggle kardiya gaya hai.'
+        reply: 'Secret Device Fingerprint aapke computer aur phone ke hardware ka invisible ID banata hai taake aap har website par track ho sakein (+15 Danger Points).'
       },
       {
         patterns: ['how long companies keep your data', 'telemetry retention window', 'retention slider', 'data storage time', 'retention window', 'data retention'],
@@ -194,27 +194,27 @@ Rules:
       {
         patterns: ['retention ephemeral karo', 'retention zero karo', 'retention foran delete', 'retention 0 karo'],
         action: 'calc-retention-0',
-        reply: 'Ji bhai! Data Retention slider ko foran Immediate Ephemeral (0 Days) par automate kardiya gaya hai. Screen par slider switch hotay dekhein.'
+        reply: 'Data Retention ko Immediate (Ephemeral) par set kardiya gaya hai (0 Days, Zero Persistence).'
       },
       {
         patterns: ['retention 30 days karo', 'retention 1 month karo', 'retention tees din karo'],
         action: 'calc-retention-1',
-        reply: 'Ji bhai! Data Retention slider ko 30 Days par automate kardiya gaya hai (+4 Danger Points).'
+        reply: 'Data Retention ko 30 Days par set kardiya gaya hai.'
       },
       {
         patterns: ['retention 1 year karo', 'retention ek saal karo'],
         action: 'calc-retention-2',
-        reply: 'Ji bhai! Data Retention slider ko 1 Year par automate kardiya gaya hai (+10 Danger Points).'
+        reply: 'Data Retention ko 1 Year par set kardiya gaya hai (+10 Danger Points).'
       },
       {
         patterns: ['retention 5 years karo', 'retention panch saal karo'],
         action: 'calc-retention-3',
-        reply: 'Ji bhai! Data Retention slider ko 5 Years par automate kardiya gaya hai (+15 Danger Points).'
+        reply: 'Data Retention ko 5 Years par set kardiya gaya hai (+15 Danger Points).'
       },
       {
         patterns: ['retention permanent karo', 'retention hamesha ke liye', 'retention indefinite'],
         action: 'calc-retention-4',
-        reply: 'Ji bhai! Data Retention slider ko Indefinite Permanent par set kardiya gaya hai (+20 Danger Points). Screen par maximum danger warning check karein.'
+        reply: 'Data Retention ko Indefinite (Permanent) par set kardiya gaya hai (+20 Danger Points).'
       },
       {
         patterns: ['strict preset', 'safe preset', '0 risk', '0 score', 'khatra khatam karo', 'strict', 'safe mode'],
@@ -266,12 +266,12 @@ Rules:
       {
         patterns: ['doctor medical report', 'test doctor and medical report', 'doctor prompt', 'medical sample', 'doctor sample'],
         action: 'ai-sample-medical',
-        reply: 'Ji bhai! Doctor medical report sample live type karke sandbox mein load kardiya gaya hai. Dekhein client-side regex engine ne SSN aur sensitive disease ko green box mein kaise mask kardiya.'
+        reply: 'Sensitive Doctor & Medical prompt load kardiya gaya hai. Dekhein kaise doctor name aur disease ko client-side par hi redact kardiya gaya.'
       },
       {
         patterns: ['test secret password and api key', 'secret api key sample', 'password sample', 'api key sample', 'secret key sample'],
         action: 'ai-sample-key',
-        reply: 'Ji bhai! Secret Password aur API Key sample live type kardiya gaya hai. Regex engine ne secret token ko foran redact kardiya.'
+        reply: 'Secret Password & API Key prompt load kardiya gaya hai. Private credentials client-side par hi secure tareeqay se redact hogaye.'
       },
       {
         patterns: ['ai matrix', 'ethical ai consent matrix', 'ai consent matrix kya hai', 'ai matrix samjhao'],
@@ -283,17 +283,17 @@ Rules:
       {
         patterns: ['tracker', 'block trackers', 'trackers roko', 'block all', 'hifazat', 'rok do'],
         action: 'block-trackers',
-        reply: 'Ji bhai! Tamam 427 ad trackers ko foran block kardiya gaya hai aur Privacy-by-Default active hai. Screen par highlight hota dekh sakte hain.'
+        reply: 'Ji bhai, maine tamam 427 ad trackers block kardiye hain. Ab websites aapka data bina ijazat ke nahi le sakeengi, aur Privacy-by-Default active hai.'
       },
       {
         patterns: ['privacy scan', 'start audit', 'scan chalao', 'check karo', 'inspection', 'data leak'],
         action: 'start-audit',
-        reply: 'Ji bhai! Inspector Drawer khol kar live privacy scan shuru kardiya gaya hai. 14 security vectors live scan horahay hain.'
+        reply: 'Ji bhai, privacy audit shuru kardi gayi hai. 14 security vectors live scan horahay hain, aap Inspector Drawer mein telemetry dekh sakte hain.'
       },
       {
         patterns: ['fast scan', '60x', 'tez scan', 'jaldi scan'],
         action: 'fast-scan',
-        reply: 'Ji bhai! 60x speed par fast-forward privacy audit run kardi gayi hai. Screen par progress bar 100% honay tak inspect ho raha hai!'
+        reply: 'Ji bhai, 60x speed par fast-forward privacy audit run kardi gayi hai!'
       },
 
       // 5. PAGE SCROLLING & NAVIGATION ACTIONS
@@ -397,17 +397,17 @@ Rules:
       {
         patterns: ['tracker inject karo', 'fake tracker test', 'simulate tracker'],
         action: 'inject-tracker',
-        reply: 'Ji bhai! Inspector drawer open karke simulated rogue ad tracker inject kardiya gaya hai. Screen par Helen Nissenbaum card mein red alert trigger hotay dekhein.'
+        reply: 'Telemetry drawer mein simulated ad tracker inject kardiya gaya hai.'
       },
       {
         patterns: ['breach simulate karo', 'consent breach test', 'simulate breach'],
         action: 'simulate-breach',
-        reply: 'Ji bhai! Contextual Integrity data breach simulate kardiya gaya hai. Screen par mitigation architecture ne unauthorized flow ko intercept kardiya.'
+        reply: 'Contextual Integrity data breach simulate kardiya gaya hai.'
       },
       {
         patterns: ['telemetry reset karo', 'drawer reset', 'reset telemetry'],
         action: 'reset-telemetry',
-        reply: 'Ji bhai! Academic telemetry logs aur vector incident stream ko clean baseline par reset kardiya gaya hai.'
+        reply: 'Academic telemetry logs reset kardiye gaye hain.'
       },
       {
         patterns: ['accessibility toolbar', 'single switch access', 'switch keys', 'switch navigation'],

@@ -38,7 +38,6 @@ class PrivacyGuardApp {
     this.aiMatrix = null;
     this.tourGuide = null;
     this.aiCopilot = null;
-    window.PrivacyGuardAppInstance = this;
   }
 
   init() {
@@ -205,90 +204,54 @@ class PrivacyGuardApp {
       case 'sim-accept-trap':
       case 'trap-cookies':
       case 'accept-trap':
-        this.triggerVisualAction({
-          element: document.getElementById('dark-accept-btn') || document.getElementById('simulator-container'),
-          actionName: 'Accepting Deceptive Cookie Trap (427 Trackers)',
-          highlightClass: 'ring-4 ring-rose-500 ring-offset-4 ring-offset-slate-950 scale-105 shadow-2xl shadow-rose-600/40',
-          onExecute: () => {
-            document.getElementById('dark-accept-btn')?.click();
-            this.audio?.playThreatAlert();
-          }
-        });
+        this.scrollToSection('simulator-section');
+        document.getElementById('dark-accept-btn')?.click();
+        this.highlightElement(document.getElementById('simulator-container'), 'ring-4 ring-rose-500 ring-offset-4 ring-offset-slate-950');
         break;
 
       case 'sim-reject-ethical':
       case 'reject-cookies':
       case 'reject-all':
-        this.triggerVisualAction({
-          element: document.getElementById('ethical-reject-btn') || document.getElementById('simulator-container'),
-          actionName: '1-Click Ethical Reject (Zero Trackers)',
-          highlightClass: 'ring-4 ring-emerald-400 ring-offset-4 ring-offset-slate-950 scale-105 shadow-2xl shadow-emerald-500/40',
-          onExecute: () => {
-            document.getElementById('ethical-reject-btn')?.click();
-            this.audio?.playShieldEngage();
-          }
-        });
+        this.scrollToSection('simulator-section');
+        document.getElementById('ethical-reject-btn')?.click();
+        this.highlightElement(document.getElementById('simulator-container'), 'ring-4 ring-emerald-400 ring-offset-4 ring-offset-slate-950');
         break;
 
       case 'sim-open-settings':
       case 'settings-cookies':
       case 'open-settings':
-        this.triggerVisualAction({
-          element: document.getElementById('dark-settings-btn') || document.getElementById('simulator-container'),
-          actionName: 'Exposing Roach Motel (427 Nested Sliders)',
-          highlightClass: 'ring-4 ring-amber-400 ring-offset-4 ring-offset-slate-950 scale-105 shadow-xl shadow-amber-500/40',
-          onExecute: () => {
-            document.getElementById('dark-settings-btn')?.click();
-            document.getElementById('dark-nested-settings')?.classList.remove('hidden');
-            this.audio?.playChirp(true);
-          }
-        });
+        this.scrollToSection('simulator-section');
+        document.getElementById('dark-settings-btn')?.click();
+        this.highlightElement(document.getElementById('simulator-container'), 'ring-4 ring-amber-400 ring-offset-4 ring-offset-slate-950');
         break;
 
       case 'sim-confirmshame':
       case 'confirmshame':
-        this.triggerVisualAction({
-          element: document.getElementById('dark-confirmshame-btn'),
-          actionName: 'Exposing Confirmshaming Guilt Line',
-          highlightClass: 'ring-4 ring-rose-400 ring-offset-4 ring-offset-slate-950 scale-105 shadow-xl shadow-rose-500/40',
-          onExecute: () => {
-            document.getElementById('dark-confirmshame-btn')?.click();
-            this.audio?.playThreatAlert();
-          }
-        });
+        this.scrollToSection('simulator-section');
+        document.getElementById('dark-confirmshame-btn')?.click();
+        this.highlightElement(document.getElementById('simulator-container'), 'ring-4 ring-rose-400 ring-offset-4 ring-offset-slate-950');
         break;
 
       case 'sim-reset':
       case 'reset-simulator':
-        this.triggerVisualAction({
-          element: document.getElementById('reset-simulator-btn') || document.getElementById('simulator-container'),
-          actionName: 'Resetting Cookie Simulator',
-          highlightClass: 'ring-4 ring-cyan-400 ring-offset-4 ring-offset-slate-950 scale-105',
-          onExecute: () => {
-            document.getElementById('reset-simulator-btn')?.click();
-            this.audio?.playShieldEngage();
-          }
-        });
+        this.scrollToSection('simulator-section');
+        document.getElementById('reset-simulator-btn')?.click();
+        this.highlightElement(document.getElementById('simulator-container'), 'ring-4 ring-cyan-400 ring-offset-4 ring-offset-slate-950');
         break;
 
       case 'sim-toggle-analytics':
-        this.toggleCheckbox('ethical-opt-analytics', 'Anonymous Error Reports');
+        this.scrollToSection('simulator-section');
+        this.toggleCheckbox('ethical-opt-analytics');
         break;
 
       case 'sim-toggle-marketing':
-        this.toggleCheckbox('ethical-opt-marketing', 'Personalized Advertisements');
+        this.scrollToSection('simulator-section');
+        this.toggleCheckbox('ethical-opt-marketing');
         break;
 
       case 'sim-save-choices':
-        this.triggerVisualAction({
-          element: document.getElementById('ethical-save-btn'),
-          actionName: 'Saving Selected Privacy Choices',
-          highlightClass: 'ring-4 ring-cyan-400 ring-offset-4 ring-offset-slate-950 scale-105',
-          onExecute: () => {
-            document.getElementById('ethical-save-btn')?.click();
-            this.audio?.playShieldEngage();
-          }
-        });
+        this.scrollToSection('simulator-section');
+        document.getElementById('ethical-save-btn')?.click();
         break;
 
       case 'sim-close-settings':
@@ -305,91 +268,93 @@ class PrivacyGuardApp {
 
       case 'calc-preset-strict':
       case 'preset-strict':
-        this.triggerVisualAction({
-          element: document.getElementById('preset-strict-btn'),
-          actionName: 'Preset ➔ Strict Privacy (0 Risk Score)',
-          highlightClass: 'ring-4 ring-emerald-400 ring-offset-4 ring-offset-slate-950 scale-105 shadow-xl shadow-emerald-500/30',
-          onExecute: () => {
-            document.getElementById('preset-strict-btn')?.click();
-            this.audio?.playShieldEngage();
-          }
-        });
+        this.scrollToSection('calculator-section');
+        document.getElementById('preset-strict-btn')?.click();
+        this.highlightElement(document.getElementById('calculator-container'), 'ring-4 ring-emerald-400 ring-offset-4 ring-offset-slate-950');
         break;
 
       case 'calc-preset-balanced':
       case 'preset-balanced':
-        this.triggerVisualAction({
-          element: document.getElementById('preset-moderate-btn'),
-          actionName: 'Preset ➔ Balanced Moderate Risk',
-          highlightClass: 'ring-4 ring-amber-400 ring-offset-4 ring-offset-slate-950 scale-105 shadow-xl shadow-amber-500/30',
-          onExecute: () => {
-            document.getElementById('preset-moderate-btn')?.click();
-            this.audio?.playChirp(true);
-          }
-        });
+        this.scrollToSection('calculator-section');
+        document.getElementById('preset-moderate-btn')?.click();
+        this.highlightElement(document.getElementById('calculator-container'), 'ring-4 ring-amber-400 ring-offset-4 ring-offset-slate-950');
         break;
 
       case 'calc-preset-social':
       case 'preset-social':
-        this.triggerVisualAction({
-          element: document.getElementById('preset-social-btn'),
-          actionName: 'Preset ➔ Predatory Social Media (100 Max Risk)',
-          highlightClass: 'ring-4 ring-rose-500 ring-offset-4 ring-offset-slate-950 scale-105 shadow-xl shadow-rose-500/40',
-          onExecute: () => {
-            document.getElementById('preset-social-btn')?.click();
-            this.audio?.playThreatAlert();
-          }
-        });
+        this.scrollToSection('calculator-section');
+        document.getElementById('preset-social-btn')?.click();
+        this.highlightElement(document.getElementById('calculator-container'), 'ring-4 ring-rose-500 ring-offset-4 ring-offset-slate-950');
         break;
 
       case 'calc-toggle-biometric':
       case 'toggle-biometric':
-        this.toggleCheckbox('calc-biometric', 'Camera & Face Biometrics');
+        this.scrollToSection('calculator-section');
+        this.toggleCheckbox('calc-biometric');
+        this.highlightElement(document.getElementById('calculator-container'));
         break;
 
       case 'calc-toggle-location':
       case 'toggle-location':
-        this.toggleCheckbox('calc-location', 'Exact GPS Location');
+        this.scrollToSection('calculator-section');
+        this.toggleCheckbox('calc-location');
+        this.highlightElement(document.getElementById('calculator-container'));
         break;
 
       case 'calc-toggle-audio':
       case 'toggle-audio-vector':
-        this.toggleCheckbox('calc-audio', 'Microphone Background Audio');
+        this.scrollToSection('calculator-section');
+        this.toggleCheckbox('calc-audio');
+        this.highlightElement(document.getElementById('calculator-container'));
         break;
 
       case 'calc-toggle-broker':
       case 'toggle-broker':
-        this.toggleCheckbox('calc-brokerage', 'Data Broker Exfiltration');
+        this.scrollToSection('calculator-section');
+        this.toggleCheckbox('calc-brokerage');
+        this.highlightElement(document.getElementById('calculator-container'));
         break;
 
       case 'calc-toggle-fingerprint':
       case 'toggle-fingerprint':
-        this.toggleCheckbox('calc-fingerprint', 'Device Canvas Fingerprinting');
+        this.scrollToSection('calculator-section');
+        this.toggleCheckbox('calc-fingerprint');
+        this.highlightElement(document.getElementById('calculator-container'));
         break;
 
       case 'calc-retention-0':
       case 'retention-ephemeral':
-        this.automateRetention(0, 'Immediate (Ephemeral - 0 Days)');
+        this.scrollToSection('calculator-section');
+        this.calculator?.setRetention(0);
+        this.highlightElement(document.getElementById('calculator-container'));
         break;
 
       case 'calc-retention-1':
       case 'retention-30days':
-        this.automateRetention(1, '30 Days (+4 Points)');
+        this.scrollToSection('calculator-section');
+        this.calculator?.setRetention(1);
+        this.highlightElement(document.getElementById('calculator-container'));
         break;
 
       case 'calc-retention-2':
       case 'retention-1year':
-        this.automateRetention(2, '1 Year (+10 Points)');
+        this.scrollToSection('calculator-section');
+        this.calculator?.setRetention(2);
+        this.highlightElement(document.getElementById('calculator-container'));
         break;
 
       case 'calc-retention-3':
       case 'retention-5years':
-        this.automateRetention(3, '5 Years (+15 Points)');
+        this.scrollToSection('calculator-section');
+        this.calculator?.setRetention(3);
+        this.highlightElement(document.getElementById('calculator-container'));
         break;
 
       case 'calc-retention-4':
       case 'retention-permanent':
-        this.automateRetention(4, 'Indefinite Permanent (+20 Points)');
+        this.scrollToSection('calculator-section');
+        this.calculator?.setRetention(4);
+        this.highlightElement(document.getElementById('calculator-container'));
         break;
 
       // --- 4. ETHICAL AI CONSENT MATRIX ---
@@ -402,78 +367,75 @@ class PrivacyGuardApp {
 
       case 'ai-toggle-training':
       case 'toggle-ai-training':
-        this.toggleCheckbox('ai-opt-training', 'AI Training Model Ingestion');
+        this.scrollToSection('ai-matrix-section');
+        this.toggleCheckbox('ai-opt-training');
+        this.highlightElement(document.getElementById('ai-matrix-container'));
         break;
 
       case 'ai-toggle-human':
       case 'toggle-ai-review':
-        this.toggleCheckbox('ai-opt-human', 'Human Operator Chat Review');
+        this.scrollToSection('ai-matrix-section');
+        this.toggleCheckbox('ai-opt-human');
+        this.highlightElement(document.getElementById('ai-matrix-container'));
         break;
 
       case 'ai-toggle-diffprivacy':
       case 'toggle-ai-diffprivacy':
-        this.toggleCheckbox('ai-opt-diffprivacy', 'Differential Privacy & PII Redaction');
+        this.scrollToSection('ai-matrix-section');
+        this.toggleCheckbox('ai-opt-diffprivacy');
+        this.highlightElement(document.getElementById('ai-matrix-container'));
         break;
 
       case 'ai-toggle-ephemeral':
       case 'toggle-ai-ephemeral':
-        this.toggleCheckbox('ai-opt-ephemeral', 'Auto-Delete Session History');
+        this.scrollToSection('ai-matrix-section');
+        this.toggleCheckbox('ai-opt-ephemeral');
+        this.highlightElement(document.getElementById('ai-matrix-container'));
         break;
 
       case 'ai-sample-medical':
       case 'sample-medical':
+        this.scrollToSection('ai-matrix-section');
         this.demonstrateAISanitization("Patient Sarah Connor, SSN 123-45-6789, diagnosed with Type 1 Diabetes, taking insulin. Contact: 555-0199.");
+        this.highlightElement(document.getElementById('ai-matrix-container'));
         break;
 
       case 'ai-sample-key':
       case 'sample-key':
+        this.scrollToSection('ai-matrix-section');
         this.demonstrateAISanitization("Fix my backend connection: const API_KEY = 'sk_live_94921938b81203a'; const USER = 'admin';");
+        this.highlightElement(document.getElementById('ai-matrix-container'));
         break;
 
       // --- 5. ACADEMIC INSPECTOR DRAWER ---
       case 'open-inspector':
-        this.showAutomationBanner('Opening Academic Telemetry Inspector Drawer');
         this.privacyInspectorDrawer?.open();
         break;
 
       case 'fast-audit':
       case 'fast-scan':
-        this.runPrivacyScan();
+        if (!this.privacyInspectorDrawer?.isOpen) {
+          this.privacyInspectorDrawer?.open();
+        }
+        setTimeout(() => this.privacyInspectorDrawer?.runFastAudit(), 250);
         break;
 
       case 'inject-tracker':
       case 'simulate-tracker':
-        this.showAutomationBanner('Injecting Rogue Ad Tracker (Helen Nissenbaum Norm Rupture)');
         if (!this.privacyInspectorDrawer?.isOpen) {
           this.privacyInspectorDrawer?.open();
         }
-        setTimeout(() => {
-          this.privacyInspectorDrawer?.injectSimulatedTracker();
-          const ciCard = this.privacyInspectorDrawer?.drawerEl?.querySelector('#ci-status-badge')?.closest('.cyber-card');
-          if (ciCard) {
-            ciCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            this.highlightElement(ciCard, 'ring-4 ring-rose-500 ring-offset-4 ring-offset-slate-950 scale-[1.02] shadow-2xl shadow-rose-600/30');
-          }
-        }, 350);
+        setTimeout(() => this.privacyInspectorDrawer?.injectSimulatedTracker(), 250);
         break;
 
       case 'simulate-breach':
-        this.showAutomationBanner('Simulating Contextual Integrity Data Breach');
         if (!this.privacyInspectorDrawer?.isOpen) {
           this.privacyInspectorDrawer?.open();
         }
-        setTimeout(() => {
-          this.privacyInspectorDrawer?.simulateConsentBreach();
-          const ciCard = this.privacyInspectorDrawer?.drawerEl?.querySelector('#ci-status-badge')?.closest('.cyber-card');
-          if (ciCard) {
-            ciCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            this.highlightElement(ciCard, 'ring-4 ring-amber-500 ring-offset-4 ring-offset-slate-950 scale-[1.02] shadow-2xl shadow-amber-500/30');
-          }
-        }, 350);
+        setTimeout(() => this.privacyInspectorDrawer?.simulateConsentBreach(), 250);
         break;
 
       case 'reset-telemetry':
-        this.showAutomationBanner('Resetting Academic Telemetry Logs');
         this.privacyInspectorDrawer?.resetTelemetry();
         break;
 
@@ -613,189 +575,42 @@ class PrivacyGuardApp {
     }
   }
 
-  showAutomationBanner(title) {
-    let banner = document.getElementById('ai-automation-banner');
-    if (!banner) {
-      banner = document.createElement('div');
-      banner.id = 'ai-automation-banner';
-      banner.className = 'fixed top-14 left-1/2 -translate-x-1/2 z-50 px-4 py-2 bg-slate-950/95 border-2 border-cyan-400/80 rounded-full shadow-2xl backdrop-blur-2xl flex items-center gap-2.5 text-xs font-mono text-cyan-200 transition-all duration-300 pointer-events-none opacity-0 scale-95';
-      document.body.appendChild(banner);
-    }
-
-    banner.innerHTML = `
-      <span class="w-2.5 h-2.5 rounded-full bg-cyan-400 animate-ping shrink-0"></span>
-      <span class="font-bold text-white tracking-wide flex items-center gap-1">
-        <span>🤖 AI Auto-Pilot:</span>
-      </span>
-      <span class="text-cyan-300 font-semibold">${title}</span>
-    `;
-
-    banner.classList.remove('opacity-0', 'scale-95');
-    banner.classList.add('opacity-100', 'scale-100');
-
-    clearTimeout(this.automationBannerTimer);
-    this.automationBannerTimer = setTimeout(() => {
-      banner.classList.remove('opacity-100', 'scale-100');
-      banner.classList.add('opacity-0', 'scale-95');
-    }, 2800);
-  }
-
-  triggerVisualAction({
-    element,
-    actionName,
-    highlightClass = 'ring-4 ring-cyan-400 ring-offset-4 ring-offset-slate-950 scale-[1.02] bg-cyan-950/40 shadow-xl shadow-cyan-500/20',
-    onExecute = null,
-    scrollBlock = 'center'
-  }) {
-    if (!element) {
-      if (onExecute) onExecute();
-      return;
-    }
-
-    // 1. Smooth scroll directly to the element
-    element.scrollIntoView({ behavior: 'smooth', block: scrollBlock });
-
-    // 2. Attach a temporary glowing "🤖 AI Action" beacon badge
-    const beacon = document.createElement('div');
-    beacon.className = 'ai-action-beacon absolute -top-3.5 right-3 px-2 py-0.5 rounded-full bg-gradient-to-r from-cyan-500 to-violet-500 text-slate-950 font-mono font-black text-[9px] shadow-lg flex items-center gap-1 z-30 animate-pulse pointer-events-none transition-all';
-    beacon.innerHTML = `<span>🤖 AI Action</span><span>${actionName ? '• ' + actionName : ''}</span>`;
-    
-    const originalPosition = window.getComputedStyle(element).position;
-    if (originalPosition === 'static') {
-      element.style.position = 'relative';
-    }
-    element.appendChild(beacon);
-
-    // 3. Highlight element
-    const classes = highlightClass.split(' ');
-    element.classList.add(...classes, 'transition-all', 'duration-300');
-
-    // 4. Show top screen Automation Banner
-    if (actionName) {
-      this.showAutomationBanner(actionName);
-    }
-
-    // 5. Execute actual interaction with realistic micro-delay so eye can see it happen
-    setTimeout(() => {
-      if (onExecute) onExecute();
-    }, 180);
-
-    // 6. Cleanup beacon and ring after animation
-    setTimeout(() => {
-      element.classList.remove(...classes);
-      beacon.remove();
-      if (originalPosition === 'static') {
-        element.style.position = '';
-      }
-    }, 2400);
-  }
-
-  toggleCheckbox(id, customLabel = null) {
-    const el = document.getElementById(id);
-    if (!el) return;
-    const rowEl = el.closest('div.p-3') || el.closest('label') || el.parentElement;
-
-    const label = customLabel || el.getAttribute('aria-label') || (rowEl ? rowEl.querySelector('span')?.textContent : '') || id;
-    const cleanLabel = label.trim().replace(/^[\W_]+/, '').slice(0, 30);
-
-    this.triggerVisualAction({
-      element: rowEl,
-      actionName: `Toggle ${cleanLabel}`,
-      highlightClass: el.checked
-        ? 'ring-4 ring-slate-500 ring-offset-4 ring-offset-slate-950 scale-[1.01] bg-slate-900/60'
-        : 'ring-4 ring-cyan-400 ring-offset-4 ring-offset-slate-950 scale-[1.02] bg-cyan-950/40 shadow-xl shadow-cyan-500/20',
-      onExecute: () => {
-        el.checked = !el.checked;
-        el.dispatchEvent(new Event('change', { bubbles: true }));
-        if (el.checked) {
-          this.audio?.playThreatAlert();
-        } else {
-          this.audio?.playShieldEngage();
-        }
-      }
-    });
-  }
-
-  automateRetention(val, label) {
-    const slider = document.getElementById('calc-retention');
-    const rowEl = slider?.closest('div.p-3') || slider?.parentElement;
-
-    this.triggerVisualAction({
-      element: rowEl,
-      actionName: `Data Retention ➔ ${label}`,
-      highlightClass: 'ring-4 ring-amber-400 ring-offset-4 ring-offset-slate-950 scale-[1.02] bg-amber-950/40 shadow-xl shadow-amber-500/20',
-      onExecute: () => {
-        if (this.calculator) {
-          this.calculator.setRetention(val);
-        }
-        if (val === 0) {
-          this.audio?.playShieldEngage();
-        } else {
-          this.audio?.playChirp(true);
-        }
-      }
-    });
-  }
-
   runPrivacyScan() {
-    this.showAutomationBanner('Running 60x Speed Privacy Audit Across 14 Vectors');
     this.privacyInspectorDrawer?.open();
     setTimeout(() => {
       this.privacyInspectorDrawer?.runFastAudit();
-      const progressBox = this.privacyInspectorDrawer?.drawerEl?.querySelector('#inspector-scan-badge')?.parentElement;
-      if (progressBox) {
-        this.highlightElement(progressBox, 'ring-4 ring-cyan-400 ring-offset-4 ring-offset-slate-950');
-      }
-    }, 350);
+    }, 250);
     this.audio?.playChirp(true);
     this.accessibility?.announcePolite('Privacy audit initiated. Scanning 14 tracking vectors.');
   }
 
   blockTrackers() {
-    this.showAutomationBanner('Defending Privacy: Blocking All 427 Trackers & Enforcing Privacy-by-Default');
-    this.scrollToSection('simulator-section');
-    setTimeout(() => {
-      document.getElementById('ethical-reject-btn')?.click();
-      document.getElementById('preset-strict-btn')?.click();
-      this.highlightElement(document.getElementById('simulator-container'), 'ring-4 ring-emerald-400 ring-offset-4 ring-offset-slate-950');
+    document.getElementById('ethical-reject-btn')?.click();
+    document.getElementById('preset-strict-btn')?.click();
+    this.scrollToSection('simulator-section', 'All 427 trackers blocked. Privacy-by-Default active.');
+    this.audio?.playShieldEngage();
+  }
+
+  toggleCheckbox(id) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.checked = !el.checked;
+    el.dispatchEvent(new Event('change', { bubbles: true }));
+    if (el.checked) {
+      this.audio?.playThreatAlert();
+    } else {
       this.audio?.playShieldEngage();
-    }, 250);
+    }
   }
 
   demonstrateAISanitization(customText = null) {
     const input = document.getElementById('ai-sandbox-input');
-    const container = document.getElementById('ai-matrix-container');
-    if (!input || !this.aiMatrix) return;
-
-    const textToType = customText || input.value || "Patient Sarah Connor, SSN 123-45-6789, diagnosed with Type 1 Diabetes, taking insulin. Contact: 555-0199.";
-
-    this.triggerVisualAction({
-      element: input.parentElement || container,
-      actionName: 'Streaming AI Prompt & Client-Side PII Masking',
-      highlightClass: 'ring-4 ring-violet-400 ring-offset-4 ring-offset-slate-950 scale-[1.01] bg-violet-950/30',
-      onExecute: () => {
-        // Fast streaming typing animation
-        input.value = '';
-        input.focus();
-        let i = 0;
-        const step = Math.max(2, Math.floor(textToType.length / 25));
-        const typeInterval = setInterval(() => {
-          i += step;
-          input.value = textToType.slice(0, i);
-          this.aiMatrix?.updateSandboxPreview();
-          if (i >= textToType.length) {
-            input.value = textToType;
-            clearInterval(typeInterval);
-            this.aiMatrix?.updateSandboxPreview();
-            this.audio?.playShieldEngage();
-            const redactedBox = document.getElementById('ai-sandbox-redacted');
-            if (redactedBox) {
-              this.highlightElement(redactedBox, 'ring-4 ring-emerald-400 ring-offset-4 ring-offset-slate-950 scale-105');
-            }
-          }
-        }, 25);
+    if (input && this.aiMatrix) {
+      if (customText) {
+        input.value = customText;
       }
-    });
+      this.aiMatrix.updateSandboxPreview();
+    }
   }
 
   highlightElement(el, ringClass = 'ring-4 ring-cyan-400 ring-offset-4 ring-offset-slate-950') {
