@@ -46,45 +46,151 @@ Rules:
 
     // Local Comprehensive Knowledge Base for Zero-Token Offline Fallback
     this.offlineKnowledgeBase = [
+      // 1. PAGE SCROLLING & NAVIGATION ACTIONS
       {
-        patterns: ['tracker', 'block', 'rok', 'band kar', 'protect', 'shield'],
+        patterns: ['scroll down', 'scroll neeche', 'neeche jao', 'neeche karo', 'page down', 'scroll', 'down', 'neeche'],
+        action: 'scroll-down',
+        reply: 'Ji bhai, page ko neeche scroll kardiya gaya hai.'
+      },
+      {
+        patterns: ['scroll up', 'scroll upar', 'upar jao', 'upar karo', 'page up', 'up', 'upar'],
+        action: 'scroll-up',
+        reply: 'Ji bhai, page ko upar scroll kardiya gaya hai.'
+      },
+      {
+        patterns: ['scroll top', 'top pe jao', 'shuru me jao', 'top karo', 'header me jao'],
+        action: 'scroll-top',
+        reply: 'Ji bhai, website ke bilkul top (header) par scroll kardiya gaya hai.'
+      },
+      {
+        patterns: ['scroll bottom', 'footer me jao', 'aakhir me jao', 'bottom karo'],
+        action: 'scroll-bottom',
+        reply: 'Ji bhai, website ke aakhir (footer) tak scroll kardiya gaya hai.'
+      },
+
+      // 2. PRIVACY DEFENSE & THREAT SCAN
+      {
+        patterns: ['tracker', 'block', 'rok', 'band kar', 'protect', 'shield', 'trackers roko'],
         action: 'block-trackers',
         reply: 'Ji bhai, maine tamam 427 ad trackers block kardiye hain. Ab websites aapka data bina ijazat ke nahi le sakeengi, aur Privacy-by-Default active hai.'
       },
       {
-        patterns: ['scan', 'audit', 'check kar', 'inspection', 'data leak'],
+        patterns: ['scan', 'audit', 'check kar', 'inspection', 'data leak', 'scan chalao'],
         action: 'start-audit',
         reply: 'Ji bhai, privacy audit shuru kardi gayi hai. 14 security vectors live scan horahay hain, aap Inspector Drawer mein telemetry dekh sakte hain.'
       },
       {
-        patterns: ['cookie', 'trap', 'roach motel', 'shame', 'dhoka', 'banner'],
+        patterns: ['fast scan', '60x', 'tez scan'],
+        action: 'fast-scan',
+        reply: 'Ji bhai, 60x speed par fast-forward privacy audit run kardi gayi hai!'
+      },
+
+      // 3. COOKIE SIMULATOR & DARK PATTERNS
+      {
+        patterns: ['trap me phanso', 'fall in trap', 'accept all', 'trap test', 'phanso', 'trap trigger'],
+        action: 'sim-accept-trap',
+        reply: 'Deceptive cookie trap trigger hogaya hai! Dekhein kaise 427 ad trackers ne user ka data bina poori ijazat ke capture karliya.'
+      },
+      {
+        patterns: ['reject all', 'reject karo', '1-click reject', 'ethical reject', 'saaf reject'],
+        action: 'sim-reject-ethical',
+        reply: 'Ethical reject trigger kardiya gaya hai. Tamam non-essential advertising trackers ko 1 click mein reject kardiya gaya hai.'
+      },
+      {
+        patterns: ['roach motel', 'settings kholo', 'preferences', 'sliders', 'option dikhao'],
+        action: 'sim-open-settings',
+        reply: 'Roach Motel settings sliders khol diye gaye hain. Deceptive design mein user ko 427 vendors ko alag alag uncheck karna padta hai.'
+      },
+      {
+        patterns: ['confirmshame', 'shame', 'guilt', 'emotional guilt', 'shame button'],
+        action: 'sim-confirmshame',
+        reply: 'Confirmshaming pattern trigger kardiya gaya hai: "No thanks, I hate privacy" jaisi emotional guilt line samne aagayi hai.'
+      },
+      {
+        patterns: ['reset simulator', 'simulator reset', 'shuru jesa karo', 'clear simulator', 'reset', 'clear'],
+        action: 'sim-reset',
+        reply: 'Cookie Simulator ko reset kardiya gaya hai.'
+      },
+      {
+        patterns: ['cookie', 'dhoka', 'banner', 'simulator samjhao'],
         action: 'audit-cookies',
         reply: 'Yeh Cookie Simulator hai! Yahan lal box dikhata hai ke kaise websites Accept All ka button bada bana kar 427 trackers daalti hain, jabke hara box 1-click ethical reject deta hai.'
       },
+
+      // 4. PRIVACY RISK METER
       {
-        patterns: ['risk', 'score', 'meter', 'khatra', 'camera', 'location', 'gps'],
+        patterns: ['strict preset', 'safe preset', '0 risk', '0 score', 'khatra khatam karo'],
+        action: 'calc-preset-strict',
+        reply: 'Privacy risk score ko 0/100 par lock kardiya gaya hai. Tamam dangerous sensors off kardiye gaye hain.'
+      },
+      {
+        patterns: ['social preset', 'danger preset', '100 risk', '100 score', 'khatra barhao'],
+        action: 'calc-preset-social',
+        reply: 'Predatory social media preset apply kardiya gaya hai! Risk score 100/100 maximum danger zone mein aagaya hai.'
+      },
+      {
+        patterns: ['biometric', 'camera', 'chehra', 'face profiling'],
+        action: 'calc-toggle-biometric',
+        reply: 'Biometric & camera profiling sensor toggle kardiya gaya hai (+30 risk points).'
+      },
+      {
+        patterns: ['location', 'gps', 'jaga', 'triangulation'],
+        action: 'calc-toggle-location',
+        reply: 'High-precision GPS location permission toggle kardi gayi hai (+25 risk points).'
+      },
+      {
+        patterns: ['audio sensor', 'mic sensor', 'awaz sensor'],
+        action: 'calc-toggle-audio',
+        reply: 'Continuous microphone capture vector toggle kardiya gaya hai (+20 risk points).'
+      },
+      {
+        patterns: ['risk', 'score', 'meter', 'khatra', 'risk check karo'],
         action: 'show-risk',
         reply: 'Yeh Privacy Risk Meter hai! Jab aap apps ko camera, location ya continuous mic ki ijazat dete hain to aapka score 100/100 danger zone mein chala jata hai.'
       },
+
+      // 5. ETHICAL AI & PII MASKING
       {
-        patterns: ['ai', 'chat', 'mask', 'pii', 'medical', 'password', 'api key'],
+        patterns: ['medical sample', 'doctor prompt', 'patient sample', 'health prompt'],
+        action: 'ai-sample-medical',
+        reply: 'Sensitive medical PII prompt load kardiya gaya hai. Dekhein kaise system ne doctor name aur diagnosis mask kardiya.'
+      },
+      {
+        patterns: ['password sample', 'secret key', 'api key', 'token sample'],
+        action: 'ai-sample-key',
+        reply: 'Secret API key sample prompt load kardiya gaya hai. Private credentials client-side par hi redact hogaye.'
+      },
+      {
+        patterns: ['ai', 'chat', 'mask', 'pii', 'ethical ai'],
         action: 'show-consent',
         reply: 'Ethical AI Matrix mein aap jo bhi prompt likhte hain, hamara system usme se passwords aur medical PII ko browser ke andar hi mask (redact) kardeta hai.'
       },
+
+      // 6. ACCESSIBILITY & DRAWER
       {
-        patterns: ['font', 'text', 'bara', 'chota', 'parhne'],
+        patterns: ['font', 'text bara', 'bara karo', 'zoom text', 'parhne me masla'],
         action: 'increase-font',
         reply: 'Ji bhai, font size 150% tak bada kardiya gaya hai taake low-vision users aasaani se padh sakein.'
       },
       {
-        patterns: ['contrast', 'andhera', 'black', 'white', 'aaa', 'rang'],
+        patterns: ['contrast', 'andhera', 'black and white', 'aaa', 'high contrast'],
         action: 'high-contrast',
         reply: 'WCAG AAA High Contrast mode active kardiya gaya hai, 7:1+ contrast ratio ke sath.'
+      },
+      {
+        patterns: ['inspector', 'drawer', 'telemetry', 'inspector kholo'],
+        action: 'open-inspector',
+        reply: 'Academic Inspector Drawer khol diya gaya hai, Contextual Integrity telemetry live show horahi hai.'
       },
       {
         patterns: ['tour', 'sikhao', 'guide', 'samjhao', 'demo', 'chalana'],
         action: 'guided-tour',
         reply: 'Zaroor bhai! Yeh 30-Second Guided Tour shuru horaha hai, step by step dekhein ke har feature kaise kaam karta hai.'
+      },
+      {
+        patterns: ['close', 'band karo', 'hatao', 'chup'],
+        action: 'close-overlays',
+        reply: 'Ji bhai, open overlays aur dialogues band kardiye gaye hain.'
       },
       {
         patterns: ['tum kaun ho', 'intro', 'kya kar sakte ho', 'kaun ho', 'naam'],
