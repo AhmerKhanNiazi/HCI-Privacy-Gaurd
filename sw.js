@@ -3,7 +3,7 @@
  * Designed for GitHub Pages single-page deployment
  */
 
-const CACHE_NAME = 'privacyguard-ux-v2.4';
+const CACHE_NAME = 'privacyguard-ux-v2.5';
 const STATIC_ASSETS = [
   './',
   './index.html',
@@ -23,7 +23,8 @@ const STATIC_ASSETS = [
   './js/modules/voice-system.js',
   './js/modules/accessibility-manager.js',
   './js/modules/privacy-inspector-drawer.js',
-  './js/modules/user-tour-guide.js'
+  './js/modules/user-tour-guide.js',
+  './js/modules/urdu-ai-copilot.js'
 ];
 
 self.addEventListener('install', (event) => {

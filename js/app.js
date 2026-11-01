@@ -21,6 +21,7 @@ import { AccessibilityManager } from './modules/accessibility-manager.js';
 import { VoiceSystem } from './modules/voice-system.js';
 import { PrivacyInspectorDrawer } from './modules/privacy-inspector-drawer.js';
 import { UserTourGuide } from './modules/user-tour-guide.js';
+import { RomanUrduAICopilot } from './modules/urdu-ai-copilot.js';
 
 class PrivacyGuardApp {
   constructor() {
@@ -36,6 +37,7 @@ class PrivacyGuardApp {
     this.calculator = null;
     this.aiMatrix = null;
     this.tourGuide = null;
+    this.aiCopilot = null;
   }
 
   init() {
@@ -94,13 +96,21 @@ class PrivacyGuardApp {
       accessibility: this.accessibility
     });
 
-    // 10. Wire Controls
+    // 10. Roman Urdu Conversational AI Copilot (Dual-Key & Zero-Token Safe)
+    this.aiCopilot = new RomanUrduAICopilot({
+      app: this,
+      audio: this.audio,
+      accessibility: this.accessibility,
+      voiceSystem: this.voiceSystem
+    });
+
+    // 11. Wire Controls
     this.setupGlobalControls();
     this.setupToolbarBindings();
     this.wireInteractiveAcoustics();
     this.updateExaminerHighlights();
 
-    // 11. Register Service Worker for offline PWA operation
+    // 12. Register Service Worker for offline PWA operation
     this.registerServiceWorker();
   }
 
@@ -144,6 +154,13 @@ class PrivacyGuardApp {
       case 'start-tour':
       case 'guided-tour':
         this.tourGuide?.startTour(0);
+        break;
+
+      // --- ROMAN URDU AI COPILOT ---
+      case 'urdu-ai':
+      case 'ai-copilot':
+      case 'open-ai':
+        this.aiCopilot?.openHUD();
         break;
 
       // --- 1. CORE PRIVACY & THREAT SCAN ---
@@ -556,6 +573,11 @@ class PrivacyGuardApp {
 
     if (this.tourGuide?.isActive) {
       this.tourGuide.stopTour();
+      handled = true;
+    }
+
+    if (this.aiCopilot?.isOpen) {
+      this.aiCopilot.closeHUD();
       handled = true;
     }
 

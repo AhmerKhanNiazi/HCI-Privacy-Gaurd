@@ -74,6 +74,14 @@ export class VoiceSystem {
         keywords: ['guided tour', 'start tour', 'tour', 'help tour', 'walkthrough', 'show tour', 'guide me', 'guide']
       },
 
+      // ROMAN URDU AI COPILOT
+      {
+        id: 'urdu-ai',
+        title: '🤖 Roman Urdu AI Copilot',
+        spoken: 'Urdu AI Copilot activated. Aap hukum karein, main sun raha hoon.',
+        keywords: ['urdu ai', 'suno ai', 'bhai suno', 'ai dost', 'copilot', 'urdu mode', 'ai assistant', 'urdu', 'ai']
+      },
+
       // 1. SPECIFIC COOKIE SIMULATOR ACTIONS
       {
         id: 'sim-accept-trap',

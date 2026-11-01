@@ -337,6 +337,14 @@ export class AccessibilityManager {
               <span>🛡️ 1. Core Privacy Defense & Audit Commands</span>
             </h4>
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[11px]">
+              <div class="help-cmd-card p-3 bg-slate-900/90 rounded-xl border border-slate-800 hover:border-violet-500/40 transition flex items-start justify-between gap-3" data-search-tags="urdu ai suno ai bhai suno copilot urdu mode ai dost voice ai">
+                <div>
+                  <span class="font-mono font-bold text-violet-300">"Suno AI" / "Urdu AI" / "Bhai suno"</span>
+                  <p class="text-slate-400 text-[10px] mt-0.5">Opens conversational Roman Urdu AI Copilot with voice answers & site control (Hotkey: U).</p>
+                </div>
+                <button type="button" class="help-test-btn shrink-0 px-2 py-1 bg-violet-950/80 hover:bg-violet-800 text-violet-300 border border-violet-600/50 rounded-lg text-[10px] font-mono transition" data-voice-cmd="urdu-ai" title="Test voice command">▶ Test</button>
+              </div>
+
               <div class="help-cmd-card p-3 bg-slate-900/90 rounded-xl border border-slate-800 hover:border-cyan-500/40 transition flex items-start justify-between gap-3" data-search-tags="guided tour start tour walkthrough guide me intro help tour 30 second">
                 <div>
                   <span class="font-mono font-bold text-cyan-300">"Guided tour" / "Start tour" / "Walkthrough"</span>
