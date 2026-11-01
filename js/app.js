@@ -148,44 +148,55 @@ class PrivacyGuardApp {
 
       // --- 1. CORE PRIVACY & THREAT SCAN ---
       case 'start-audit':
+      case 'privacy-scan':
         this.runPrivacyScan();
         break;
 
       case 'block-trackers':
+      case 'block-all':
         this.blockTrackers();
         break;
 
       // --- 2. DECEPTIVE PATTERN SIMULATOR ---
       case 'audit-cookies':
+      case 'simulator':
         this.scrollToSection('simulator-section', 'Scrolled to Deceptive Dark Pattern Simulator');
         this.highlightElement(document.getElementById('simulator-container'), 'ring-4 ring-cyan-400 ring-offset-4 ring-offset-slate-950');
         break;
 
       case 'sim-accept-trap':
+      case 'trap-cookies':
+      case 'accept-trap':
         this.scrollToSection('simulator-section');
         document.getElementById('dark-accept-btn')?.click();
         this.highlightElement(document.getElementById('simulator-container'), 'ring-4 ring-rose-500 ring-offset-4 ring-offset-slate-950');
         break;
 
       case 'sim-reject-ethical':
+      case 'reject-cookies':
+      case 'reject-all':
         this.scrollToSection('simulator-section');
         document.getElementById('ethical-reject-btn')?.click();
         this.highlightElement(document.getElementById('simulator-container'), 'ring-4 ring-emerald-400 ring-offset-4 ring-offset-slate-950');
         break;
 
       case 'sim-open-settings':
+      case 'settings-cookies':
+      case 'open-settings':
         this.scrollToSection('simulator-section');
         document.getElementById('dark-settings-btn')?.click();
         this.highlightElement(document.getElementById('simulator-container'), 'ring-4 ring-amber-400 ring-offset-4 ring-offset-slate-950');
         break;
 
       case 'sim-confirmshame':
+      case 'confirmshame':
         this.scrollToSection('simulator-section');
         document.getElementById('dark-confirmshame-btn')?.click();
         this.highlightElement(document.getElementById('simulator-container'), 'ring-4 ring-rose-400 ring-offset-4 ring-offset-slate-950');
         break;
 
       case 'sim-reset':
+      case 'reset-simulator':
         this.scrollToSection('simulator-section');
         document.getElementById('reset-simulator-btn')?.click();
         this.highlightElement(document.getElementById('simulator-container'), 'ring-4 ring-cyan-400 ring-offset-4 ring-offset-slate-950');
@@ -193,53 +204,63 @@ class PrivacyGuardApp {
 
       // --- 3. DYNAMIC PRIVACY RISK CALCULATOR ---
       case 'show-calculator':
+      case 'show-risk':
+      case 'risk-meter':
         this.scrollToSection('calculator-section', 'Scrolled to Privacy Risk Score Meter');
         this.highlightElement(document.getElementById('calculator-container'), 'ring-4 ring-emerald-400 ring-offset-4 ring-offset-slate-950');
         break;
 
       case 'calc-preset-strict':
+      case 'preset-strict':
         this.scrollToSection('calculator-section');
         document.getElementById('preset-strict-btn')?.click();
         this.highlightElement(document.getElementById('calculator-container'), 'ring-4 ring-emerald-400 ring-offset-4 ring-offset-slate-950');
         break;
 
       case 'calc-preset-balanced':
+      case 'preset-balanced':
         this.scrollToSection('calculator-section');
         document.getElementById('preset-moderate-btn')?.click();
         this.highlightElement(document.getElementById('calculator-container'), 'ring-4 ring-amber-400 ring-offset-4 ring-offset-slate-950');
         break;
 
       case 'calc-preset-social':
+      case 'preset-social':
         this.scrollToSection('calculator-section');
         document.getElementById('preset-social-btn')?.click();
         this.highlightElement(document.getElementById('calculator-container'), 'ring-4 ring-rose-500 ring-offset-4 ring-offset-slate-950');
         break;
 
       case 'calc-toggle-biometric':
+      case 'toggle-biometric':
         this.scrollToSection('calculator-section');
         this.toggleCheckbox('calc-biometric');
         this.highlightElement(document.getElementById('calculator-container'));
         break;
 
       case 'calc-toggle-location':
+      case 'toggle-location':
         this.scrollToSection('calculator-section');
         this.toggleCheckbox('calc-location');
         this.highlightElement(document.getElementById('calculator-container'));
         break;
 
       case 'calc-toggle-audio':
+      case 'toggle-audio-vector':
         this.scrollToSection('calculator-section');
         this.toggleCheckbox('calc-audio');
         this.highlightElement(document.getElementById('calculator-container'));
         break;
 
       case 'calc-toggle-broker':
+      case 'toggle-broker':
         this.scrollToSection('calculator-section');
         this.toggleCheckbox('calc-brokerage');
         this.highlightElement(document.getElementById('calculator-container'));
         break;
 
       case 'calc-toggle-fingerprint':
+      case 'toggle-fingerprint':
         this.scrollToSection('calculator-section');
         this.toggleCheckbox('calc-fingerprint');
         this.highlightElement(document.getElementById('calculator-container'));
@@ -247,42 +268,49 @@ class PrivacyGuardApp {
 
       // --- 4. ETHICAL AI CONSENT MATRIX ---
       case 'show-consent':
+      case 'ai-matrix':
         this.scrollToSection('ai-matrix-section', 'Scrolled to Ethical AI Consent Matrix');
         this.highlightElement(document.getElementById('ai-matrix-container'), 'ring-4 ring-violet-400 ring-offset-4 ring-offset-slate-950');
         this.demonstrateAISanitization();
         break;
 
       case 'ai-toggle-training':
+      case 'toggle-ai-training':
         this.scrollToSection('ai-matrix-section');
         this.toggleCheckbox('ai-opt-training');
         this.highlightElement(document.getElementById('ai-matrix-container'));
         break;
 
       case 'ai-toggle-human':
+      case 'toggle-ai-review':
         this.scrollToSection('ai-matrix-section');
         this.toggleCheckbox('ai-opt-human');
         this.highlightElement(document.getElementById('ai-matrix-container'));
         break;
 
       case 'ai-toggle-diffprivacy':
+      case 'toggle-ai-diffprivacy':
         this.scrollToSection('ai-matrix-section');
         this.toggleCheckbox('ai-opt-diffprivacy');
         this.highlightElement(document.getElementById('ai-matrix-container'));
         break;
 
       case 'ai-toggle-ephemeral':
+      case 'toggle-ai-ephemeral':
         this.scrollToSection('ai-matrix-section');
         this.toggleCheckbox('ai-opt-ephemeral');
         this.highlightElement(document.getElementById('ai-matrix-container'));
         break;
 
       case 'ai-sample-medical':
+      case 'sample-medical':
         this.scrollToSection('ai-matrix-section');
         this.demonstrateAISanitization("Patient Sarah Connor, SSN 123-45-6789, diagnosed with Type 1 Diabetes, taking insulin. Contact: 555-0199.");
         this.highlightElement(document.getElementById('ai-matrix-container'));
         break;
 
       case 'ai-sample-key':
+      case 'sample-key':
         this.scrollToSection('ai-matrix-section');
         this.demonstrateAISanitization("Fix my backend connection: const API_KEY = 'sk_live_94921938b81203a'; const USER = 'admin';");
         this.highlightElement(document.getElementById('ai-matrix-container'));
@@ -294,6 +322,7 @@ class PrivacyGuardApp {
         break;
 
       case 'fast-audit':
+      case 'fast-scan':
         if (!this.privacyInspectorDrawer?.isOpen) {
           this.privacyInspectorDrawer?.open();
         }
@@ -301,6 +330,7 @@ class PrivacyGuardApp {
         break;
 
       case 'inject-tracker':
+      case 'simulate-tracker':
         if (!this.privacyInspectorDrawer?.isOpen) {
           this.privacyInspectorDrawer?.open();
         }
@@ -320,26 +350,32 @@ class PrivacyGuardApp {
 
       // --- 6. EXAMINER DOSSIER & TABS ---
       case 'show-dossier':
+      case 'open-dossier':
+      case 'viva':
         this.audio?.playChirp(true);
         this.examinerModal?.show('taxonomies');
         break;
 
       case 'dossier-tab-patterns':
+      case 'tab-patterns':
         this.audio?.playChirp(true);
         this.examinerModal?.show('taxonomies');
         break;
 
       case 'dossier-tab-pbd':
+      case 'tab-pbd':
         this.audio?.playChirp(true);
         this.examinerModal?.show('pbd');
         break;
 
       case 'dossier-tab-heuristics':
+      case 'tab-heuristics':
         this.audio?.playChirp(true);
         this.examinerModal?.show('heuristics');
         break;
 
       case 'dossier-tab-viva':
+      case 'tab-viva':
         this.audio?.playChirp(true);
         this.examinerModal?.show('viva-qa');
         break;
@@ -390,6 +426,10 @@ class PrivacyGuardApp {
         this.audio?.playClick();
         break;
 
+      case 'toggle-audio':
+        this.toggleAudioMute();
+        break;
+
       case 'mute-sound':
         if (!this.audio?.isMuted) {
           this.toggleAudioMute();
@@ -421,6 +461,22 @@ class PrivacyGuardApp {
       default:
         console.warn(`[Voice Router] Unmapped voice command: "${commandId}"`);
     }
+  }
+
+  runPrivacyScan() {
+    this.privacyInspectorDrawer?.open();
+    setTimeout(() => {
+      this.privacyInspectorDrawer?.runFastAudit();
+    }, 250);
+    this.audio?.playChirp(true);
+    this.accessibility?.announcePolite('Privacy audit initiated. Scanning 14 tracking vectors.');
+  }
+
+  blockTrackers() {
+    document.getElementById('ethical-reject-btn')?.click();
+    document.getElementById('preset-strict-btn')?.click();
+    this.scrollToSection('simulator-section', 'All 427 trackers blocked. Privacy-by-Default active.');
+    this.audio?.playShieldEngage();
   }
 
   toggleCheckbox(id) {

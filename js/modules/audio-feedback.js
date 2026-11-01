@@ -128,6 +128,13 @@ export class AudioFeedback {
   }
 
   /**
+   * Alias for playFanfare
+   */
+  playCompletionFanfare() {
+    this.playFanfare();
+  }
+
+  /**
    * Tactile earcon click for button selections
    */
   playClick() {

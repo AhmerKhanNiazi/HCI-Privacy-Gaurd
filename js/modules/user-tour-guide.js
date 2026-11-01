@@ -327,7 +327,11 @@ export class UserTourGuide {
       this.accessibility.announceAssertive('Tour finished! You are ready to explore PrivacyGuard UX.');
     }
     if (this.audio) {
-      this.audio.playCompletionFanfare();
+      if (typeof this.audio.playFanfare === 'function') {
+        this.audio.playFanfare();
+      } else if (typeof this.audio.playCompletionFanfare === 'function') {
+        this.audio.playCompletionFanfare();
+      }
     }
   }
 

@@ -3,7 +3,7 @@
  * Designed for GitHub Pages single-page deployment
  */
 
-const CACHE_NAME = 'privacyguard-ux-v2.3';
+const CACHE_NAME = 'privacyguard-ux-v2.4';
 const STATIC_ASSETS = [
   './',
   './index.html',
