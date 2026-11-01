@@ -134,6 +134,16 @@ export class PrivacyInspectorDrawer {
               <span id="ci-norm-status" class="text-slate-200">User Autonomy Preserved</span>
             </div>
           </div>
+
+          <!-- Live Incident Log Stream -->
+          <div class="pt-2 border-t border-slate-800">
+            <span class="text-[10px] text-slate-400 font-bold block mb-1">Live Vector Telemetry Log:</span>
+            <div id="ci-live-log-container" class="space-y-1 max-h-24 overflow-y-auto text-[9px] font-mono">
+              <div class="p-1 bg-slate-950/80 rounded border border-slate-800 text-slate-400">
+                • [0.00s] Baseline: All 14 vectors conforming to context-relative norms.
+              </div>
+            </div>
+          </div>
         </div>
 
         <!-- Academic Heuristic 2: Ann Cavoukian Privacy by Design Compliance -->
@@ -343,6 +353,21 @@ export class PrivacyInspectorDrawer {
       principle.className = 'text-rose-400';
     }
 
+    const logContainer = this.drawerEl.querySelector('#ci-live-log-container');
+    if (logContainer) {
+      const time = new Date().toLocaleTimeString();
+      const entry = document.createElement('div');
+      entry.className = 'p-1.5 bg-rose-950/70 border border-rose-600/80 rounded text-rose-200 animate-pulse flex items-center justify-between';
+      entry.innerHTML = `<span>🚨 [${time}] Rogue Tracker: beacon.adservice.net</span><span class="px-1 text-[8px] bg-rose-900 rounded font-bold">BLOCKED</span>`;
+      logContainer.prepend(entry);
+    }
+
+    const card = this.drawerEl.querySelector('#ci-status-badge')?.closest('.cyber-card');
+    if (card) {
+      card.classList.add('ring-4', 'ring-rose-500', 'ring-offset-2', 'ring-offset-slate-950', 'transition-all');
+      setTimeout(() => card.classList.remove('ring-4', 'ring-rose-500', 'ring-offset-2', 'ring-offset-slate-950'), 2500);
+    }
+
     const msg = 'Security warning: Unauthorized background tracking beacon detected. Helen Nissenbaum Contextual Integrity rule violated.';
     if (this.voiceSystem) this.voiceSystem.speak(msg);
     if (this.accessibility) this.accessibility.announceAssertive(msg);
@@ -364,6 +389,21 @@ export class PrivacyInspectorDrawer {
       norm.className = 'text-amber-400 font-bold';
     }
 
+    const logContainer = this.drawerEl.querySelector('#ci-live-log-container');
+    if (logContainer) {
+      const time = new Date().toLocaleTimeString();
+      const entry = document.createElement('div');
+      entry.className = 'p-1.5 bg-amber-950/70 border border-amber-600/80 rounded text-amber-200 flex items-center justify-between';
+      entry.innerHTML = `<span>⚠️ [${time}] Exfiltration Attempt: PII Data Stream</span><span class="px-1 text-[8px] bg-amber-900 rounded font-bold">INTERCEPTED</span>`;
+      logContainer.prepend(entry);
+    }
+
+    const card = this.drawerEl.querySelector('#ci-status-badge')?.closest('.cyber-card');
+    if (card) {
+      card.classList.add('ring-4', 'ring-amber-500', 'ring-offset-2', 'ring-offset-slate-950', 'transition-all');
+      setTimeout(() => card.classList.remove('ring-4', 'ring-amber-500', 'ring-offset-2', 'ring-offset-slate-950'), 2500);
+    }
+
     const msg = 'Simulated data breach intercepted. Positive-Sum architecture neutralized exfiltration without user disruption.';
     if (this.voiceSystem) this.voiceSystem.speak(msg);
     if (this.accessibility) this.accessibility.announceAssertive(msg);
@@ -376,6 +416,15 @@ export class PrivacyInspectorDrawer {
     const badge = this.drawerEl.querySelector('#inspector-scan-badge');
     const bar = this.drawerEl.querySelector('#inspector-progress-bar');
     const num = this.drawerEl.querySelector('#inspector-progress-num');
+    const logContainer = this.drawerEl.querySelector('#ci-live-log-container');
+
+    if (logContainer) {
+      logContainer.innerHTML = `
+        <div class="p-1 bg-slate-950/80 rounded border border-slate-800 text-slate-400">
+          • [0.00s] Reset: All 14 telemetry pipelines restored to certified Privacy by Design baseline.
+        </div>
+      `;
+    }
 
     if (ciBadge) {
       ciBadge.textContent = 'Valid Transmission';
