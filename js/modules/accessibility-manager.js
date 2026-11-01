@@ -813,7 +813,6 @@ export class AccessibilityManager {
       });
     });
   }
-  }
 
   toggleHelpModal() {
     if (!this.helpModal) return;
