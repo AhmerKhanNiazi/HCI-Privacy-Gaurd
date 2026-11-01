@@ -31,6 +31,7 @@ export class RomanUrduAICopilot {
     this.primaryApiKey = localStorage.getItem('privacyguard_gemini_key_1') || '';
     this.secondaryApiKey = localStorage.getItem('privacyguard_gemini_key_2') || '';
     this.activeKeyIndex = 1; // 1 = Primary, 2 = Secondary
+    this.failedKeys = new Set(); // Prevent retrying invalid keys
 
     // In-memory & LocalStorage response cache (Saves 100% of tokens on repeated questions)
     this.responseCache = JSON.parse(localStorage.getItem('privacyguard_ai_cache') || '{}');
@@ -50,6 +51,13 @@ Rules:
 
     // Comprehensive Knowledge Base for Zero-Token Offline Fallback & Autonomous Execution
     this.offlineKnowledgeBase = [
+      // 0. GREETINGS & VOICE HEALTH CHECK (Instant 0-ms reply)
+      {
+        patterns: ['hello', 'hi', 'salam', 'assalam', 'hey', 'kya hal hai', 'kya haal hai', 'sun rahe ho', 'sun rahy ho', 'awaz aa rahi hai', 'bolo', 'kia haal hai'],
+        action: null,
+        reply: 'Walaikum Assalam bhai! Main bilkul active hoon aur aapki aawaz saaf sun raha hoon. Aap mujhse poori website chala sakte hain ya kisi bhi feature ka pooch sakte hain.'
+      },
+
       // 1. PAGE SCROLLING & NAVIGATION ACTIONS
       {
         patterns: ['scroll down', 'scroll neeche', 'neeche jao', 'neeche karo', 'page down', 'scroll', 'down', 'neeche'],
@@ -346,13 +354,13 @@ Rules:
         </div>
       </div>
 
-      <!-- Live Voice Status Indicator -->
-      <div id="ai-voice-status" class="hidden px-2.5 py-1 bg-cyan-950/60 border border-cyan-800/60 rounded-lg text-[10px] font-mono text-cyan-300 items-center justify-between">
-        <span class="flex items-center gap-1.5">
-          <span class="w-2 h-2 rounded-full bg-cyan-400 animate-ping"></span>
-          <span>Aapki aawaz sun raha hoon...</span>
-        </span>
-        <span class="text-slate-400">Roman Urdu</span>
+      <!-- Live Voice Status Indicator & Real-Time Speech Visualizer -->
+      <div id="ai-voice-status" class="hidden px-3 py-1.5 bg-gradient-to-r from-slate-900 to-cyan-950/80 border border-cyan-500/50 rounded-xl text-xs font-mono text-cyan-200 items-center justify-between shadow-lg">
+        <div class="flex items-center gap-2 truncate">
+          <span id="ai-voice-dot" class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping shrink-0"></span>
+          <span id="ai-voice-live-text" class="truncate font-semibold text-white">🎙️ Sun raha hoon... Bolein</span>
+        </div>
+        <span id="ai-voice-badge" class="text-[9px] px-1.5 py-0.5 rounded bg-cyan-900 text-cyan-300 border border-cyan-700 shrink-0">Listening</span>
       </div>
 
       <!-- Input Area: Voice Mic + Text Input -->
@@ -389,7 +397,9 @@ Rules:
         </div>
 
         <div class="p-3 bg-cyan-950/40 border border-cyan-800/40 rounded-xl text-[11px] text-cyan-200 leading-relaxed">
-          <strong>🛡️ Anti-Quota Failover:</strong> Enter your personal test key and an optional secondary presentation key. If Key 1 hits the rate limit, it automatically switches to Key 2! If neither key is entered or internet is lost, the <strong>Zero-Token Offline Engine</strong> answers seamlessly.
+          <strong>⚡ Instant 0-ms Engine & Dual-Key Safeguard:</strong><br/>
+          • Google AI Studio Gemini keys start with <code>AIzaSy...</code>.<br/>
+          • If no key is entered or if quota/key fails, the <strong>Instant 0-Token Offline Engine</strong> responds in <strong>0 milliseconds</strong> with zero lag!
         </div>
 
         <div class="space-y-3">
@@ -523,6 +533,47 @@ Rules:
     }
   }
 
+  updateVoiceStatus(state, text = '') {
+    const statusEl = document.getElementById('ai-voice-status');
+    const liveTextEl = document.getElementById('ai-voice-live-text');
+    const dotEl = document.getElementById('ai-voice-dot');
+    const badgeEl = document.getElementById('ai-voice-badge');
+
+    if (!statusEl) return;
+
+    if (state === 'listening') {
+      statusEl.classList.remove('hidden');
+      statusEl.classList.add('flex');
+      if (dotEl) dotEl.className = 'w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping shrink-0';
+      if (liveTextEl) liveTextEl.textContent = `Sun raha hoon: "${text}..."`;
+      if (badgeEl) {
+        badgeEl.textContent = 'Speaking...';
+        badgeEl.className = 'text-[9px] px-1.5 py-0.5 rounded bg-emerald-950 text-emerald-300 border border-emerald-700 shrink-0';
+      }
+    } else if (state === 'processing') {
+      statusEl.classList.remove('hidden');
+      statusEl.classList.add('flex');
+      if (dotEl) dotEl.className = 'w-2.5 h-2.5 rounded-full bg-cyan-400 animate-spin shrink-0';
+      if (liveTextEl) liveTextEl.textContent = `Soch raha hoon: "${text}"`;
+      if (badgeEl) {
+        badgeEl.textContent = 'Thinking...';
+        badgeEl.className = 'text-[9px] px-1.5 py-0.5 rounded bg-cyan-950 text-cyan-300 border border-cyan-700 shrink-0';
+      }
+    } else if (state === 'ready') {
+      statusEl.classList.remove('hidden');
+      statusEl.classList.add('flex');
+      if (dotEl) dotEl.className = 'w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse shrink-0';
+      if (liveTextEl) liveTextEl.textContent = '🎙️ Hands-Free Active: Sun raha hoon (Bolein)...';
+      if (badgeEl) {
+        badgeEl.textContent = 'Ready';
+        badgeEl.className = 'text-[9px] px-1.5 py-0.5 rounded bg-slate-900 text-slate-300 border border-slate-700 shrink-0';
+      }
+    } else if (state === 'hidden') {
+      statusEl.classList.add('hidden');
+      statusEl.classList.remove('flex');
+    }
+  }
+
   startHandsFreeVoice(showWelcomeAnnounce = true) {
     const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (!SpeechRec) {
@@ -532,17 +583,14 @@ Rules:
 
     this.isHandsFreeVoiceActive = true;
     const micBtn = document.getElementById('ai-mic-btn');
-    const statusEl = document.getElementById('ai-voice-status');
 
     // Visual indicator: glowing pulsating mic button
     micBtn?.classList.add('bg-rose-600', 'text-white', 'animate-pulse', 'ring-4', 'ring-rose-500/50', 'shadow-lg');
     micBtn?.classList.remove('bg-slate-900', 'text-slate-300');
     micBtn?.setAttribute('title', 'Hands-Free Voice Active (Click to Stop)');
 
-    statusEl?.classList.remove('hidden');
-    statusEl?.classList.add('flex');
-    const statusText = statusEl?.querySelector('span span:last-child');
-    if (statusText) statusText.textContent = 'Continuous Hands-Free: Bolein (No button click needed!)';
+    this.updateVoiceStatus('ready');
+    if (this.audio) this.audio.playChirp(true);
 
     if (showWelcomeAnnounce && this.accessibility) {
       this.accessibility.announcePolite('Continuous Hands-Free voice recognition activated.');
@@ -551,21 +599,41 @@ Rules:
     if (!this.recognition) {
       const rec = new SpeechRec();
       rec.continuous = true;
-      rec.interimResults = false;
+      rec.interimResults = true; // Live real-time feedback as the user speaks!
       rec.lang = 'en-US';
 
       rec.onresult = (e) => {
         if (this.isSpeakingTTS) return; // Ignore audio feedback loop
-        const lastIdx = e.results.length - 1;
-        const transcript = e.results[lastIdx][0]?.transcript?.trim();
-        if (transcript) {
-          console.log('[AI Copilot Hands-Free] Captured transcript:', transcript);
-          this.handleUserQuery(transcript);
+
+        let interimTranscript = '';
+        let finalTranscript = '';
+
+        for (let i = e.resultIndex; i < e.results.length; i++) {
+          const trans = e.results[i][0]?.transcript || '';
+          if (e.results[i].isFinal) {
+            finalTranscript += trans;
+          } else {
+            interimTranscript += trans;
+          }
+        }
+
+        // Live visual feedback: user sees their words in real-time!
+        if (interimTranscript.trim()) {
+          this.updateVoiceStatus('listening', interimTranscript.trim());
+        }
+
+        if (finalTranscript.trim()) {
+          console.log('[AI Copilot Hands-Free] Captured final transcript:', finalTranscript.trim());
+          this.updateVoiceStatus('processing', finalTranscript.trim());
+          if (this.audio) this.audio.playChirp(true);
+          this.handleUserQuery(finalTranscript.trim());
         }
       };
 
       rec.onerror = (err) => {
-        console.warn('[AI Copilot Hands-Free] Speech error:', err.error);
+        if (err.error !== 'no-speech' && err.error !== 'aborted') {
+          console.warn('[AI Copilot Hands-Free] Speech error:', err.error);
+        }
         if (err.error === 'not-allowed') {
           this.stopHandsFreeVoice();
           this.appendMessage('AI Dost', 'Microphone permission allow karein taake hands-free aawaz chal sake.', false);
@@ -580,6 +648,7 @@ Rules:
             if (this.isHandsFreeVoiceActive && !this.isSpeakingTTS) {
               try {
                 this.recognition?.start();
+                this.updateVoiceStatus('ready');
               } catch (_) {}
             }
           }, 200);
@@ -607,14 +676,12 @@ Rules:
     }
 
     const micBtn = document.getElementById('ai-mic-btn');
-    const statusEl = document.getElementById('ai-voice-status');
-
     micBtn?.classList.remove('bg-rose-600', 'text-white', 'animate-pulse', 'ring-4', 'ring-rose-500/50', 'shadow-lg');
     micBtn?.classList.add('bg-slate-900', 'text-slate-300');
     micBtn?.setAttribute('title', 'Bolein (Speak in Roman Urdu - Hands-Free)');
 
-    statusEl?.classList.add('hidden');
-    statusEl?.classList.remove('flex');
+    this.updateVoiceStatus('hidden');
+    if (this.audio) this.audio.playChirp(false);
   }
 
   listenVoiceQuery() {
@@ -696,17 +763,26 @@ Rules:
       return;
     }
 
-    // ── Tier 1: Zero-Token LocalStorage Cache ──────────────────────────────
+    // ── Tier 1: Zero-Token LocalStorage Cache (Instant 0ms) ───────────────────
     if (this.responseCache[normalized] || this.responseCache[rawNormalized]) {
       const cached = this.responseCache[normalized] || this.responseCache[rawNormalized];
       console.log('[AI Copilot] Served from Tier 1 Cache (0 Tokens):', query);
-      this.processAIResponse(cached.reply, cached.action, '⚡ Smart Cache (0 Tokens)');
+      this.processAIResponse(cached.reply, cached.action, '⚡ Smart Cache (0ms)');
       return;
     }
 
-    // ── Tier 2: Google Gemini Flash API (Dual-Key with Failover) ───────────
+    // ── Tier 2: Instant 0-ms Offline Knowledge Engine (PRIORITY 1 FOR SPEED!) ─
+    // If the query matches any website topic, command, or greeting, answer in 0ms!
+    const offlineMatch = this.matchOfflineKnowledge(normalized, rawNormalized);
+    if (offlineMatch.isSpecificMatch) {
+      console.log('[AI Copilot] Instant NLU Match (0 Tokens, 0ms):', offlineMatch.reply);
+      this.processAIResponse(offlineMatch.reply, offlineMatch.action, '⚡ Instant NLU (0ms)');
+      return;
+    }
+
+    // ── Tier 3: Google Gemini Flash API (Fallback for Open-Ended Unknown Questions) ──
     const keyToUse = this.getActiveApiKey();
-    if (keyToUse) {
+    if (keyToUse && !this.failedKeys.has(keyToUse)) {
       try {
         const result = await this.queryGeminiAPI(query, keyToUse);
         if (result && result.reply) {
@@ -721,9 +797,10 @@ Rules:
         }
       } catch (err) {
         console.warn(`[AI Copilot] Gemini API Key ${this.activeKeyIndex} failed:`, err.message);
+        this.failedKeys.add(keyToUse);
         
-        // If Key 1 failed and Key 2 exists, switch to Key 2 and retry!
-        if (this.activeKeyIndex === 1 && this.secondaryApiKey) {
+        // If Key 1 failed, test Key 2 if available and not previously failed
+        if (this.activeKeyIndex === 1 && this.secondaryApiKey && !this.failedKeys.has(this.secondaryApiKey)) {
           console.log('[AI Copilot] Failing over to Secondary Presentation Key 2...');
           this.activeKeyIndex = 2;
           try {
@@ -733,25 +810,30 @@ Rules:
               return;
             }
           } catch (retryErr) {
+            this.failedKeys.add(this.secondaryApiKey);
             console.warn('[AI Copilot] Backup Key 2 also failed:', retryErr.message);
           }
         }
       }
     }
 
-    // ── Tier 3: Zero-Token Offline Roman Urdu Engine (Guaranteed Fallback) ─
-    console.log('[AI Copilot] Engaging Tier 3 Offline NLU Knowledge Engine...');
-    const offlineMatch = this.matchOfflineKnowledge(normalized, rawNormalized);
-    this.processAIResponse(offlineMatch.reply, offlineMatch.action, '🛡️ Offline AI Engine (0 Tokens)');
+    // ── Tier 4: Zero-Token Offline Fallback (Guaranteed Safe Response) ─────────
+    console.log('[AI Copilot] Engaging Tier 4 Offline Fallback (0ms)...');
+    this.processAIResponse(offlineMatch.reply, offlineMatch.action, '🛡️ Offline AI Engine (0ms)');
   }
 
   getActiveApiKey() {
-    if (this.activeKeyIndex === 1 && this.primaryApiKey) return this.primaryApiKey;
-    if (this.activeKeyIndex === 2 && this.secondaryApiKey) return this.secondaryApiKey;
-    return this.primaryApiKey || this.secondaryApiKey || null;
+    if (this.activeKeyIndex === 1 && this.primaryApiKey && !this.failedKeys.has(this.primaryApiKey)) return this.primaryApiKey;
+    if (this.activeKeyIndex === 2 && this.secondaryApiKey && !this.failedKeys.has(this.secondaryApiKey)) return this.secondaryApiKey;
+    if (this.primaryApiKey && !this.failedKeys.has(this.primaryApiKey)) return this.primaryApiKey;
+    if (this.secondaryApiKey && !this.failedKeys.has(this.secondaryApiKey)) return this.secondaryApiKey;
+    return null;
   }
 
   async queryGeminiAPI(prompt, apiKey) {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 2500); // 2.5s timeout prevents hanging
+
     // Using gemini-1.5-flash with ultra-compact tokens (max 150)
     const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
 
@@ -768,28 +850,35 @@ Rules:
       }
     };
 
-    const res = await fetch(url, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload)
-    });
+    try {
+      const res = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+        signal: controller.signal
+      });
+      clearTimeout(timeoutId);
 
-    if (!res.ok) {
-      throw new Error(`HTTP ${res.status}: ${res.statusText}`);
+      if (!res.ok) {
+        throw new Error(`HTTP ${res.status}: ${res.statusText}`);
+      }
+
+      const data = await res.json();
+      let text = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+
+      // Extract any [ACTION:command-id] tag
+      let action = null;
+      const actionMatch = text.match(/\[ACTION:([^\]]+)\]/i);
+      if (actionMatch) {
+        action = actionMatch[1].trim();
+        text = text.replace(/\[ACTION:[^\]]+\]/gi, '').trim();
+      }
+
+      return { reply: text, action };
+    } catch (err) {
+      clearTimeout(timeoutId);
+      throw err;
     }
-
-    const data = await res.json();
-    let text = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
-
-    // Extract any [ACTION:command-id] tag
-    let action = null;
-    const actionMatch = text.match(/\[ACTION:([^\]]+)\]/i);
-    if (actionMatch) {
-      action = actionMatch[1].trim();
-      text = text.replace(/\[ACTION:[^\]]+\]/gi, '').trim();
-    }
-
-    return { reply: text, action };
   }
 
   matchOfflineKnowledge(normalizedQuery, rawQuery = '') {
@@ -816,13 +905,14 @@ Rules:
     }
 
     if (bestMatch) {
-      return { reply: bestMatch.reply, action: bestMatch.action };
+      return { reply: bestMatch.reply, action: bestMatch.action, isSpecificMatch: true };
     }
 
     // Default polite Roman Urdu response
     return {
       reply: 'Ji bhai, PrivacyGuard aapko websites ke deceptive dark patterns se bachata hai aur voice control ke zariye mukammal privacy control deta hai. Aap "trackers block kardo", "risk check karo", ya "cookie simulator samjhao" keh sakte hain.',
-      action: null
+      action: null,
+      isSpecificMatch: false
     };
   }
 
