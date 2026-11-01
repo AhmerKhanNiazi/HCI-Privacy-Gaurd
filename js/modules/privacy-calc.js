@@ -46,24 +46,24 @@ export class PrivacyRiskCalculator {
               </span>
             </div>
             <h2 class="text-xl md:text-2xl font-bold tracking-tight text-white mt-1">
-              Dynamic Privacy Risk Score Calculator
+              Live Privacy Risk Meter (0 to 100)
             </h2>
             <p class="text-xs md:text-sm text-slate-400 mt-0.5">
-              Simulate sensor permissions and data retention horizons to evaluate real-time surveillance exposure.
+              Turn permissions on and off below to see how dangerous apps become when they spy on your device sensors.
             </p>
           </div>
 
           <!-- Quick Presets -->
           <div class="flex flex-wrap items-center gap-2">
-            <span class="text-xs text-slate-500 font-mono">Presets:</span>
-            <button id="preset-strict-btn" class="px-2.5 py-1 text-xs font-mono bg-emerald-950/80 hover:bg-emerald-900 text-emerald-300 border border-emerald-800/60 rounded-lg transition">
-              🛡️ Privacy-by-Default
+            <span class="text-xs text-slate-500 font-mono">Quick Presets:</span>
+            <button id="preset-strict-btn" class="px-2.5 py-1 text-xs font-mono bg-emerald-950/80 hover:bg-emerald-900 text-emerald-300 border border-emerald-800/60 rounded-lg transition" title="100% Safe (0/100 Risk)">
+              🛡️ Safe (0/100)
             </button>
-            <button id="preset-moderate-btn" class="px-2.5 py-1 text-xs font-mono bg-amber-950/80 hover:bg-amber-900 text-amber-300 border border-amber-800/60 rounded-lg transition">
-              ⚖️ Balanced
+            <button id="preset-moderate-btn" class="px-2.5 py-1 text-xs font-mono bg-amber-950/80 hover:bg-amber-900 text-amber-300 border border-amber-800/60 rounded-lg transition" title="Average App (45/100 Risk)">
+              ⚖️ Balanced (45/100)
             </button>
-            <button id="preset-social-btn" class="px-2.5 py-1 text-xs font-mono bg-rose-950/80 hover:bg-rose-900 text-rose-300 border border-rose-800/60 rounded-lg transition">
-              🚨 Predatory Social Media
+            <button id="preset-social-btn" class="px-2.5 py-1 text-xs font-mono bg-rose-950/80 hover:bg-rose-900 text-rose-300 border border-rose-800/60 rounded-lg transition" title="Dangerous App (100/100 Risk)">
+              🚨 Maximum Danger (100/100)
             </button>
           </div>
         </div>
@@ -76,9 +76,9 @@ export class PrivacyRiskCalculator {
             <div class="flex items-center justify-between pb-2 border-b border-slate-800">
               <h3 class="text-sm md:text-base font-bold text-white flex items-center gap-2">
                 <svg class="w-4 h-4 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"/></svg>
-                Permission Vector Configuration
+                Phone & Browser Permissions (Click toggles to test risk)
               </h3>
-              <span class="text-xs font-mono text-slate-500">Live Sensitivity Inputs</span>
+              <span class="text-xs font-mono text-slate-500">Live Sensors</span>
             </div>
 
             <!-- Permission Toggles List -->
@@ -88,11 +88,11 @@ export class PrivacyRiskCalculator {
               <div class="p-3 bg-slate-900/80 rounded-xl border border-slate-800 flex items-center justify-between hover:border-slate-700 transition">
                 <div class="pr-3">
                   <div class="flex items-center gap-2">
-                    <span class="text-xs md:text-sm font-semibold text-slate-200">Biometric & Facial Emotion Mesh</span>
-                    <span class="px-1.5 py-0.2 text-[10px] font-mono bg-rose-950 text-rose-400 border border-rose-800 rounded">+30 Pts</span>
+                    <span class="text-xs md:text-sm font-semibold text-slate-200">📸 Camera & Face Scanning</span>
+                    <span class="px-1.5 py-0.2 text-[10px] font-mono bg-rose-950 text-rose-400 border border-rose-800 rounded">+30 Danger Pts</span>
                   </div>
                   <p class="text-[11px] text-slate-400 mt-0.5 leading-tight">
-                    Continuous facial landmark detection and emotional state classification via front camera.
+                    Secretly scans your face, facial expressions, and emotional state through the camera.
                   </p>
                 </div>
                 <label class="cyber-toggle cyber-toggle-danger shrink-0">
@@ -105,11 +105,11 @@ export class PrivacyRiskCalculator {
               <div class="p-3 bg-slate-900/80 rounded-xl border border-slate-800 flex items-center justify-between hover:border-slate-700 transition">
                 <div class="pr-3">
                   <div class="flex items-center gap-2">
-                    <span class="text-xs md:text-sm font-semibold text-slate-200">High-Precision GPS & WiFi Triangulation</span>
-                    <span class="px-1.5 py-0.2 text-[10px] font-mono bg-amber-950 text-amber-400 border border-amber-800 rounded">+25 Pts</span>
+                    <span class="text-xs md:text-sm font-semibold text-slate-200">📍 Exact GPS Location Tracking</span>
+                    <span class="px-1.5 py-0.2 text-[10px] font-mono bg-amber-950 text-amber-400 border border-amber-800 rounded">+25 Danger Pts</span>
                   </div>
                   <p class="text-[11px] text-slate-400 mt-0.5 leading-tight">
-                    Sub-meter physical location telemetry collected continuously in background.
+                    Tracks everywhere you go 24/7 in the background, pinpointing your exact house and workplace.
                   </p>
                 </div>
                 <label class="cyber-toggle cyber-toggle-danger shrink-0">
@@ -122,11 +122,11 @@ export class PrivacyRiskCalculator {
               <div class="p-3 bg-slate-900/80 rounded-xl border border-slate-800 flex items-center justify-between hover:border-slate-700 transition">
                 <div class="pr-3">
                   <div class="flex items-center gap-2">
-                    <span class="text-xs md:text-sm font-semibold text-slate-200">Ambient Microphone Stream</span>
-                    <span class="px-1.5 py-0.2 text-[10px] font-mono bg-amber-950 text-amber-400 border border-amber-800 rounded">+20 Pts</span>
+                    <span class="text-xs md:text-sm font-semibold text-slate-200">🎤 Background Microphone Listening</span>
+                    <span class="px-1.5 py-0.2 text-[10px] font-mono bg-amber-950 text-amber-400 border border-amber-800 rounded">+20 Danger Pts</span>
                   </div>
                   <p class="text-[11px] text-slate-400 mt-0.5 leading-tight">
-                    Passive listening for ultrasonic beacons and acoustic environment classification.
+                    Secretly listens to your room, conversations, and TV in the background to show creepy targeted ads.
                   </p>
                 </div>
                 <label class="cyber-toggle cyber-toggle-danger shrink-0">
@@ -139,11 +139,11 @@ export class PrivacyRiskCalculator {
               <div class="p-3 bg-slate-900/80 rounded-xl border border-slate-800 flex items-center justify-between hover:border-slate-700 transition">
                 <div class="pr-3">
                   <div class="flex items-center gap-2">
-                    <span class="text-xs md:text-sm font-semibold text-slate-200">3rd-Party Brokerage Syndication</span>
-                    <span class="px-1.5 py-0.2 text-[10px] font-mono bg-amber-950 text-amber-400 border border-amber-800 rounded">+20 Pts</span>
+                    <span class="text-xs md:text-sm font-semibold text-slate-200">💰 Selling Personal Data to Brokers</span>
+                    <span class="px-1.5 py-0.2 text-[10px] font-mono bg-amber-950 text-amber-400 border border-amber-800 rounded">+20 Danger Pts</span>
                   </div>
                   <p class="text-[11px] text-slate-400 mt-0.5 leading-tight">
-                    Selling behavioral profiles to credit scoring agencies, insurers, and advertising conglomerates.
+                    Sells what you search, buy, and view to third-party data broker companies and credit agencies.
                   </p>
                 </div>
                 <label class="cyber-toggle cyber-toggle-danger shrink-0">
@@ -156,11 +156,11 @@ export class PrivacyRiskCalculator {
               <div class="p-3 bg-slate-900/80 rounded-xl border border-slate-800 flex items-center justify-between hover:border-slate-700 transition">
                 <div class="pr-3">
                   <div class="flex items-center gap-2">
-                    <span class="text-xs md:text-sm font-semibold text-slate-200">Browser Canvas Fingerprinting</span>
-                    <span class="px-1.5 py-0.2 text-[10px] font-mono bg-slate-800 text-slate-300 border border-slate-700 rounded">+15 Pts</span>
+                    <span class="text-xs md:text-sm font-semibold text-slate-200">🔍 Secret Device Fingerprint ID</span>
+                    <span class="px-1.5 py-0.2 text-[10px] font-mono bg-slate-800 text-slate-300 border border-slate-700 rounded">+15 Danger Pts</span>
                   </div>
                   <p class="text-[11px] text-slate-400 mt-0.5 leading-tight">
-                    Persistent tracking across unrelated domains via hardware rendering artifacts.
+                    Creates an invisible fingerprint of your laptop/phone so you are identified across every website you open.
                   </p>
                 </div>
                 <label class="cyber-toggle cyber-toggle-danger shrink-0">
@@ -173,8 +173,8 @@ export class PrivacyRiskCalculator {
               <div class="p-3.5 bg-slate-900/80 rounded-xl border border-slate-800 space-y-2">
                 <div class="flex items-center justify-between">
                   <div>
-                    <span class="text-xs md:text-sm font-semibold text-slate-200">Telemetry Retention Window</span>
-                    <p class="text-[11px] text-slate-400">Duration server stores logs before cryptographic erasure.</p>
+                    <span class="text-xs md:text-sm font-semibold text-slate-200">⏳ How Long Companies Keep Your Data</span>
+                    <p class="text-[11px] text-slate-400">How long servers keep your personal records before deleting them.</p>
                   </div>
                   <span id="retention-label" class="px-2 py-0.5 text-xs font-mono font-bold bg-cyan-950 text-cyan-300 border border-cyan-800 rounded">
                     30 Days

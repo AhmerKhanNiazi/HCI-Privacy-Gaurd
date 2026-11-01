@@ -22,6 +22,10 @@ export class RomanUrduAICopilot {
     this.isOpen = false;
     this.isListening = false;
     this.isSpeaking = false;
+    this.isHandsFreeVoiceActive = false;
+    this.isSpeakingTTS = false;
+    this.recognition = null;
+    this.recRestartTimer = null;
 
     // Keys stored securely in localStorage (never committed to GitHub)
     this.primaryApiKey = localStorage.getItem('privacyguard_gemini_key_1') || '';
@@ -44,7 +48,7 @@ Rules:
 - Ethical AI: Client-side regex PII masking (medical records, secret API keys), model training opt-out, differential privacy.
 - Accessibility: WCAG 2.1 AAA, hands-free voice, single-key switch access (V, P, C, F, I, M).`;
 
-    // Local Comprehensive Knowledge Base for Zero-Token Offline Fallback
+    // Comprehensive Knowledge Base for Zero-Token Offline Fallback & Autonomous Execution
     this.offlineKnowledgeBase = [
       // 1. PAGE SCROLLING & NAVIGATION ACTIONS
       {
@@ -58,46 +62,46 @@ Rules:
         reply: 'Ji bhai, page ko upar scroll kardiya gaya hai.'
       },
       {
-        patterns: ['scroll top', 'top pe jao', 'shuru me jao', 'top karo', 'header me jao'],
+        patterns: ['scroll top', 'top pe jao', 'shuru me jao', 'top karo', 'header me jao', 'start me jao', 'top'],
         action: 'scroll-top',
         reply: 'Ji bhai, website ke bilkul top (header) par scroll kardiya gaya hai.'
       },
       {
-        patterns: ['scroll bottom', 'footer me jao', 'aakhir me jao', 'bottom karo'],
+        patterns: ['scroll bottom', 'footer me jao', 'aakhir me jao', 'bottom karo', 'end me jao', 'bottom'],
         action: 'scroll-bottom',
         reply: 'Ji bhai, website ke aakhir (footer) tak scroll kardiya gaya hai.'
       },
 
       // 2. PRIVACY DEFENSE & THREAT SCAN
       {
-        patterns: ['tracker', 'block', 'rok', 'band kar', 'protect', 'shield', 'trackers roko'],
+        patterns: ['tracker', 'block', 'rok', 'band kar', 'protect', 'shield', 'trackers roko', 'hifazat'],
         action: 'block-trackers',
         reply: 'Ji bhai, maine tamam 427 ad trackers block kardiye hain. Ab websites aapka data bina ijazat ke nahi le sakeengi, aur Privacy-by-Default active hai.'
       },
       {
-        patterns: ['scan', 'audit', 'check kar', 'inspection', 'data leak', 'scan chalao'],
+        patterns: ['scan', 'audit', 'check kar', 'inspection', 'data leak', 'scan chalao', 'check'],
         action: 'start-audit',
         reply: 'Ji bhai, privacy audit shuru kardi gayi hai. 14 security vectors live scan horahay hain, aap Inspector Drawer mein telemetry dekh sakte hain.'
       },
       {
-        patterns: ['fast scan', '60x', 'tez scan'],
+        patterns: ['fast scan', '60x', 'tez scan', 'jaldi scan'],
         action: 'fast-scan',
         reply: 'Ji bhai, 60x speed par fast-forward privacy audit run kardi gayi hai!'
       },
 
       // 3. COOKIE SIMULATOR & DARK PATTERNS
       {
-        patterns: ['trap me phanso', 'fall in trap', 'accept all', 'trap test', 'phanso', 'trap trigger'],
+        patterns: ['trap me phanso', 'fall in trap', 'accept all', 'trap test', 'phanso', 'trap trigger', 'trap'],
         action: 'sim-accept-trap',
         reply: 'Deceptive cookie trap trigger hogaya hai! Dekhein kaise 427 ad trackers ne user ka data bina poori ijazat ke capture karliya.'
       },
       {
-        patterns: ['reject all', 'reject karo', '1-click reject', 'ethical reject', 'saaf reject'],
+        patterns: ['reject all', 'reject karo', '1-click reject', 'ethical reject', 'saaf reject', 'reject'],
         action: 'sim-reject-ethical',
         reply: 'Ethical reject trigger kardiya gaya hai. Tamam non-essential advertising trackers ko 1 click mein reject kardiya gaya hai.'
       },
       {
-        patterns: ['roach motel', 'settings kholo', 'preferences', 'sliders', 'option dikhao'],
+        patterns: ['roach motel', 'settings kholo', 'preferences', 'sliders', 'option dikhao', 'roach'],
         action: 'sim-open-settings',
         reply: 'Roach Motel settings sliders khol diye gaye hain. Deceptive design mein user ko 427 vendors ko alag alag uncheck karna padta hai.'
       },
@@ -107,100 +111,172 @@ Rules:
         reply: 'Confirmshaming pattern trigger kardiya gaya hai: "No thanks, I hate privacy" jaisi emotional guilt line samne aagayi hai.'
       },
       {
-        patterns: ['reset simulator', 'simulator reset', 'shuru jesa karo', 'clear simulator', 'reset', 'clear'],
+        patterns: ['reset simulator', 'simulator reset', 'shuru jesa karo', 'clear simulator', 'reset', 'clear', 'saaf karo'],
         action: 'sim-reset',
-        reply: 'Cookie Simulator ko reset kardiya gaya hai.'
+        reply: 'Cookie Simulator ko reset kardiya gaya hai, sab kuch shuru ki halat mein aagaya hai.'
       },
       {
-        patterns: ['cookie', 'dhoka', 'banner', 'simulator samjhao'],
+        patterns: ['cookie', 'dhoka', 'banner', 'simulator samjhao', 'cookie simulator kya hai'],
         action: 'audit-cookies',
-        reply: 'Yeh Cookie Simulator hai! Yahan lal box dikhata hai ke kaise websites Accept All ka button bada bana kar 427 trackers daalti hain, jabke hara box 1-click ethical reject deta hai.'
+        reply: 'Yeh Cookie Simulator hai! Lal box dikhata hai ke kaise sneaky websites "Accept All" ka bada button bana kar 427 trackers daalti hain, jabke hara box 1-click ethical reject deta hai.'
+      },
+      {
+        patterns: ['dark pattern kya hai', 'dark pattern kya hota hai', 'deceptive pattern', 'dhoka kya hai'],
+        action: null,
+        reply: 'Dark patterns aisi chalaki wale design hote hain jo user ko dhoka de kar unka personal data ya paise chheen lete hain. Harry Brignull ne inke 12 patterns identify kiye hain.'
+      },
+      {
+        patterns: ['roach motel kya hai', 'roach motel kya hota hai', 'roach motel samjhao'],
+        action: 'sim-open-settings',
+        reply: 'Roach Motel aisi trap hoti hai jisme dakhil hona asan hota hai magar nikalna intehai mushkil. Jaise 427 ad companies ko band karne ke liye 427 bar alag alag click karna pade.'
+      },
+      {
+        patterns: ['confirmshaming kya hai', 'confirmshaming kya hoti hai', 'guilt tripping'],
+        action: 'sim-confirmshame',
+        reply: 'Confirmshaming ka matlab hai user ko sharminda karna ya emotional guilt dena, jaise "Nahi mujhe discount nahi chahiye kyunke mujhe paise zaya karna pasand hai".'
       },
 
       // 4. PRIVACY RISK METER
       {
-        patterns: ['strict preset', 'safe preset', '0 risk', '0 score', 'khatra khatam karo'],
+        patterns: ['strict preset', 'safe preset', '0 risk', '0 score', 'khatra khatam karo', 'strict'],
         action: 'calc-preset-strict',
-        reply: 'Privacy risk score ko 0/100 par lock kardiya gaya hai. Tamam dangerous sensors off kardiye gaye hain.'
+        reply: 'Privacy risk score ko 0/100 par lock kardiya gaya hai. Tamam dangerous sensors off kardiye gaye hain, aap 100% safe hain.'
       },
       {
-        patterns: ['social preset', 'danger preset', '100 risk', '100 score', 'khatra barhao'],
+        patterns: ['social preset', 'danger preset', '100 risk', '100 score', 'khatra barhao', 'social'],
         action: 'calc-preset-social',
         reply: 'Predatory social media preset apply kardiya gaya hai! Risk score 100/100 maximum danger zone mein aagaya hai.'
       },
       {
-        patterns: ['biometric', 'camera', 'chehra', 'face profiling'],
+        patterns: ['biometric', 'camera', 'chehra', 'face profiling', 'camra'],
         action: 'calc-toggle-biometric',
         reply: 'Biometric & camera profiling sensor toggle kardiya gaya hai (+30 risk points).'
       },
       {
-        patterns: ['location', 'gps', 'jaga', 'triangulation'],
+        patterns: ['location', 'gps', 'jaga', 'triangulation', 'location sensor'],
         action: 'calc-toggle-location',
         reply: 'High-precision GPS location permission toggle kardi gayi hai (+25 risk points).'
       },
       {
-        patterns: ['audio sensor', 'mic sensor', 'awaz sensor'],
+        patterns: ['audio sensor', 'mic sensor', 'awaz sensor', 'audio', 'mic'],
         action: 'calc-toggle-audio',
         reply: 'Continuous microphone capture vector toggle kardiya gaya hai (+20 risk points).'
       },
       {
-        patterns: ['risk', 'score', 'meter', 'khatra', 'risk check karo'],
+        patterns: ['data broker', 'broker', 'data bechna', 'selling data'],
+        action: 'calc-toggle-brokerage',
+        reply: '3rd-Party Data Brokerage toggle kardiya gaya hai (+20 risk points).'
+      },
+      {
+        patterns: ['fingerprint', 'canvas fingerprint', 'secret id'],
+        action: 'calc-toggle-fingerprint',
+        reply: 'Browser Canvas Fingerprinting sensor toggle kardiya gaya hai (+15 risk points).'
+      },
+      {
+        patterns: ['risk', 'score', 'meter', 'khatra', 'risk check karo', 'risk calculator kya hai'],
         action: 'show-risk',
         reply: 'Yeh Privacy Risk Meter hai! Jab aap apps ko camera, location ya continuous mic ki ijazat dete hain to aapka score 100/100 danger zone mein chala jata hai.'
       },
 
       // 5. ETHICAL AI & PII MASKING
       {
-        patterns: ['medical sample', 'doctor prompt', 'patient sample', 'health prompt'],
+        patterns: ['medical sample', 'doctor prompt', 'patient sample', 'health prompt', 'medical'],
         action: 'ai-sample-medical',
-        reply: 'Sensitive medical PII prompt load kardiya gaya hai. Dekhein kaise system ne doctor name aur diagnosis mask kardiya.'
+        reply: 'Sensitive medical PII prompt load kardiya gaya hai. Dekhein kaise system ne doctor name aur diagnosis client-side par hi mask kardiya.'
       },
       {
-        patterns: ['password sample', 'secret key', 'api key', 'token sample'],
+        patterns: ['password sample', 'secret key', 'api key', 'token sample', 'key sample', 'password'],
         action: 'ai-sample-key',
-        reply: 'Secret API key sample prompt load kardiya gaya hai. Private credentials client-side par hi redact hogaye.'
+        reply: 'Secret API key sample prompt load kardiya gaya hai. Private credentials server par jane se pehle hi redact hogaye.'
       },
       {
-        patterns: ['ai', 'chat', 'mask', 'pii', 'ethical ai'],
+        patterns: ['ai', 'chat', 'mask', 'pii', 'ethical ai', 'ai consent matrix kya hai'],
         action: 'show-consent',
-        reply: 'Ethical AI Matrix mein aap jo bhi prompt likhte hain, hamara system usme se passwords aur medical PII ko browser ke andar hi mask (redact) kardeta hai.'
+        reply: 'Ethical AI Matrix mein aap jo bhi prompt likhte hain, hamara system usme se passwords aur medical PII ko browser ke andar hi mask (redact) kardeta hai taake AI training me private data na jaye.'
+      },
+      {
+        patterns: ['llm training ingestion kya hai', 'model training kya hai', 'ai training'],
+        action: 'show-consent',
+        reply: 'LLM Training Ingestion ka matlab hai ke AI companies aapki chats ko store karke future AI models ko train karti hain. Hamare system me aap ise 1-click se band kar sakte hain.'
+      },
+      {
+        patterns: ['human reviewers kya hai', 'insan chat parhte hain', 'human annotation'],
+        action: 'show-consent',
+        reply: 'Bohat si AI companies teesre darye ke human workers ko aapki chat parhne ki ijazat deti hain. Is toggle ko off rakhne se koi bhi insan aapki chat nahi padh sakta.'
+      },
+      {
+        patterns: ['differential privacy kya hai', 'differential privacy samjhao'],
+        action: 'show-consent',
+        reply: 'Differential Privacy ek aisi mathematical technique hai jisme data me halka sa random noise mila diya jata hai taake data ka pattern samajh aye magar kisi fard ki identity leak na ho.'
+      },
+      {
+        patterns: ['ephemeral memory kya hai', 'auto delete kya hai'],
+        action: 'show-consent',
+        reply: 'Ephemeral Memory ka matlab hai ke jaise hi aap chat ya tab band karein, aapka tamam data cache aur memory se foran mita diya jaye aur server par zero logs bachein.'
       },
 
-      // 6. ACCESSIBILITY & DRAWER
+      // 6. ACCESSIBILITY & DRAWER & HELP
       {
-        patterns: ['font', 'text bara', 'bara karo', 'zoom text', 'parhne me masla'],
+        patterns: ['font', 'text bara', 'bara karo', 'zoom text', 'parhne me masla', 'font size'],
         action: 'increase-font',
-        reply: 'Ji bhai, font size 150% tak bada kardiya gaya hai taake low-vision users aasaani se padh sakein.'
+        reply: 'Ji bhai, font size 150% tak bada kardiya gaya hai taake kamzor nazar wale aasaani se padh sakein.'
       },
       {
-        patterns: ['contrast', 'andhera', 'black and white', 'aaa', 'high contrast'],
+        patterns: ['contrast', 'andhera', 'black and white', 'aaa', 'high contrast', 'contrast badlo'],
         action: 'high-contrast',
         reply: 'WCAG AAA High Contrast mode active kardiya gaya hai, 7:1+ contrast ratio ke sath.'
       },
       {
-        patterns: ['inspector', 'drawer', 'telemetry', 'inspector kholo'],
+        patterns: ['inspector', 'drawer', 'telemetry', 'inspector kholo', 'drawer kholo'],
         action: 'open-inspector',
         reply: 'Academic Inspector Drawer khol diya gaya hai, Contextual Integrity telemetry live show horahi hai.'
       },
       {
-        patterns: ['tour', 'sikhao', 'guide', 'samjhao', 'demo', 'chalana'],
+        patterns: ['tour', 'sikhao', 'guide', 'samjhao', 'demo', 'chalana', 'tour chalao'],
         action: 'guided-tour',
         reply: 'Zaroor bhai! Yeh 30-Second Guided Tour shuru horaha hai, step by step dekhein ke har feature kaise kaam karta hai.'
       },
       {
-        patterns: ['close', 'band karo', 'hatao', 'chup'],
+        patterns: ['close', 'band karo', 'hatao', 'chup', 'dialogue band karo'],
         action: 'close-overlays',
         reply: 'Ji bhai, open overlays aur dialogues band kardiye gaye hain.'
       },
       {
-        patterns: ['tum kaun ho', 'intro', 'kya kar sakte ho', 'kaun ho', 'naam'],
-        action: null,
-        reply: 'Main PrivacyGuard ka Roman Urdu AI Copilot hoon! Aap mujhse is website ke kisi bhi feature ke baare mein pooch sakte hain ya bol kar poori web chala sakte hain.'
+        patterns: ['stop voice', 'mic band', 'chup', 'shant', 'stop mic', 'mic band karo'],
+        action: 'stop-voice-handsfree',
+        reply: 'Ji bhai, hands-free mic band kardiya gaya hai. Jab chahein mic button daba kar dubara baat kar sakte hain.'
       },
       {
-        patterns: ['viva', 'examiner', 'theory', 'heuristics', 'dossier'],
+        patterns: ['help', 'madad', 'shortcuts', 'buttons', 'key help'],
+        action: 'help',
+        reply: 'Keyboard shortcuts help modal open kardiya gaya hai. Single key: V for Voice, C for Contrast, F for Font, I for Inspector.'
+      },
+
+      // 7. ACADEMIC THEORY & VIVA DOSSIER
+      {
+        patterns: ['viva', 'examiner', 'theory', 'heuristics', 'dossier', 'viva ki tayari', 'dossier kholo'],
         action: 'open-dossier',
         reply: 'Examiner Viva Dossier open kardiya gaya hai, jisme Harry Brignull ke dark patterns, Cavoukian ke 7 PbD principles aur viva questions shamil hain.'
+      },
+      {
+        patterns: ['privacy by design kya hai', 'pbd kya hai', 'ann cavoukian'],
+        action: 'open-dossier',
+        reply: 'Privacy by Design Dr. Ann Cavoukian ne banaya tha. Iska usool hai ke privacy website me baad me jor-tor karke nahi, balki shuru se by-default build honi chahiye.'
+      },
+      {
+        patterns: ['contextual integrity kya hai', 'helen nissenbaum'],
+        action: 'open-dossier',
+        reply: 'Helen Nissenbaum ki Contextual Integrity theory kehti hai ke data share karna ghalat nahi, balki context ke mutabiq hona chahiye. Jaise doctor ko bimari batana sahi hai magar bank ko bechna ghalat.'
+      },
+      {
+        patterns: ['ye website kis liye hai', 'ye project kya hai', 'privacyguard kya hai', 'website samjhao', 'intro'],
+        action: null,
+        reply: 'PrivacyGuard UX ek interactive research lab hai jo dikhati hai ke kaise websites deceptive dark patterns se users ko dhoka deti hain, aur kaise Privacy-by-Design aur voice accessibility se user mukammal tor par mehfooz reh sakta hai.'
+      },
+      {
+        patterns: ['tum kaun ho', 'naam kya hai', 'kya kar sakte ho', 'kaun ho'],
+        action: null,
+        reply: 'Main PrivacyGuard ka Roman Urdu AI Copilot hoon! Main hands-free aawaz se poori website chala sakta hoon aur privacy ke har feature ki Roman Urdu mein wazahat kar sakta hoon.'
       }
     ];
 
@@ -431,6 +507,7 @@ Rules:
 
   closeHUD() {
     this.isOpen = false;
+    this.stopHandsFreeVoice();
     this.hudElement?.classList.add('hidden');
     this.hudElement?.classList.remove('flex');
     if (this.speechSynthesis && this.speechSynthesis.speaking) {
@@ -438,55 +515,190 @@ Rules:
     }
   }
 
-  listenVoiceQuery() {
+  toggleHandsFreeVoice() {
+    if (this.isHandsFreeVoiceActive) {
+      this.stopHandsFreeVoice();
+    } else {
+      this.startHandsFreeVoice(true);
+    }
+  }
+
+  startHandsFreeVoice(showWelcomeAnnounce = true) {
     const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (!SpeechRec) {
       this.appendMessage('AI Dost', 'Aapka browser Speech Recognition support nahi karta. Barah-e-karam text likhein.', false);
       return;
     }
 
-    const rec = new SpeechRec();
-    rec.continuous = false;
-    rec.interimResults = false;
-    // Set to ur-PK or en-US (both handle Roman Urdu phonetics well in modern Chrome)
-    rec.lang = 'en-US';
-
+    this.isHandsFreeVoiceActive = true;
+    const micBtn = document.getElementById('ai-mic-btn');
     const statusEl = document.getElementById('ai-voice-status');
+
+    // Visual indicator: glowing pulsating mic button
+    micBtn?.classList.add('bg-rose-600', 'text-white', 'animate-pulse', 'ring-4', 'ring-rose-500/50', 'shadow-lg');
+    micBtn?.classList.remove('bg-slate-900', 'text-slate-300');
+    micBtn?.setAttribute('title', 'Hands-Free Voice Active (Click to Stop)');
+
     statusEl?.classList.remove('hidden');
     statusEl?.classList.add('flex');
+    const statusText = statusEl?.querySelector('span span:last-child');
+    if (statusText) statusText.textContent = 'Continuous Hands-Free: Bolein (No button click needed!)';
 
-    rec.onresult = (e) => {
-      const transcript = e.results[0][0].transcript;
-      statusEl?.classList.add('hidden');
-      statusEl?.classList.remove('flex');
-      if (transcript) {
-        this.handleUserQuery(transcript);
-      }
-    };
+    if (showWelcomeAnnounce && this.accessibility) {
+      this.accessibility.announcePolite('Continuous Hands-Free voice recognition activated.');
+    }
 
-    rec.onerror = () => {
-      statusEl?.classList.add('hidden');
-      statusEl?.classList.remove('flex');
-    };
+    if (!this.recognition) {
+      const rec = new SpeechRec();
+      rec.continuous = true;
+      rec.interimResults = false;
+      rec.lang = 'en-US';
 
-    rec.onend = () => {
-      statusEl?.classList.add('hidden');
-      statusEl?.classList.remove('flex');
-    };
+      rec.onresult = (e) => {
+        if (this.isSpeakingTTS) return; // Ignore audio feedback loop
+        const lastIdx = e.results.length - 1;
+        const transcript = e.results[lastIdx][0]?.transcript?.trim();
+        if (transcript) {
+          console.log('[AI Copilot Hands-Free] Captured transcript:', transcript);
+          this.handleUserQuery(transcript);
+        }
+      };
+
+      rec.onerror = (err) => {
+        console.warn('[AI Copilot Hands-Free] Speech error:', err.error);
+        if (err.error === 'not-allowed') {
+          this.stopHandsFreeVoice();
+          this.appendMessage('AI Dost', 'Microphone permission allow karein taake hands-free aawaz chal sake.', false);
+        }
+      };
+
+      rec.onend = () => {
+        // Auto-reconnect if hands-free is still active and TTS is not talking
+        if (this.isHandsFreeVoiceActive && !this.isSpeakingTTS) {
+          clearTimeout(this.recRestartTimer);
+          this.recRestartTimer = setTimeout(() => {
+            if (this.isHandsFreeVoiceActive && !this.isSpeakingTTS) {
+              try {
+                this.recognition?.start();
+              } catch (_) {}
+            }
+          }, 200);
+        }
+      };
+
+      this.recognition = rec;
+    }
 
     try {
-      rec.start();
-    } catch (_) {}
+      this.recognition.start();
+    } catch (_) {
+      // Already running
+    }
+  }
+
+  stopHandsFreeVoice() {
+    this.isHandsFreeVoiceActive = false;
+    clearTimeout(this.recRestartTimer);
+
+    if (this.recognition) {
+      try {
+        this.recognition.stop();
+      } catch (_) {}
+    }
+
+    const micBtn = document.getElementById('ai-mic-btn');
+    const statusEl = document.getElementById('ai-voice-status');
+
+    micBtn?.classList.remove('bg-rose-600', 'text-white', 'animate-pulse', 'ring-4', 'ring-rose-500/50', 'shadow-lg');
+    micBtn?.classList.add('bg-slate-900', 'text-slate-300');
+    micBtn?.setAttribute('title', 'Bolein (Speak in Roman Urdu - Hands-Free)');
+
+    statusEl?.classList.add('hidden');
+    statusEl?.classList.remove('flex');
+  }
+
+  listenVoiceQuery() {
+    this.toggleHandsFreeVoice();
+  }
+
+  normalizePhoneticQuery(query) {
+    if (!query) return '';
+    let text = query.toLowerCase().trim();
+
+    // Remove punctuation
+    text = text.replace(/[.,?!:;'"(){}\-_/\\]/g, ' ');
+    text = text.replace(/\s+/g, ' ').trim();
+
+    // Sound-alike replacements for common noise, typos, and Roman Urdu accents
+    const phoneticReplacements = [
+      // Scrolling variants
+      [/\b(skrol|scrol|skroll|screel|call|karol|khiskana|saraka)\b/g, 'scroll'],
+      [/\b(nichy|neechy|nichay|nechay|niche|neche)\b/g, 'neeche'],
+      [/\b(oopar|uper|oopur|ooper)\b/g, 'upar'],
+      [/\b(shuru|strt|agaz)\b/g, 'top'],
+      [/\b(akhir|aakheer|akheer|end)\b/g, 'bottom'],
+
+      // Trackers & Blocking variants
+      [/\b(traker|trakers|treker|tractor|traiker|trackar|record|taraker)\b/g, 'tracker'],
+      [/\b(bluk|blok|bloc|rok|roko|ruk|band|bnd)\b/g, 'block'],
+      [/\b(hifazat|bachao|security|safe)\b/g, 'protect'],
+
+      // Scan & Audit variants
+      [/\b(skan|scane|skane|audit|odit|adit|cheq|chek|inspect)\b/g, 'scan'],
+      [/\b(tez|fast|jaldi|60x)\b/g, 'fast'],
+
+      // Cookies & Simulator variants
+      [/\b(coki|cokies|cooki|kuki|koki|kukies|cookie)\b/g, 'cookie'],
+      [/\b(dhoka|dhoke|fraud|sneaky|trick|farad)\b/g, 'dark pattern'],
+      [/\b(trap|phans|phanso|fas|faso|gir)\b/g, 'trap'],
+      [/\b(asept|acept|accept|iqbal|manzoor)\b/g, 'accept'],
+      [/\b(rijact|rejct|reject|inkar|na|radd)\b/g, 'reject'],
+      [/\b(roach|motel|slider|sliders|preferences|setting|settings)\b/g, 'roach motel'],
+      [/\b(shame|guilt|shaming|confirmshem)\b/g, 'confirmshame'],
+
+      // Risk Meter & Sensors variants
+      [/\b(risq|risk|khatra|khatre|danger|nuksan|score|meter)\b/g, 'risk'],
+      [/\b(bayometric|biometric|camra|camera|chehra|face)\b/g, 'biometric'],
+      [/\b(loction|lacation|gps|jaga|muqam|triangulation)\b/g, 'location'],
+      [/\b(mic|mike|awaz|aawaz|audio|sound|recording)\b/g, 'audio'],
+      [/\b(broker|brokers|bechna|sale|brokerage)\b/g, 'broker'],
+      [/\b(fingerprint|canvas|device id)\b/g, 'fingerprint'],
+      [/\b(strict|mehfooz|zero risk|0 risk)\b/g, 'strict'],
+      [/\b(social|khatarnak|maximum risk|100 risk)\b/g, 'social'],
+
+      // AI Consent & PII variants
+      [/\b(daktar|doctor|madical|medical|bimari|sehat|patient)\b/g, 'medical'],
+      [/\b(pasword|pastword|password|secret|key|token|api key)\b/g, 'key'],
+      [/\b(pii|mask|masking|chupana|redact|redaction)\b/g, 'mask'],
+      [/\b(ephemeral|delete|mita|saf|saaf)\b/g, 'ephemeral'],
+
+      // Stop & Voice control
+      [/\b(chup|shant|ruko|ruk|stop voice|mic band|band karo mic)\b/g, 'stop-voice-handsfree']
+    ];
+
+    for (const [pattern, replacement] of phoneticReplacements) {
+      text = text.replace(pattern, replacement);
+    }
+
+    return text;
   }
 
   async handleUserQuery(query) {
     this.appendMessage('You', query, true);
 
-    const normalized = query.toLowerCase().trim();
+    const rawNormalized = query.toLowerCase().trim();
+    const normalized = this.normalizePhoneticQuery(query);
+
+    // Hands-Free Mic Stop Command
+    if (normalized.includes('stop-voice-handsfree') || normalized === 'stop') {
+      this.stopHandsFreeVoice();
+      this.processAIResponse('Ji bhai, hands-free mic band kardiya gaya hai. Jab chahein mic button daba kar dubara baat kar sakte hain.', null, '🎙️ Hands-Free Voice');
+      return;
+    }
 
     // ── Tier 1: Zero-Token LocalStorage Cache ──────────────────────────────
-    if (this.responseCache[normalized]) {
-      const cached = this.responseCache[normalized];
+    if (this.responseCache[normalized] || this.responseCache[rawNormalized]) {
+      const cached = this.responseCache[normalized] || this.responseCache[rawNormalized];
       console.log('[AI Copilot] Served from Tier 1 Cache (0 Tokens):', query);
       this.processAIResponse(cached.reply, cached.action, '⚡ Smart Cache (0 Tokens)');
       return;
@@ -529,7 +741,7 @@ Rules:
 
     // ── Tier 3: Zero-Token Offline Roman Urdu Engine (Guaranteed Fallback) ─
     console.log('[AI Copilot] Engaging Tier 3 Offline NLU Knowledge Engine...');
-    const offlineMatch = this.matchOfflineKnowledge(normalized);
+    const offlineMatch = this.matchOfflineKnowledge(normalized, rawNormalized);
     this.processAIResponse(offlineMatch.reply, offlineMatch.action, '🛡️ Offline AI Engine (0 Tokens)');
   }
 
@@ -580,18 +792,36 @@ Rules:
     return { reply: text, action };
   }
 
-  matchOfflineKnowledge(query) {
+  matchOfflineKnowledge(normalizedQuery, rawQuery = '') {
+    const q1 = ` ${(normalizedQuery || '').toLowerCase()} `;
+    const q2 = ` ${(rawQuery || '').toLowerCase()} `;
+
+    let bestMatch = null;
+    let maxMatchLength = 0;
+
     for (const item of this.offlineKnowledgeBase) {
       for (const pat of item.patterns) {
-        if (query.includes(pat)) {
-          return { reply: item.reply, action: item.action };
+        const escaped = pat.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+        const regex = new RegExp(`(^|\\s)${escaped}(\\s|$)`, 'i');
+
+        // Check whole-word match or padded inclusion
+        if (regex.test(q1) || regex.test(q2) || q1.includes(` ${pat} `) || q2.includes(` ${pat} `)) {
+          // Prioritize longer, more specific multi-word phrases over single generic words
+          if (pat.length > maxMatchLength) {
+            maxMatchLength = pat.length;
+            bestMatch = item;
+          }
         }
       }
     }
 
+    if (bestMatch) {
+      return { reply: bestMatch.reply, action: bestMatch.action };
+    }
+
     // Default polite Roman Urdu response
     return {
-      reply: 'Ji bhai, PrivacyGuard aapko websites ke deceptive dark patterns se bachata hai aur voice control ke zariye mukammal privacy control deta hai. Aap "trackers block kardo" ya "risk check karo" keh sakte hain.',
+      reply: 'Ji bhai, PrivacyGuard aapko websites ke deceptive dark patterns se bachata hai aur voice control ke zariye mukammal privacy control deta hai. Aap "trackers block kardo", "risk check karo", ya "cookie simulator samjhao" keh sakte hain.',
       action: null
     };
   }
@@ -637,6 +867,14 @@ Rules:
   speakRomanUrdu(text) {
     if (!window.speechSynthesis) return;
 
+    // Suppress recognition while AI speaks to prevent audio feedback loop
+    this.isSpeakingTTS = true;
+    if (this.recognition && this.isHandsFreeVoiceActive) {
+      try {
+        this.recognition.abort();
+      } catch (_) {}
+    }
+
     // Cancel any previous speech
     window.speechSynthesis.cancel();
 
@@ -652,16 +890,28 @@ Rules:
     const urVoice = voices.find(v => v.lang.includes('ur') || v.lang.includes('hi') || v.lang.includes('en-IN'));
     if (urVoice) utterance.voice = urVoice;
 
-    // Microphone collision suppression
+    // Microphone collision suppression for main voice system
     if (this.voiceSystem) this.voiceSystem.isSpeakingTTS = true;
 
-    utterance.onend = () => {
+    const onSpeechFinished = () => {
+      this.isSpeakingTTS = false;
       if (this.voiceSystem) this.voiceSystem.isSpeakingTTS = false;
+
+      // Automatically resume continuous hands-free listening!
+      if (this.isHandsFreeVoiceActive) {
+        clearTimeout(this.recRestartTimer);
+        this.recRestartTimer = setTimeout(() => {
+          if (this.isHandsFreeVoiceActive && !this.isSpeakingTTS) {
+            try {
+              this.recognition?.start();
+            } catch (_) {}
+          }
+        }, 350);
+      }
     };
 
-    utterance.onerror = () => {
-      if (this.voiceSystem) this.voiceSystem.isSpeakingTTS = false;
-    };
+    utterance.onend = onSpeechFinished;
+    utterance.onerror = onSpeechFinished;
 
     window.speechSynthesis.speak(utterance);
   }

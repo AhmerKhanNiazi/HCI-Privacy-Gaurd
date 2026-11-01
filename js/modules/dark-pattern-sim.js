@@ -45,10 +45,10 @@ export class DarkPatternSimulator {
               </span>
             </div>
             <h2 class="text-xl md:text-2xl font-bold tracking-tight text-white mt-1">
-              Deceptive Banner vs. Privacy-by-Design
+              Sneaky Website Tricks vs. Honest Privacy Design
             </h2>
             <p class="text-xs md:text-sm text-slate-400 mt-0.5">
-              Interact with both live banners to analyze cognitive friction, asymmetrical affordances, and heuristic compliance.
+              Compare the two cookie banners below: The left one tricks you into surrendering your data, while the right one protects you by default.
             </p>
           </div>
 
@@ -70,10 +70,10 @@ export class DarkPatternSimulator {
             <div class="flex items-center justify-between pb-3 mb-4 border-b border-rose-900/30">
               <div class="flex items-center gap-2">
                 <span class="w-2.5 h-2.5 rounded-full bg-rose-500 animate-pulse"></span>
-                <h3 class="text-base font-bold text-rose-300">Predatory / Dark Pattern Banner</h3>
+                <h3 class="text-base font-bold text-rose-300">⚠️ Sneaky Banner (Designed to Trick You)</h3>
               </div>
               <span class="text-[11px] font-mono px-2 py-0.5 bg-rose-950/80 text-rose-400 border border-rose-800/60 rounded">
-                High Exploitation
+                High Danger
               </span>
             </div>
 
@@ -87,56 +87,56 @@ export class DarkPatternSimulator {
                     🍪 We value your privacy!
                   </h4>
                   <button data-inspect="visual_interference" class="inspect-badge text-[10px] font-mono px-2 py-0.5 bg-rose-500/20 text-rose-300 border border-rose-500/40 rounded-full hover:bg-rose-500/30 flex items-center gap-1">
-                    🔍 Inspect Pattern
+                    🔍 Inspect Trick
                   </button>
                 </div>
                 <p class="text-xs text-slate-400 mt-1 leading-relaxed">
-                  We and our <strong class="text-rose-400">427 advertising partners</strong> use invasive trackers, cross-site telemetry, and keystroke analytics to personalize your advertisements and enrich your behavioral profile.
+                  We and our <strong class="text-rose-400">427 advertising companies</strong> track your device, record what you type, and build a secret behavioral profile to sell targeted ads.
                 </p>
               </div>
 
               <!-- Fake Urgency Bar -->
               <div class="bg-rose-950/40 border border-rose-900/40 px-3 py-1.5 rounded-lg flex items-center justify-between text-[11px] text-rose-300">
-                <span>⚠️ Session security credentials refresh in:</span>
+                <span>⚠️ Fake Urgency: Your session will expire in:</span>
                 <span id="fake-urgency-timer" class="font-mono font-bold text-rose-400 animate-pulse">01:30</span>
               </div>
 
               <!-- Pre-checked Traps & Trick Questions -->
               <div class="space-y-2 bg-slate-900/80 p-3 rounded-lg border border-slate-800 relative">
                 <div class="flex items-center justify-between">
-                  <span class="text-xs font-semibold text-slate-300">Telemetry Permissions</span>
+                  <span class="text-xs font-semibold text-slate-300">Sneaky Pre-Selected Toggles (Auto Turned ON):</span>
                   <button data-inspect="pre_selection" class="inspect-badge text-[10px] font-mono px-1.5 py-0.5 bg-amber-500/20 text-amber-300 border border-amber-500/40 rounded hover:bg-amber-500/30">
-                    🔍 Pre-selection Violation
+                    🔍 Illegal Pre-Selection
                   </button>
                 </div>
 
                 <label class="flex items-start gap-2.5 text-xs text-slate-300 cursor-pointer">
                   <input type="checkbox" id="dark-opt-partners" checked class="mt-0.5 rounded bg-slate-800 border-rose-600 text-rose-600 focus:ring-0">
-                  <span>Allow 427 ad-tech partners to store device fingerprint & sell profiling data.</span>
+                  <span>Allow 427 ad companies to track your device and sell what you browse (+427 Trackers).</span>
                 </label>
 
                 <label class="flex items-start gap-2.5 text-xs text-slate-300 cursor-pointer">
                   <input type="checkbox" id="dark-opt-location" checked class="mt-0.5 rounded bg-slate-800 border-rose-600 text-rose-600 focus:ring-0">
-                  <span>Share real-time high-precision GPS tracking with data brokers.</span>
+                  <span>Share your live GPS location 24/7 with companies that sell location history.</span>
                 </label>
 
                 <!-- Trick Question / Double Negative -->
                 <label class="flex items-start gap-2.5 text-xs text-slate-400 cursor-pointer pt-1 border-t border-slate-800">
                   <input type="checkbox" id="dark-opt-negative" class="mt-0.5 rounded bg-slate-800 border-slate-700 text-rose-600">
-                  <span class="text-[11px] italic">Uncheck this box if you do NOT wish to avoid not participating in cross-app profiling.</span>
+                  <span class="text-[11px] italic">Trick Question: "Uncheck this box if you do NOT wish to avoid not participating..." (Confusing double-negative designed to fool you).</span>
                 </label>
               </div>
 
               <!-- Nested Roach Motel Settings Drawer (Hidden by default, friction trap) -->
               <div id="dark-nested-settings" class="hidden bg-slate-900 p-3 rounded-lg border border-rose-800/50 space-y-2 text-xs">
                 <div class="flex items-center justify-between text-rose-300 font-semibold pb-1 border-b border-slate-800">
-                  <span>Roach Motel: Vendor Obstruction (427 Vendors)</span>
+                  <span>🪤 Roach Motel Trap: 427 Ad Companies Hidden Inside</span>
                   <button data-inspect="obstruction_friction" class="inspect-badge text-[10px] font-mono px-1.5 py-0.5 bg-rose-500/20 text-rose-300 border border-rose-500/40 rounded">
-                    🔍 Obstruction
+                    🔍 Deliberate Obstruction
                   </button>
                 </div>
                 <p class="text-[11px] text-slate-400">
-                  To opt out, manually toggle off each individual vendor below (No "Deselect All" button provided):
+                  To stop tracking, you must manually turn off each company one by one (They deliberately hid the "Deselect All" button to exhaust you!):
                 </p>
                 <div class="max-h-24 overflow-y-auto space-y-1.5 pr-1 font-mono text-[10px]">
                   <div class="flex justify-between items-center bg-slate-950 p-1 rounded"><span>AdVantage Network LLC</span><input type="checkbox" checked class="vendor-chk"></div>
@@ -145,7 +145,7 @@ export class DarkPatternSimulator {
                   <div class="flex justify-between items-center bg-slate-950 p-1 rounded"><span>Nexus Consumer Profiling</span><input type="checkbox" checked class="vendor-chk"></div>
                 </div>
                 <button id="dark-save-vendors-btn" class="w-full py-1 text-[11px] bg-slate-800 hover:bg-slate-700 text-slate-200 rounded border border-slate-700">
-                  Save Vendor Choices (Requires 423 more clicks)
+                  Save Choices (Requires 423 more clicks!)
                 </button>
               </div>
 
@@ -153,23 +153,23 @@ export class DarkPatternSimulator {
               <div class="space-y-2 pt-2">
                 <!-- Huge Predatory Accept All CTA -->
                 <button id="dark-accept-btn" class="w-full py-3 px-4 bg-gradient-to-r from-rose-600 to-rose-700 hover:from-rose-500 hover:to-rose-600 text-white font-bold rounded-xl shadow-lg shadow-rose-900/40 text-sm tracking-wide transition flex items-center justify-center gap-2">
-                  <span>⚡ ACCEPT ALL & CONTINUE</span>
-                  <span class="text-xs font-normal opacity-80">(Recommended)</span>
+                  <span>⚡ ACCEPT ALL & SURRENDER DATA</span>
+                  <span class="text-xs font-normal opacity-80">(Recommended - Trapping 93% of users)</span>
                 </button>
 
                 <!-- Obscure, Tiny, Low-Contrast Settings & Confirmshaming Link -->
                 <div class="flex flex-col sm:flex-row items-center justify-between gap-2 pt-1 text-[11px]">
                   <button id="dark-settings-btn" class="text-slate-500 hover:text-slate-400 underline decoration-slate-700">
-                    Preferences / Vendor Details (Hidden)
+                    Preferences / Vendor Details (Made tiny and grey)
                   </button>
                   
                   <!-- Confirmshaming Link -->
                   <div class="flex items-center gap-1">
                     <button id="dark-confirmshame-btn" class="text-slate-500 hover:text-rose-400 italic text-[11px] transition">
-                      "No thanks, I dislike safe & relevant browsing"
+                      "No thanks, I hate privacy and security"
                     </button>
                     <button data-inspect="confirmshaming" class="inspect-badge text-[9px] font-mono px-1 bg-rose-500/20 text-rose-300 rounded border border-rose-500/30">
-                      🔍 Confirmshaming
+                      🔍 Confirmshaming Guilt
                     </button>
                   </div>
                 </div>
@@ -203,10 +203,10 @@ export class DarkPatternSimulator {
             <div class="flex items-center justify-between pb-3 mb-4 border-b border-emerald-900/30">
               <div class="flex items-center gap-2">
                 <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                <h3 class="text-base font-bold text-emerald-300">Privacy-by-Design Banner (Ethical UX)</h3>
+                <h3 class="text-base font-bold text-emerald-300">🛡️ Honest & Transparent Banner (Ethical Design)</h3>
               </div>
               <span class="text-[11px] font-mono px-2 py-0.5 bg-emerald-950/80 text-emerald-400 border border-emerald-800/60 rounded">
-                100% GDPR Compliant
+                100% Safe & Compliant
               </span>
             </div>
 
@@ -216,40 +216,40 @@ export class DarkPatternSimulator {
               <div class="relative">
                 <div class="flex items-start justify-between gap-2">
                   <h4 class="text-sm md:text-base font-semibold text-slate-100 flex items-center gap-1.5">
-                    🛡️ Your Privacy & Data Choices
+                    🛡️ Your Privacy & Real Choices
                   </h4>
                   <button data-inspect="visual_interference" class="inspect-badge inspect-badge-safe text-[10px] font-mono px-2 py-0.5 bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 rounded-full hover:bg-emerald-500/30 flex items-center gap-1">
-                    ✅ Symmetrical Design
+                    ✅ Honest Design
                   </button>
                 </div>
                 <p class="text-xs text-slate-400 mt-1 leading-relaxed">
-                  We use strictly necessary cookies to keep you logged in securely. All analytics and telemetry are <strong class="text-emerald-400">completely optional</strong> and disabled by default.
+                  We only use basic cookies to keep your login working safely. All tracking, advertising, and analytics are <strong class="text-emerald-400">completely optional</strong> and turned OFF by default.
                 </p>
               </div>
 
               <!-- Cavoukian Principle 2: Privacy as Default (Unchecked Toggles) -->
               <div class="space-y-2.5 bg-slate-900/80 p-3 rounded-lg border border-slate-800">
                 <div class="flex items-center justify-between pb-1 border-b border-slate-800/70">
-                  <span class="text-xs font-semibold text-slate-300">Granular Privacy Preferences</span>
-                  <span class="text-[10px] font-mono text-emerald-400">PbD Principle #2 (Default Off)</span>
+                  <span class="text-xs font-semibold text-slate-300">Your Privacy Settings (Turned OFF by default):</span>
+                  <span class="text-[10px] font-mono text-emerald-400">Privacy by Default</span>
                 </div>
 
                 <!-- Essential Cookies (Always Active, Clearly Explained) -->
                 <div class="flex items-center justify-between text-xs py-1">
                   <div>
-                    <span class="font-medium text-slate-200">Essential Security & Auth</span>
-                    <p class="text-[11px] text-slate-500">Required for session state & anti-CSRF protection.</p>
+                    <span class="font-medium text-slate-200">Essential Login & Security</span>
+                    <p class="text-[11px] text-slate-500">Required for website login and security. (No personal data is collected or sold).</p>
                   </div>
                   <span class="px-2 py-0.5 text-[10px] font-mono bg-slate-800 text-slate-400 rounded border border-slate-700">
-                    Always Active
+                    Always Safe
                   </span>
                 </div>
 
                 <!-- Optional Analytics (Default OFF) -->
                 <div class="flex items-center justify-between text-xs py-1">
                   <div>
-                    <span class="font-medium text-slate-200">Anonymous Telemetry</span>
-                    <p class="text-[11px] text-slate-500">Helps us catch UI errors; zero cross-site tracking.</p>
+                    <span class="font-medium text-slate-200">Anonymous Error Reports</span>
+                    <p class="text-[11px] text-slate-500">Helps us find and fix bugs. Zero personal tracking or advertising.</p>
                   </div>
                   <label class="cyber-toggle">
                     <input type="checkbox" id="ethical-opt-analytics">
@@ -260,8 +260,8 @@ export class DarkPatternSimulator {
                 <!-- 3rd Party Marketing (Default OFF) -->
                 <div class="flex items-center justify-between text-xs py-1">
                   <div>
-                    <span class="font-medium text-slate-200">Advertising & Personalization</span>
-                    <p class="text-[11px] text-slate-500">We do not share your data with 3rd-party data brokers.</p>
+                    <span class="font-medium text-slate-200">Personalized Advertisements</span>
+                    <p class="text-[11px] text-slate-500">Shows relevant ads. (We NEVER sell your information to data brokers).</p>
                   </div>
                   <label class="cyber-toggle">
                     <input type="checkbox" id="ethical-opt-marketing">
@@ -275,13 +275,13 @@ export class DarkPatternSimulator {
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <!-- Symmetrical Reject All -->
                   <button id="ethical-reject-btn" class="py-2.5 px-4 bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold rounded-xl border border-slate-600 text-xs tracking-wide transition flex items-center justify-center gap-1.5 shadow">
-                    <span>🛡️ REJECT OPTIONAL</span>
+                    <span>🛡️ REJECT ALL TRACKING</span>
                     <span class="text-[10px] text-slate-400">(1-Click)</span>
                   </button>
 
                   <!-- Symmetrical Accept Selected -->
                   <button id="ethical-save-btn" class="py-2.5 px-4 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-semibold rounded-xl shadow-lg shadow-emerald-950/50 text-xs tracking-wide transition flex items-center justify-center gap-1.5">
-                    <span>ACCEPT CHOICES</span>
+                    <span>ACCEPT SELECTED ONLY</span>
                   </button>
                 </div>
 

@@ -163,6 +163,10 @@ class PrivacyGuardApp {
         this.aiCopilot?.openHUD();
         break;
 
+      case 'stop-voice-handsfree':
+        this.aiCopilot?.stopHandsFreeVoice();
+        break;
+
       // --- 1. CORE PRIVACY & THREAT SCAN ---
       case 'start-audit':
       case 'privacy-scan':

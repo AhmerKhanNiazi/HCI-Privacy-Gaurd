@@ -45,16 +45,16 @@ export class AIConsentMatrix {
               </span>
             </div>
             <h2 class="text-xl md:text-2xl font-bold tracking-tight text-white mt-1">
-              Ethical AI Consent & Data Sovereignty Matrix
+              AI Privacy & Data Protection Controls
             </h2>
             <p class="text-xs md:text-sm text-slate-400 mt-0.5">
-              Empower users with transparent controls over Large Language Model (LLM) training, human telemetry audits, and PII masking.
+              Control exactly how AI companies use your chats. Prevent AI from training on your messages or allowing human workers to read them.
             </p>
           </div>
 
           <div class="flex items-center gap-2">
             <span class="px-3 py-1 text-xs font-mono bg-violet-950/80 text-violet-300 border border-violet-800/60 rounded-lg">
-              IEEE 7000 & EU AI Act Compliant
+              IEEE & EU AI Act Compliant
             </span>
           </div>
         </div>
@@ -68,25 +68,25 @@ export class AIConsentMatrix {
               <div class="flex items-center justify-between pb-2 border-b border-slate-800">
                 <h3 class="text-sm md:text-base font-bold text-white flex items-center gap-2">
                   <svg class="w-4 h-4 text-violet-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
-                  Granular AI Data Usage Policy
+                  Choose Your AI Privacy Settings (Click toggles):
                 </h3>
-                <span class="text-xs font-mono text-emerald-400">Positive-Sum UX</span>
+                <span class="text-xs font-mono text-emerald-400">Your Data, Your Rules</span>
               </div>
 
               <!-- Matrix Item 1: Model Retraining Opt-In -->
               <div class="p-3.5 bg-slate-900/90 rounded-xl border border-slate-800 flex items-start justify-between gap-3 hover:border-slate-700 transition">
                 <div class="space-y-1">
                   <div class="flex items-center gap-2">
-                    <span class="text-xs md:text-sm font-semibold text-slate-100">LLM Training Dataset Ingestion</span>
+                    <span class="text-xs md:text-sm font-semibold text-slate-100">🧠 Train Future AI on Your Chats</span>
                     <span id="badge-model-training" class="px-2 py-0.2 text-[10px] font-mono rounded bg-emerald-950 text-emerald-400 border border-emerald-800">
                       Opted Out (Safe)
                     </span>
                   </div>
                   <p class="text-[11px] text-slate-400 leading-tight">
-                    Allow user prompt exchanges to be scraped into future foundation model weights and fine-tuning checkpoints.
+                    When ON: The AI company stores your private messages and uses them to train future AI models. (Recommended: OFF).
                   </p>
                   <p class="text-[10px] text-cyan-400 font-mono">
-                    HCI Rule: Turning off model training must NEVER degrade intelligence tier or inference latency.
+                    Fair AI Guarantee: Turning this OFF will NEVER make the AI slower or less intelligent.
                   </p>
                 </div>
                 <label class="cyber-toggle shrink-0 mt-1">
@@ -99,16 +99,16 @@ export class AIConsentMatrix {
               <div class="p-3.5 bg-slate-900/90 rounded-xl border border-slate-800 flex items-start justify-between gap-3 hover:border-slate-700 transition">
                 <div class="space-y-1">
                   <div class="flex items-center gap-2">
-                    <span class="text-xs md:text-sm font-semibold text-slate-100">Third-Party Human Reviewers</span>
+                    <span class="text-xs md:text-sm font-semibold text-slate-100">👥 Human Workers Reading Your Chats</span>
                     <span id="badge-human-review" class="px-2 py-0.2 text-[10px] font-mono rounded bg-emerald-950 text-emerald-400 border border-emerald-800">
-                      Restricted
+                      Restricted (Safe)
                     </span>
                   </div>
                   <p class="text-[11px] text-slate-400 leading-tight">
-                    Allow outsourced human evaluators to read transcripts for RLHF (Reinforcement Learning from Human Feedback).
+                    When ON: External human contractors read your conversation history to grade responses. (Can expose your secrets).
                   </p>
                   <p class="text-[10px] text-slate-500 font-mono">
-                    Confidentiality Risk: High exposure of corporate secrets and personal health queries.
+                    Recommended: Keep OFF to ensure zero human eyes ever read what you type.
                   </p>
                 </div>
                 <label class="cyber-toggle shrink-0 mt-1">
@@ -121,13 +121,13 @@ export class AIConsentMatrix {
               <div class="p-3.5 bg-slate-900/90 rounded-xl border border-slate-800 flex items-start justify-between gap-3 hover:border-slate-700 transition">
                 <div class="space-y-1">
                   <div class="flex items-center gap-2">
-                    <span class="text-xs md:text-sm font-semibold text-slate-100">Differential Privacy & PII Masking</span>
+                    <span class="text-xs md:text-sm font-semibold text-slate-100">🔒 Hide Passwords & Private Details (Auto-Redact)</span>
                     <span class="px-2 py-0.2 text-[10px] font-mono rounded bg-violet-950 text-violet-300 border border-violet-800">
-                      Cryptographic Shield
+                      Shield Active
                     </span>
                   </div>
                   <p class="text-[11px] text-slate-400 leading-tight">
-                    Client-side regex & NER automatically scrubs names, API tokens, phone numbers, and adds mathematical ε-noise.
+                    When ON: Your browser automatically detects and hides passwords, doctor names, phone numbers, and credit cards BEFORE sending.
                   </p>
                 </div>
                 <label class="cyber-toggle shrink-0 mt-1">
@@ -140,13 +140,13 @@ export class AIConsentMatrix {
               <div class="p-3.5 bg-slate-900/90 rounded-xl border border-slate-800 flex items-start justify-between gap-3 hover:border-slate-700 transition">
                 <div class="space-y-1">
                   <div class="flex items-center gap-2">
-                    <span class="text-xs md:text-sm font-semibold text-slate-100">Zero-Persistence Ephemeral Context</span>
+                    <span class="text-xs md:text-sm font-semibold text-slate-100">🧹 Auto-Delete History When You Leave</span>
                     <span class="px-2 py-0.2 text-[10px] font-mono rounded bg-emerald-950 text-emerald-300 border border-emerald-800">
-                      GDPR Art. 17
+                      Auto-Wipe Active
                     </span>
                   </div>
                   <p class="text-[11px] text-slate-400 leading-tight">
-                    Instantly wipes conversation vectors from cache upon session termination. No server-side logs stored.
+                    When ON: Instantly erases all chat history from memory as soon as you close the tab. Zero logs remain on servers.
                   </p>
                 </div>
                 <label class="cyber-toggle shrink-0 mt-1">
@@ -165,20 +165,20 @@ export class AIConsentMatrix {
                 <div class="flex items-center justify-between pb-2 border-b border-slate-800">
                   <h3 class="text-sm md:text-base font-bold text-white flex items-center gap-2">
                     <svg class="w-4 h-4 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/></svg>
-                    Live AI Prompt Ingestion Inspector
+                    Live AI Prompt Privacy Tester
                   </h3>
-                  <span class="text-xs font-mono text-slate-400">Telemetry Payload</span>
+                  <span class="text-xs font-mono text-slate-400">Live Preview</span>
                 </div>
 
                 <div class="space-y-3 mt-3">
                   <!-- Sample Prompt Selector -->
                   <div class="flex flex-wrap items-center gap-2">
-                    <span class="text-xs font-mono text-slate-400">Sample Prompts:</span>
+                    <span class="text-xs font-mono text-slate-400">Click a Sample to Test:</span>
                     <button class="sample-prompt-btn px-2 py-0.5 text-[11px] bg-slate-800 hover:bg-slate-700 text-slate-300 rounded border border-slate-700 transition" data-prompt="Dr. Sarah Collins diagnosed me with Type 2 Diabetes. What diet should I follow for my insulin at 555-0192?">
-                      🩺 Medical / PII
+                      🩺 Test Doctor & Medical Report
                     </button>
                     <button class="sample-prompt-btn px-2 py-0.5 text-[11px] bg-slate-800 hover:bg-slate-700 text-slate-300 rounded border border-slate-700 transition" data-prompt="Fix my backend database connection error: const API_KEY = 'sk_live_9942a48bc7814';">
-                      🔑 Secret API Key
+                      🔑 Test Secret Password & API Key
                     </button>
                   </div>
 
@@ -191,7 +191,7 @@ export class AIConsentMatrix {
                 <!-- Live Transmission Payload Inspector -->
                 <div class="mt-4 space-y-2">
                   <div class="flex items-center justify-between">
-                    <span class="text-xs font-mono font-semibold text-slate-300">Sanitized AI Server Ingestion Payload:</span>
+                    <span class="text-xs font-mono font-semibold text-slate-300">What the AI Server Actually Receives (Protected):</span>
                     <span id="ai-transmission-status" class="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-950 text-emerald-400 border border-emerald-800">
                       Shield Active
                     </span>
@@ -206,10 +206,10 @@ export class AIConsentMatrix {
               <!-- Academic Heuristic Callout -->
               <div class="mt-4 p-3 bg-violet-950/40 border border-violet-900/60 rounded-xl text-xs space-y-1">
                 <div class="flex items-center gap-1.5 text-violet-300 font-bold font-mono">
-                  <span>💡 HCI Ethical Guideline (Topic 5):</span>
+                  <span>💡 HCI Ethical Guideline:</span>
                 </div>
                 <p class="text-slate-400 text-[11px] leading-relaxed">
-                  "Consent for AI model training must be decoupled from service access. Coercing users to surrender intellectual property or medical telemetry in exchange for model access violates GDPR Article 4(11) unbundled consent."
+                  "AI apps must NEVER force you to give up your private notes, passwords, or health queries just to use their chatbot. Privacy must always be free and protected by default."
                 </p>
               </div>
 
