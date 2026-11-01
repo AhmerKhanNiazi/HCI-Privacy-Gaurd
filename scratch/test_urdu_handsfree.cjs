@@ -9,7 +9,8 @@ global.localStorage = {
 global.document = {
   createElement: () => ({ appendChild: () => {}, setAttribute: () => {}, className: '' }),
   body: { appendChild: () => {} },
-  getElementById: () => null
+  getElementById: () => null,
+  querySelectorAll: () => []
 };
 global.window = {
   addEventListener: () => {}
