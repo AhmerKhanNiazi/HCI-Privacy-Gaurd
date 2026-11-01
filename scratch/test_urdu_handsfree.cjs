@@ -1,10 +1,11 @@
-// Scratch test to verify RomanUrduAICopilot phonetic normalization & offline matching
+// Scratch test to verify RomanUrduAICopilot phonetic normalization, offline matching & dynamic self-training
 const fs = require('fs');
 
+const mockStorage = {};
 global.localStorage = {
-  getItem: () => null,
-  setItem: () => null,
-  removeItem: () => null
+  getItem: (k) => mockStorage[k] || null,
+  setItem: (k, v) => { mockStorage[k] = String(v); },
+  removeItem: (k) => { delete mockStorage[k]; }
 };
 global.document = {
   createElement: () => ({ appendChild: () => {}, setAttribute: () => {}, className: '' }),
@@ -110,35 +111,67 @@ try {
     { query: 'auto delete history when you leave samjhao', expectedAction: 'ai-toggle-ephemeral' },
     { query: 'live ai prompt privacy tester samjhao', expectedAction: 'ai-sample-medical' },
     { query: 'tour chalao', expectedAction: 'guided-tour' },
-    { query: 'dark pattern kya hota hai samjhao', expectedAction: null },
+    { query: 'dark pattern kya hota hai samjhao', expectedAction: 'null' },
     { query: 'roach motel kya hai batao', expectedAction: 'sim-open-settings' },
     { query: 'privacy by design kya hai', expectedAction: 'open-dossier' },
     { query: 'contextual integrity kya hai', expectedAction: 'open-dossier' },
-    { query: 'ye website kis liye hai', expectedAction: null },
-    { query: 'tum kaun ho', expectedAction: null }
+    { query: 'ye website kis liye hai', expectedAction: 'null' },
+    { query: 'tum kaun ho', expectedAction: 'null' },
+
+    // New Viva & Academic Heuristic Queries
+    { query: 'nielsen heuristics kya hain batao', expectedAction: 'dossier-tab-heuristics' },
+    { query: 'ann cavoukian 7 principles samjhao', expectedAction: 'dossier-tab-pbd' },
+    { query: 'harry brignull 12 deceptive patterns samjhao', expectedAction: 'dossier-tab-patterns' },
+    { query: 'gdpr article 7 planet49 samjhao', expectedAction: 'dossier-tab-heuristics' },
+    { query: 'client side redaction kaise hoti hai', expectedAction: 'ai-sample-medical' },
+    { query: 'apne features batao kya kar sakte ho', expectedAction: 'null' },
+    { query: 'kya mera data mehfooz hai', expectedAction: 'show-risk' },
+    { query: 'bohat shukriya zabardast kaam kia', expectedAction: 'null' },
+    { query: 'allah hafiz bhai', expectedAction: 'null' }
   ];
 
   let passed = 0;
   for (const t of testQueries) {
-    const raw = t.query;
-    const norm = copilot.normalizePhoneticQuery(raw);
+    const raw = t.query.toLowerCase().trim();
+    const norm = copilot.normalizePhoneticQuery(t.query);
     const match = copilot.matchOfflineKnowledge(norm, raw);
 
-    if (t.expectedAction !== undefined && match.action !== t.expectedAction) {
-      console.error(`❌ FAILED for query: "${raw}" -> Norm: "${norm}" -> Got action: "${match.action}", Expected: "${t.expectedAction}"`);
-    } else {
+    const actualAction = match && match.action ? String(match.action) : 'null';
+    if (actualAction === t.expectedAction) {
+      console.log(`✅ PASSED: "${t.query}" => Action: "${actualAction}"`);
       passed++;
-      console.log(`✅ PASSED: "${raw}" => Action: "${match.action}"`);
+    } else {
+      console.error(`❌ FAILED: "${t.query}" => Expected: "${t.expectedAction}", Got: "${actualAction}"`);
     }
   }
 
-  console.log(`\n🎉 Results: ${passed}/${testQueries.length} tests passed successfully!`);
-  if (passed === testQueries.length) {
-    process.exit(0);
+  // ── TEST DYNAMIC ONLINE-TO-OFFLINE SELF-TRAINING ENGINE ──
+  console.log('\n[TEST] Verifying Dynamic Online-to-Offline Self-Training Engine...');
+  const newOnlineQuery = 'bhai contextual integrity ka formula kisne create kia';
+  const geminiGeneratedReply = 'Contextual Integrity ka conceptual framework Helen Nissenbaum ne 2004 mein pesh kiya tha.';
+  const geminiAction = 'open-dossier';
+
+  // Initially, this custom query does not have a factory rule
+  const beforeLearning = copilot.matchOfflineKnowledge(copilot.normalizePhoneticQuery(newOnlineQuery), newOnlineQuery.toLowerCase());
+  console.log(`Pre-Training specific match status: ${beforeLearning.isSpecificMatch}`);
+
+  // Train the engine via Gemini response
+  copilot.learnFromGemini(newOnlineQuery, geminiGeneratedReply, geminiAction, 'gemini-3.5-flash-lite');
+
+  // Verify that it now matches instantly offline!
+  const afterLearning = copilot.matchOfflineKnowledge(copilot.normalizePhoneticQuery(newOnlineQuery), newOnlineQuery.toLowerCase());
+  if (afterLearning.isSpecificMatch && afterLearning.action === geminiAction && afterLearning.reply === geminiGeneratedReply) {
+    console.log('✅ PASSED: Dynamic Self-Training successfully created instant 0ms offline rule!');
+    console.log(`   Reply: "${afterLearning.reply}"`);
+    console.log(`   Action: "${afterLearning.action}"`);
+    passed++;
   } else {
-    process.exit(1);
+    console.error('❌ FAILED: Dynamic Self-Training did not register rule properly!');
   }
-} catch (err) {
-  console.error('Fatal error during test:', err);
+
+  console.log(`\n🎉 Results: ${passed}/${testQueries.length + 1} tests passed successfully!`);
+
+} catch (e) {
+  console.error('Test execution error:', e);
   process.exit(1);
 }

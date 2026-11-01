@@ -477,17 +477,16 @@ export class VoiceSystem {
     }
 
     if (this.isListening) {
-      this.isListening = false;
-      clearTimeout(this.restartTimer);
-      try {
-        this.recognition.stop();
-      } catch (e) {}
-      this.updateUIState();
+      this.stopListening();
       this.speak('Voice control deactivated.');
       this.showActionHUD('🎤 Voice Control Off', 'Microphone listening has stopped', 'info');
       return false;
     } else {
       try {
+        // Suppress any competing AI copilot hands-free mic to prevent Chromium abort
+        if (window.privacyGuardApp?.aiCopilot?.isHandsFreeVoiceActive) {
+          window.privacyGuardApp.aiCopilot.stopHandsFreeVoice();
+        }
         this.isListening = true;
         this.recognition.start();
         this.showActionHUD('🎤 Voice Control Active', 'Listening for commands... (Say "Help" for complete list)', 'success');
@@ -496,6 +495,17 @@ export class VoiceSystem {
         console.warn('[VoiceSystem] Error starting recognition:', e);
         return false;
       }
+    }
+  }
+
+  stopListening() {
+    if (this.isListening) {
+      this.isListening = false;
+      clearTimeout(this.restartTimer);
+      try {
+        this.recognition?.stop();
+      } catch (_) {}
+      this.updateUIState();
     }
   }
 

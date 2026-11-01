@@ -309,6 +309,7 @@ class PrivacyGuardApp {
         break;
 
       case 'calc-toggle-broker':
+      case 'calc-toggle-brokerage':
       case 'toggle-broker':
         this.scrollToSection('calculator-section');
         this.toggleCheckbox('calc-brokerage');
@@ -326,35 +327,35 @@ class PrivacyGuardApp {
       case 'retention-ephemeral':
         this.scrollToSection('calculator-section');
         this.calculator?.setRetention(0);
-        this.highlightElement(document.getElementById('calculator-container'));
+        this.highlightElement(document.getElementById('calc-retention')?.closest('div.p-3') || document.getElementById('calc-retention')?.parentElement, 'ring-4 ring-emerald-400 ring-offset-2 ring-offset-slate-950');
         break;
 
       case 'calc-retention-1':
       case 'retention-30days':
         this.scrollToSection('calculator-section');
         this.calculator?.setRetention(1);
-        this.highlightElement(document.getElementById('calculator-container'));
+        this.highlightElement(document.getElementById('calc-retention')?.closest('div.p-3') || document.getElementById('calc-retention')?.parentElement, 'ring-4 ring-cyan-400 ring-offset-2 ring-offset-slate-950');
         break;
 
       case 'calc-retention-2':
       case 'retention-1year':
         this.scrollToSection('calculator-section');
         this.calculator?.setRetention(2);
-        this.highlightElement(document.getElementById('calculator-container'));
+        this.highlightElement(document.getElementById('calc-retention')?.closest('div.p-3') || document.getElementById('calc-retention')?.parentElement, 'ring-4 ring-amber-400 ring-offset-2 ring-offset-slate-950');
         break;
 
       case 'calc-retention-3':
       case 'retention-5years':
         this.scrollToSection('calculator-section');
         this.calculator?.setRetention(3);
-        this.highlightElement(document.getElementById('calculator-container'));
+        this.highlightElement(document.getElementById('calc-retention')?.closest('div.p-3') || document.getElementById('calc-retention')?.parentElement, 'ring-4 ring-orange-400 ring-offset-2 ring-offset-slate-950');
         break;
 
       case 'calc-retention-4':
       case 'retention-permanent':
         this.scrollToSection('calculator-section');
         this.calculator?.setRetention(4);
-        this.highlightElement(document.getElementById('calculator-container'));
+        this.highlightElement(document.getElementById('calc-retention')?.closest('div.p-3') || document.getElementById('calc-retention')?.parentElement, 'ring-4 ring-rose-500 ring-offset-2 ring-offset-slate-950');
         break;
 
       // --- 4. ETHICAL AI CONSENT MATRIX ---
@@ -567,6 +568,7 @@ class PrivacyGuardApp {
 
       case 'help':
       case 'show-help':
+      case 'open-help':
         this.accessibility?.openHelpModal();
         break;
 
@@ -585,10 +587,14 @@ class PrivacyGuardApp {
   }
 
   blockTrackers() {
-    document.getElementById('ethical-reject-btn')?.click();
-    document.getElementById('preset-strict-btn')?.click();
     this.scrollToSection('simulator-section', 'All 427 trackers blocked. Privacy-by-Default active.');
-    this.audio?.playShieldEngage();
+    setTimeout(() => {
+      document.getElementById('ethical-reject-btn')?.click();
+      document.getElementById('preset-strict-btn')?.click();
+      const rejectBtn = document.getElementById('ethical-reject-btn');
+      if (rejectBtn) this.highlightElement(rejectBtn, 'ring-4 ring-emerald-400 ring-offset-2 ring-offset-slate-950');
+      this.audio?.playShieldEngage();
+    }, 200);
   }
 
   toggleCheckbox(id) {
@@ -596,6 +602,21 @@ class PrivacyGuardApp {
     if (!el) return;
     el.checked = !el.checked;
     el.dispatchEvent(new Event('change', { bubbles: true }));
+
+    // Clean, direct row visual feedback and gentle scroll
+    const row = el.closest('div.p-3') || el.closest('div.p-3\.5') || el.parentElement;
+    if (row) {
+      this.highlightElement(
+        row,
+        el.checked
+          ? 'ring-4 ring-rose-500/80 ring-offset-2 ring-offset-slate-950 scale-[1.01] bg-rose-950/20'
+          : 'ring-4 ring-emerald-400/80 ring-offset-2 ring-offset-slate-950 scale-[1.01] bg-emerald-950/20'
+      );
+      try {
+        row.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      } catch (_) {}
+    }
+
     if (el.checked) {
       this.audio?.playThreatAlert();
     } else {
@@ -610,6 +631,8 @@ class PrivacyGuardApp {
         input.value = customText;
       }
       this.aiMatrix.updateSandboxPreview();
+      this.highlightElement(input, 'ring-4 ring-violet-400 ring-offset-2 ring-offset-slate-950');
+      input.focus();
     }
   }
 

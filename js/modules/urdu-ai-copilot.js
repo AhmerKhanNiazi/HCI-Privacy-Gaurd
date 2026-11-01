@@ -58,6 +58,15 @@ export class RomanUrduAICopilot {
     // In-memory & LocalStorage response cache (Saves 100% of tokens on repeated questions)
     this.responseCache = JSON.parse(localStorage.getItem('privacyguard_ai_cache') || '{}');
 
+    // Dynamic Online-to-Offline Learned Knowledge Base (Persisted in localStorage)
+    this.learnedKnowledge = [];
+    try {
+      this.learnedKnowledge = JSON.parse(localStorage.getItem('privacyguard_learned_knowledge') || '[]');
+      if (!Array.isArray(this.learnedKnowledge)) this.learnedKnowledge = [];
+    } catch (_) {
+      this.learnedKnowledge = [];
+    }
+
     // System prompt engineered specifically for short, crisp, natural Pakistani Roman Urdu
     this.systemPrompt = `You are "PrivacyGuard AI Dost" (پرائیویسی گارڈ دوست), an expert HCI & Cybersecurity AI assistant embedded directly inside the PrivacyGuard UX web application.
 Your role: Explain everything about this website, privacy engineering, dark patterns, and ethical AI in simple, respectful, natural Pakistani Roman Urdu (like: "Ji bhai", "Dekhein", "Iska matlab hai").
@@ -480,8 +489,59 @@ Rules:
         patterns: ['tum kaun ho', 'naam kya hai', 'kya kar sakte ho', 'kaun ho'],
         action: null,
         reply: 'Main PrivacyGuard ka Roman Urdu AI Copilot hoon! Main hands-free aawaz se poori website chala sakta hoon aur privacy ke har feature ki Roman Urdu mein wazahat kar sakta hoon.'
+      },
+      // 8. ADDITIONAL VIVA, THEORY & ADVANCED CONVERSATIONAL RULES
+      {
+        patterns: ['nielsen heuristics kya hain', 'jakob nielsen', '10 heuristics', 'nielsen heuristics', 'usability heuristics'],
+        action: 'dossier-tab-heuristics',
+        reply: 'Jakob Nielsen ke 10 Usability Heuristics user interface design ke aalmi usool hain. Hamara project khaas tor par Heuristic #1 (Visibility of system status) aur Heuristic #3 (User control and freedom) ko implement karta hai.'
+      },
+      {
+        patterns: ['ann cavoukian', 'cavoukian 7 principles', 'privacy by design ke usool', '7 pbd principles', 'pbd ke usool'],
+        action: 'dossier-tab-pbd',
+        reply: 'Dr. Ann Cavoukian ke 7 Privacy by Design Principles hain: 1. Proactive not reactive, 2. Privacy as default, 3. Privacy embedded into design, 4. Full functionality (positive-sum), 5. End-to-end security, 6. Visibility and transparency, 7. Respect for user privacy.'
+      },
+      {
+        patterns: ['harry brignull', '12 deceptive patterns', 'dark patterns taxonomy', 'brignull patterns', 'brignull taxonomy'],
+        action: 'dossier-tab-patterns',
+        reply: 'Harry Brignull ne 2010 mein 12 deceptive patterns identify kiye thay, jinme Confirmshaming, Roach Motel, Visual Interference, Obstruction, aur Pre-selection shamil hain.'
+      },
+      {
+        patterns: ['gdpr article 7', 'planet49', 'edpb guidelines', 'gdpr consent laws', 'gdpr law'],
+        action: 'dossier-tab-heuristics',
+        reply: 'GDPR Article 7 aur CJEU Planet49 ruling ke mutabiq consent aazaadana, wazeh aur active honi chahiye. Pre-checked boxes ya coercive dark patterns qanoonan jurm hain.'
+      },
+      {
+        patterns: ['client side redaction', 'pii masking kaise hoti hai', 'differential privacy samjhao', 'pii masking logic'],
+        action: 'ai-sample-medical',
+        reply: 'Client-side PII masking mein browser ke andar regex aur Named Entity Recognition chalti hai, jo passwords, credit cards aur bimari ke naamon ko AI server tak janay se pehle hi black out kardeti hai.'
+      },
+      {
+        patterns: ['apne features batao', 'commands list', 'kya kya kar sakte ho batao', 'commands batao', 'help commands'],
+        action: null,
+        reply: 'Main poori website chala sakta hoon: 1. "trackers block kardo", 2. "60x fast scan chalao", 3. "roach motel kholo", 4. "0 risk preset lagao", 5. "retention ephemeral karo", 6. "guided tour chalao", 7. "viva dossier kholo".'
+      },
+      {
+        patterns: ['kya mera data mehfooz hai', 'privacyguard security', 'security guarantee', 'mera data safe hai'],
+        action: 'show-risk',
+        reply: 'Ji bilkul 100% mehfooz hai! PrivacyGuard client-side par chalta hai, aapka data kisi teesri company ko nahi becha jata, aur privacy-by-default har waqt active rehti hai.'
+      },
+      {
+        patterns: ['shukriya', 'thank you', 'bohat shukriya', 'zabardast', 'great', 'good job', 'theek hai', 'acha'],
+        action: null,
+        reply: 'Bohat shukriya bhai! Agar aur kuch samajhna ya test karna ho to bila-jhijhak bolein ya text likhein.'
+      },
+      {
+        patterns: ['allah hafiz', 'khuda hafiz', 'bye', 'goodbye', 'alwida'],
+        action: null,
+        reply: 'Allah Hafiz bhai! Apna khayal rakhiyega aur apni privacy ko hamesha mehfooz rakhein.'
       }
     ];
+
+    // Merge persisted online-to-offline learned rules
+    if (this.learnedKnowledge && this.learnedKnowledge.length > 0) {
+      this.offlineKnowledgeBase = [...this.learnedKnowledge, ...this.offlineKnowledgeBase];
+    }
 
     this.hudElement = null;
     this.keyModalElement = null;
@@ -621,8 +681,12 @@ Rules:
           <div id="key-test-status" class="hidden text-[11px]"></div>
 
           <div class="flex items-center justify-between text-[11px] text-slate-400 pt-1">
-            <span>Cache Status: <strong>${Object.keys(this.responseCache).length}</strong> queries cached (0 tokens)</span>
+            <span>Cache Status: <strong>${Object.keys(this.responseCache).length}</strong> cached (0 tokens)</span>
             <button id="clear-cache-btn" class="text-rose-400 hover:underline">Clear Cache</button>
+          </div>
+          <div class="flex items-center justify-between text-[11px] text-slate-400">
+            <span>🧠 Offline Trained: <strong id="learned-rules-count" class="text-emerald-400">${this.learnedKnowledge.length}</strong> rules learned from Gemini</span>
+            <button id="clear-learned-btn" class="text-amber-400 hover:underline">Reset Rules</button>
           </div>
         </div>
 
@@ -698,6 +762,15 @@ Rules:
       this.responseCache = {};
       localStorage.removeItem('privacyguard_ai_cache');
       this.appendMessage('AI Dost', 'Cache saaf kardiya gaya hai.', false);
+    });
+
+    document.getElementById('clear-learned-btn')?.addEventListener('click', () => {
+      this.learnedKnowledge = [];
+      localStorage.removeItem('privacyguard_learned_knowledge');
+      const countEl = document.getElementById('learned-rules-count');
+      if (countEl) countEl.textContent = '0';
+      this.updateLearnedCountBadge();
+      this.appendMessage('AI Dost', 'Self-trained offline rules reset kardi gayi hain.', false);
     });
 
     // Form Submit (Text Input)
@@ -806,6 +879,11 @@ Rules:
   }
 
   startHandsFreeVoice(showWelcomeAnnounce = true) {
+    // Coordinate with primary VoiceSystem to prevent Chromium mic abort
+    if (this.voiceSystem && typeof this.voiceSystem.stopListening === 'function') {
+      this.voiceSystem.stopListening();
+    }
+
     const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (!SpeechRec) {
       this.appendMessage('AI Dost', 'Aapka browser Speech Recognition support nahi karta. Barah-e-karam text likhein.', false);
@@ -972,6 +1050,13 @@ Rules:
       [/\b(pii|mask|masking|chupana|redact|redaction)\b/g, 'mask'],
       [/\b(ephemeral|delete|mita|saf|saaf)\b/g, 'ephemeral'],
 
+      // Common Pakistani Roman Urdu command verbs
+      [/\b(kro|kardo|kar do|kar dain|kardain|karein|kijiye|krdo)\b/g, 'karo'],
+      [/\b(dikhao|dikha dain|dikhayein|batao|bataen|bata dain|batayein)\b/g, 'samjhao'],
+      [/\b(khol do|kholo|khulein|open karo|shuru karo)\b/g, 'start'],
+      [/\b(vaywa|viwa|viva|dossier|dosier|theori|theory)\b/g, 'dossier'],
+      [/\b(matriks|metrix|matrix)\b/g, 'aimatrix'],
+
       // Stop & Voice control
       [/\b(chup|shant|ruko|ruk|stop voice|mic band|band karo mic)\b/g, 'stop-voice-handsfree']
     ];
@@ -1030,6 +1115,9 @@ Rules:
             localStorage.setItem('privacyguard_ai_cache', JSON.stringify(this.responseCache));
           } catch (_) {}
 
+          // Dynamic Online-to-Offline Self-Training: Train offline NLU engine permanently!
+          this.learnFromGemini(query, result.reply, result.action, result.model);
+
           this.processAIResponse(result.reply, result.action, `🤖 Gemini AI (${result.model} • ${keyItem.label})`);
           return;
         }
@@ -1042,6 +1130,63 @@ Rules:
     // ── Tier 4: Zero-Token Offline Fallback (Guaranteed Safe Response) ─────────
     console.log('[AI Copilot] Engaging Tier 4 Offline Fallback (0ms)...');
     this.processAIResponse(offlineMatch.reply, offlineMatch.action, '🛡️ Offline AI Engine (0ms)');
+  }
+
+  learnFromGemini(query, reply, action, modelName) {
+    if (!query || !reply || reply.length < 10) return;
+
+    const rawNormalized = query.toLowerCase().trim();
+    const normalized = this.normalizePhoneticQuery(query);
+    const cleanedNorm = this.cleanIntentQuery(normalized);
+    const cleanedRaw = this.cleanIntentQuery(rawNormalized);
+
+    const patterns = [
+      rawNormalized,
+      normalized,
+      cleanedNorm,
+      cleanedRaw
+    ].filter((p, i, arr) => p && p.length >= 3 && arr.indexOf(p) === i);
+
+    if (patterns.length === 0) return;
+
+    // Check if query is already covered by factory rules
+    const existing = this.matchOfflineKnowledge(normalized, rawNormalized);
+    if (existing.isSpecificMatch && !existing.isLearned) {
+      return;
+    }
+
+    const newRule = {
+      patterns,
+      action: action || null,
+      reply,
+      isLearned: true,
+      learnedAt: Date.now(),
+      model: modelName
+    };
+
+    // Prepend to live offlineKnowledgeBase so subsequent identical or sound-alike questions hit 0ms locally
+    this.offlineKnowledgeBase.unshift(newRule);
+
+    // Save up to 150 learned rules persistently in localStorage
+    this.learnedKnowledge = [newRule, ...this.learnedKnowledge.filter(r => !r.patterns.some(p => patterns.includes(p)))].slice(0, 150);
+
+    try {
+      localStorage.setItem('privacyguard_learned_knowledge', JSON.stringify(this.learnedKnowledge));
+      console.log(`[AI Copilot Self-Training] Learned new offline rule for "${query}" from ${modelName}. Total offline learned rules: ${this.learnedKnowledge.length}`);
+      this.updateLearnedCountBadge();
+    } catch (_) {}
+  }
+
+  updateLearnedCountBadge() {
+    const badge = document.getElementById('ai-engine-badge');
+    if (badge) {
+      const count = (this.learnedKnowledge && this.learnedKnowledge.length) || 0;
+      badge.textContent = count > 0 ? `Hybrid AI • 🧠 ${count} Learned` : 'Hybrid AI Active';
+    }
+    const countEl = document.getElementById('learned-rules-count');
+    if (countEl) {
+      countEl.textContent = String((this.learnedKnowledge && this.learnedKnowledge.length) || 0);
+    }
   }
 
   async testApiKeys() {
