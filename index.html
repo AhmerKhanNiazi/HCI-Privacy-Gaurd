@@ -197,27 +197,57 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
       <div class="max-w-3xl space-y-4">
         
-        <!-- Academic Pill Badges -->
-        <div class="flex flex-wrap items-center gap-2">
-          <span class="px-2.5 py-1 text-xs font-mono font-semibold rounded-full bg-cyan-500/10 text-cyan-400 border border-cyan-500/30">
-            🎓 HCI 5th Semester Research Lab
-          </span>
-          <span class="px-2.5 py-1 text-xs font-mono font-semibold rounded-full bg-rose-500/10 text-rose-400 border border-rose-500/30">
-            HCI Topic 12: Privacy & Data Ethics in UX
-          </span>
-          <span class="px-2.5 py-1 text-xs font-mono font-semibold rounded-full bg-violet-500/10 text-violet-400 border border-violet-500/30">
-            HCI Topic 5: Ethical AI in HCI
-          </span>
+        <!-- Academic Pill Badges & Language Switcher -->
+        <div class="flex flex-wrap items-center justify-between gap-2">
+          <div class="flex flex-wrap items-center gap-2">
+            <span class="px-2.5 py-1 text-xs font-mono font-semibold rounded-full bg-cyan-500/10 text-cyan-400 border border-cyan-500/30">
+              🎓 HCI 5th Semester Research Lab
+            </span>
+            <span class="px-2.5 py-1 text-xs font-mono font-semibold rounded-full bg-rose-500/10 text-rose-400 border border-rose-500/30">
+              HCI Topic 12: Privacy & Data Ethics
+            </span>
+            <span class="px-2.5 py-1 text-xs font-mono font-semibold rounded-full bg-violet-500/10 text-violet-400 border border-violet-500/30">
+              HCI Topic 5: Ethical AI
+            </span>
+          </div>
+
+          <!-- Bilingual Mode Switcher -->
+          <button id="lang-toggle-btn" class="px-3 py-1 bg-slate-900/90 hover:bg-slate-800 text-cyan-300 border border-cyan-800/60 rounded-xl text-xs font-mono font-semibold flex items-center gap-1.5 transition shadow-sm" title="Toggle English / Roman Urdu Explanations">
+            <span class="text-sm">🌐</span>
+            <span id="lang-toggle-text">🇺🇸 English Active</span>
+          </button>
         </div>
 
         <h1 class="text-3xl sm:text-4xl lg:text-5xl font-black text-white tracking-tight leading-tight">
           Deconstructing Deceptive Patterns through <span class="bg-gradient-to-r from-cyan-400 via-teal-300 to-emerald-400 bg-clip-text text-transparent">Privacy-by-Design</span>
         </h1>
 
-        <p class="text-sm sm:text-base text-slate-400 leading-relaxed">
+        <!-- Friendly Beginner-Friendly Explanation Banner -->
+        <div class="p-3.5 bg-cyan-950/40 border border-cyan-500/30 rounded-xl flex items-start gap-3 text-xs sm:text-sm text-cyan-200 leading-relaxed">
+          <span class="text-xl shrink-0">💡</span>
+          <div>
+            <strong class="text-cyan-300 font-mono" data-lang-en="New here? Welcome!" data-lang-ur="یہ پروجیکٹ کس لیے ہے؟">New here? Welcome!</strong>
+            <p class="text-slate-300 text-xs mt-0.5" data-lang-en="This interactive lab exposes how sneaky websites trick you into surrendering your personal data with deceptive 'Accept All' buttons. Anyone — including blind and motor-disabled users — can protect themselves hands-free using simple voice commands or 1 key." data-lang-ur="یہ انٹرایکٹو لیب دکھاتی ہے کہ ویب سائٹس کیسے جعلی اور چمکدار 'Accept' بٹن بنا کر آپ کا پرائیویٹ ڈیٹا چراتی ہیں، اور کیسے کوئی بھی عام یا معذور یوزر صرف آواز یا 1 بٹن سے خود کو محفوظ رکھ سکتا ہے۔">
+              This interactive lab exposes how sneaky websites trick you into surrendering your personal data with deceptive 'Accept All' buttons. Anyone — including blind and motor-disabled users — can protect themselves hands-free using simple voice commands or 1 key.
+            </p>
+          </div>
+        </div>
+
+        <p class="text-sm text-slate-400 leading-relaxed">
           An interactive pairing of empirical HCI research and ethical UX engineering. Demonstrating 
           <strong>Harry Brignull's Deceptive Patterns Taxonomy</strong>, <strong>Ann Cavoukian's 7 Privacy by Design Principles</strong>, and <strong>IEEE/EU AI Act transparency standards</strong> through side-by-side live simulators and dynamic threat calculations.
         </p>
+
+        <!-- Primary Action Buttons for New Users -->
+        <div class="pt-2 flex flex-wrap items-center gap-3">
+          <button data-start-tour type="button" class="px-5 py-2.5 bg-gradient-to-r from-cyan-500 to-teal-500 hover:from-cyan-400 hover:to-teal-400 text-slate-950 font-bold rounded-xl text-xs sm:text-sm font-mono flex items-center gap-2 shadow-lg shadow-cyan-950/60 transition transform hover:scale-[1.02]">
+            <span>▶ Take 30-Second Guided Tour</span>
+          </button>
+          <button onclick="window.privacyGuardApp?.voiceSystem?.toggleListening()" type="button" class="px-4 py-2.5 bg-slate-900/90 hover:bg-slate-800 text-cyan-300 border border-slate-700/80 rounded-xl text-xs sm:text-sm font-mono font-semibold flex items-center gap-2 transition">
+            <svg class="w-4 h-4 text-cyan-400 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"/></svg>
+            <span>Try Voice Control (Press V)</span>
+          </button>
+        </div>
 
         <!-- Quick Heuristic Metric Pills -->
         <div class="pt-2 flex flex-wrap gap-2 text-xs font-mono text-slate-400">
@@ -235,6 +265,114 @@
   <!-- MAIN CONTENT CONTAINER -->
   <!-- ========================================================================= -->
   <main id="main-content" class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-16">
+
+    <!-- ======================================================================= -->
+    <!-- BEGINNER-FRIENDLY QUICK-START PLAYGROUND (3 SIMPLE STEPS) -->
+    <!-- ======================================================================= -->
+    <section id="quick-start-section" class="scroll-mt-24">
+      <div class="cyber-card rounded-2xl p-6 md:p-8 space-y-6 border border-cyan-500/30 bg-gradient-to-b from-slate-900/90 to-slate-950/90 shadow-2xl">
+        
+        <div class="flex flex-col md:flex-row md:items-center justify-between pb-4 border-b border-slate-800 gap-3">
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="px-2.5 py-0.5 text-xs font-mono font-semibold rounded-full bg-cyan-500/20 text-cyan-300 border border-cyan-500/40">
+                ⭐ Beginner Friendly
+              </span>
+              <span class="text-xs text-slate-400 font-mono">No Technical Knowledge Required</span>
+            </div>
+            <h3 class="text-xl md:text-2xl font-bold text-white font-mono mt-1" data-lang-en="Interactive Quick-Start: Try It in 3 Easy Steps" data-lang-ur="آسان شروعات: 3 آسان مراحل میں ٹیسٹ کریں">
+              Interactive Quick-Start: Try It in 3 Easy Steps
+            </h3>
+            <p class="text-xs md:text-sm text-slate-400 mt-0.5" data-lang-en="Click any button below to instantly experience deceptive traps vs. ethical defense." data-lang-ur="نیچے دیے گئے کسی بھی بٹن پر کلک کریں اور لائیو دیکھیں کہ سسٹم کیسے کام کرتا ہے۔">
+              Click any button below to instantly experience deceptive traps vs. ethical defense.
+            </p>
+          </div>
+
+          <button data-start-tour class="px-4 py-2 bg-cyan-950 hover:bg-cyan-900 text-cyan-300 border border-cyan-700/80 rounded-xl text-xs font-mono font-bold transition flex items-center gap-2 self-start md:self-auto shadow-sm">
+            <span>▶ Start Guided Tour</span>
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+          </button>
+        </div>
+
+        <!-- 3 Interactive Action Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+          
+          <!-- Card 1: Cookie Trap -->
+          <div class="p-4 bg-slate-950/80 border border-rose-900/40 hover:border-rose-500/50 rounded-xl space-y-3 transition flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between text-xs font-mono pb-2 border-b border-slate-800">
+                <span class="font-bold text-rose-400 flex items-center gap-1.5">
+                  <span>🍪</span>
+                  <span data-lang-en="1. Cookie Trap Test" data-lang-ur="1. کوکی ٹریپ ٹیسٹ">1. Cookie Trap Test</span>
+                </span>
+                <span class="text-[10px] text-slate-500">Topic 12</span>
+              </div>
+              <p class="text-xs text-slate-300 mt-2 leading-relaxed" data-lang-en="Websites trick you into giving away personal data by hiding the 'Reject' button and making 'Accept All' shiny green." data-lang-ur="ویب سائٹس 'Accept' کا بٹن بڑا اور چمکدار بناتی ہیں جبکہ 'Reject' کو چھپاتی ہیں تاکہ آپ سے 427 ٹریکرز کا ڈیٹا لے لیں۔">
+                Websites trick you into giving away personal data by hiding the 'Reject' button and making 'Accept All' shiny green.
+              </p>
+            </div>
+            <div class="space-y-2 pt-2">
+              <button data-quick-action="sim-accept-trap" class="w-full py-2 px-3 bg-rose-950/80 hover:bg-rose-900 text-rose-300 border border-rose-700/60 rounded-lg text-xs font-mono font-semibold transition flex items-center justify-center gap-1.5">
+                <span>🔴 Fall in Trap (427 Trackers)</span>
+              </button>
+              <button data-quick-action="sim-reject-ethical" class="w-full py-2 px-3 bg-emerald-950/80 hover:bg-emerald-900 text-emerald-300 border border-emerald-700/60 rounded-lg text-xs font-mono font-semibold transition flex items-center justify-center gap-1.5">
+                <span>🟢 Try 1-Click Ethical Reject</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Card 2: Risk Meter -->
+          <div class="p-4 bg-slate-950/80 border border-amber-900/40 hover:border-amber-500/50 rounded-xl space-y-3 transition flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between text-xs font-mono pb-2 border-b border-slate-800">
+                <span class="font-bold text-amber-400 flex items-center gap-1.5">
+                  <span>📊</span>
+                  <span data-lang-en="2. Privacy Risk Meter" data-lang-ur="2. پرائیویسی رسک میٹر">2. Privacy Risk Meter</span>
+                </span>
+                <span class="text-[10px] text-slate-500">Real-Time</span>
+              </div>
+              <p class="text-xs text-slate-300 mt-2 leading-relaxed" data-lang-en="See how dangerous permissions like high-precision GPS, Camera, and Microphone spike your vulnerability score." data-lang-ur="دیکھیں کہ کیمرہ، مائیکروفون اور لوکیشن پرمیشن دینے سے آپ کا رسک اسکور کتنا زیادہ خطرناک ہو جاتا ہے۔">
+                See how dangerous permissions like high-precision GPS, Camera, and Microphone spike your vulnerability score.
+              </p>
+            </div>
+            <div class="space-y-2 pt-2">
+              <button data-quick-action="calc-preset-strict" class="w-full py-2 px-3 bg-emerald-950/80 hover:bg-emerald-900 text-emerald-300 border border-emerald-700/60 rounded-lg text-xs font-mono font-semibold transition flex items-center justify-center gap-1.5">
+                <span>🛡️ Set to 100% Safe (0/100)</span>
+              </button>
+              <button data-quick-action="calc-preset-social" class="w-full py-2 px-3 bg-rose-950/80 hover:bg-rose-900 text-rose-300 border border-rose-700/60 rounded-lg text-xs font-mono font-semibold transition flex items-center justify-center gap-1.5">
+                <span>⚠️ Set to High Risk (100/100)</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Card 3: Voice & Switch -->
+          <div class="p-4 bg-slate-950/80 border border-cyan-900/40 hover:border-cyan-500/50 rounded-xl space-y-3 transition flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between text-xs font-mono pb-2 border-b border-slate-800">
+                <span class="font-bold text-cyan-400 flex items-center gap-1.5">
+                  <span>🎙️</span>
+                  <span data-lang-en="3. Hands-Free Voice" data-lang-ur="3. بغیر ہاتھ لگائے کنٹرول">3. Hands-Free Voice</span>
+                </span>
+                <span class="text-[10px] text-slate-500">WCAG AAA</span>
+              </div>
+              <p class="text-xs text-slate-300 mt-2 leading-relaxed" data-lang-en="Blind or motor-impaired? No mouse required! Speak commands or use single switch keys (V, P, C, F) with spoken confirmation." data-lang-ur="اگر ماؤس نہ چل سکے یا دیکھنے میں دشواری ہو، تو صرف بول کر (جیسے 'Start scan') یا کی بورڈ سے پورا سسٹم چلائیں۔">
+                Blind or motor-impaired? No mouse required! Speak commands or use single switch keys (V, P, C, F) with spoken confirmation.
+              </p>
+            </div>
+            <div class="space-y-2 pt-2">
+              <button data-quick-action="toggle-voice" class="w-full py-2 px-3 bg-cyan-950/80 hover:bg-cyan-900 text-cyan-300 border border-cyan-700/60 rounded-lg text-xs font-mono font-semibold transition flex items-center justify-center gap-1.5">
+                <span>🎤 Turn On Mic (Press V)</span>
+              </button>
+              <button data-quick-action="open-help" class="w-full py-2 px-3 bg-slate-900 hover:bg-slate-800 text-slate-300 border border-slate-700 rounded-lg text-xs font-mono font-semibold transition flex items-center justify-center gap-1.5">
+                <span>📋 View 35+ Voice Commands</span>
+              </button>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </section>
 
     <!-- FEATURE 1: DARK PATTERN VS ETHICAL UX SIMULATOR -->
     <section id="simulator-section" class="scroll-mt-24">

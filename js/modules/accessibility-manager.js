@@ -337,6 +337,14 @@ export class AccessibilityManager {
               <span>🛡️ 1. Core Privacy Defense & Audit Commands</span>
             </h4>
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[11px]">
+              <div class="help-cmd-card p-3 bg-slate-900/90 rounded-xl border border-slate-800 hover:border-cyan-500/40 transition flex items-start justify-between gap-3" data-search-tags="guided tour start tour walkthrough guide me intro help tour 30 second">
+                <div>
+                  <span class="font-mono font-bold text-cyan-300">"Guided tour" / "Start tour" / "Walkthrough"</span>
+                  <p class="text-slate-400 text-[10px] mt-0.5">Launches 30-second beginner-friendly walkthrough highlighting all core features.</p>
+                </div>
+                <button type="button" class="help-test-btn shrink-0 px-2 py-1 bg-cyan-950/80 hover:bg-cyan-800 text-cyan-300 border border-cyan-600/50 rounded-lg text-[10px] font-mono transition" data-voice-cmd="guided-tour" title="Test voice command">▶ Test</button>
+              </div>
+
               <div class="help-cmd-card p-3 bg-slate-900/90 rounded-xl border border-slate-800 hover:border-emerald-500/40 transition flex items-start justify-between gap-3" data-search-tags="block trackers block all lock trackers protect me privacy shield defend stop tracking">
                 <div>
                   <span class="font-mono font-bold text-emerald-300">"Block trackers" / "Block all" / "Protect"</span>

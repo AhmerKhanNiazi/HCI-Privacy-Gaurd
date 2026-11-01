@@ -66,6 +66,14 @@ export class VoiceSystem {
 
   buildKnowledgeBase() {
     this.commandCatalog = [
+      // 0. GUIDED ONBOARDING & TOUR
+      {
+        id: 'guided-tour',
+        title: '⭐ 30-Second Guided Tour',
+        spoken: 'Starting interactive guided tour. Showing Step 1.',
+        keywords: ['guided tour', 'start tour', 'tour', 'help tour', 'walkthrough', 'show tour', 'guide me', 'guide']
+      },
+
       // 1. SPECIFIC COOKIE SIMULATOR ACTIONS
       {
         id: 'sim-accept-trap',

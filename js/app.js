@@ -20,6 +20,7 @@ import { AudioFeedback } from './modules/audio-feedback.js';
 import { AccessibilityManager } from './modules/accessibility-manager.js';
 import { VoiceSystem } from './modules/voice-system.js';
 import { PrivacyInspectorDrawer } from './modules/privacy-inspector-drawer.js';
+import { UserTourGuide } from './modules/user-tour-guide.js';
 
 class PrivacyGuardApp {
   constructor() {
@@ -34,6 +35,7 @@ class PrivacyGuardApp {
     this.simulator = null;
     this.calculator = null;
     this.aiMatrix = null;
+    this.tourGuide = null;
   }
 
   init() {
@@ -85,13 +87,20 @@ class PrivacyGuardApp {
     this.aiMatrix = new AIConsentMatrix('ai-matrix-container');
     this.aiMatrix.init();
 
-    // 9. Wire Controls
+    // 9. Beginner-Friendly Onboarding & Bilingual Tour Guide
+    this.tourGuide = new UserTourGuide({
+      app: this,
+      audio: this.audio,
+      accessibility: this.accessibility
+    });
+
+    // 10. Wire Controls
     this.setupGlobalControls();
     this.setupToolbarBindings();
     this.wireInteractiveAcoustics();
     this.updateExaminerHighlights();
 
-    // 10. Register Service Worker for offline PWA operation
+    // 11. Register Service Worker for offline PWA operation
     this.registerServiceWorker();
   }
 
@@ -131,6 +140,12 @@ class PrivacyGuardApp {
     console.log(`[Voice Router] Executing action: ${commandId}`);
 
     switch (commandId) {
+      // --- 0. GUIDED ONBOARDING & TOUR ---
+      case 'start-tour':
+      case 'guided-tour':
+        this.tourGuide?.startTour(0);
+        break;
+
       // --- 1. CORE PRIVACY & THREAT SCAN ---
       case 'start-audit':
         this.runPrivacyScan();
@@ -482,6 +497,11 @@ class PrivacyGuardApp {
 
   closeAllOverlays() {
     let handled = false;
+
+    if (this.tourGuide?.isActive) {
+      this.tourGuide.stopTour();
+      handled = true;
+    }
 
     if (this.privacyInspectorDrawer?.isOpen) {
       this.privacyInspectorDrawer.close();
