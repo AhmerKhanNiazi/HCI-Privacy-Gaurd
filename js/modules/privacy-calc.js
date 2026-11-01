@@ -324,6 +324,14 @@ export class PrivacyRiskCalculator {
     });
   }
 
+  setRetention(val) {
+    const slider = document.getElementById('calc-retention');
+    if (slider) {
+      slider.value = String(val);
+      this.updateCalculation();
+    }
+  }
+
   updateCalculation() {
     const isBiometric = document.getElementById('calc-biometric')?.checked || false;
     const isLocation = document.getElementById('calc-location')?.checked || false;

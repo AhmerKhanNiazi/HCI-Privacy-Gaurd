@@ -103,6 +103,21 @@ Rules:
         reply: 'Ethical reject trigger kardiya gaya hai. Tamam non-essential advertising trackers ko 1 click mein reject kardiya gaya hai.'
       },
       {
+        patterns: ['ethical analytics toggle', 'anonymous error reports toggle', 'analytics toggle'],
+        action: 'sim-toggle-analytics',
+        reply: 'Anonymous Error Reports (Telemetry) toggle kardiya gaya hai.'
+      },
+      {
+        patterns: ['ethical marketing toggle', 'personalized ads toggle', 'marketing toggle'],
+        action: 'sim-toggle-marketing',
+        reply: 'Personalized Advertisements toggle kardiya gaya hai.'
+      },
+      {
+        patterns: ['save choices', 'accept selected only', 'save selected choices'],
+        action: 'sim-save-choices',
+        reply: 'Aapki selected privacy choices save kardi gayi hain.'
+      },
+      {
         patterns: ['reset simulator', 'simulator reset', 'shuru jesa karo', 'clear simulator', 'reset', 'clear', 'saaf karo'],
         action: 'sim-reset',
         reply: 'Cookie Simulator ko reset kardiya gaya hai, sab kuch shuru ki halat mein aagaya hai.'
@@ -138,6 +153,31 @@ Rules:
         patterns: ['how long companies keep your data', 'telemetry retention window', 'retention slider', 'data storage time', 'retention window', 'data retention'],
         action: null,
         reply: 'Data Retention Slider dikhata hai ke server aapka data kitne time tak store rakhta hai. Privacy-by-Design mein session khatam hotay hi data delete hona chahiye.'
+      },
+      {
+        patterns: ['retention ephemeral karo', 'retention zero karo', 'retention foran delete', 'retention 0 karo'],
+        action: 'calc-retention-0',
+        reply: 'Data Retention ko Immediate (Ephemeral) par set kardiya gaya hai (0 Days, Zero Persistence).'
+      },
+      {
+        patterns: ['retention 30 days karo', 'retention 1 month karo', 'retention tees din karo'],
+        action: 'calc-retention-1',
+        reply: 'Data Retention ko 30 Days par set kardiya gaya hai.'
+      },
+      {
+        patterns: ['retention 1 year karo', 'retention ek saal karo'],
+        action: 'calc-retention-2',
+        reply: 'Data Retention ko 1 Year par set kardiya gaya hai (+10 Danger Points).'
+      },
+      {
+        patterns: ['retention 5 years karo', 'retention panch saal karo'],
+        action: 'calc-retention-3',
+        reply: 'Data Retention ko 5 Years par set kardiya gaya hai (+15 Danger Points).'
+      },
+      {
+        patterns: ['retention permanent karo', 'retention hamesha ke liye', 'retention indefinite'],
+        action: 'calc-retention-4',
+        reply: 'Data Retention ko Indefinite (Permanent) par set kardiya gaya hai (+20 Danger Points).'
       },
       {
         patterns: ['strict preset', 'safe preset', '0 risk', '0 score', 'khatra khatam karo', 'strict', 'safe mode'],
@@ -221,6 +261,26 @@ Rules:
 
       // 5. PAGE SCROLLING & NAVIGATION ACTIONS
       {
+        patterns: ['simulator pe jao', 'simulator section dikhao', 'cookie simulator section'],
+        action: 'scroll-simulator',
+        reply: 'Ji bhai, Deceptive Cookie Simulator section par scroll kardiya gaya hai.'
+      },
+      {
+        patterns: ['calculator pe jao', 'risk meter section dikhao', 'risk calculator section'],
+        action: 'scroll-calculator',
+        reply: 'Ji bhai, Privacy Risk Calculator section par scroll kardiya gaya hai.'
+      },
+      {
+        patterns: ['ai matrix pe jao', 'ai consent section dikhao', 'ai sandbox section'],
+        action: 'scroll-aimatrix',
+        reply: 'Ji bhai, Ethical AI Consent Matrix section par scroll kardiya gaya hai.'
+      },
+      {
+        patterns: ['theory pe jao', 'academic frameworks pe jao', 'frameworks section'],
+        action: 'scroll-theory',
+        reply: 'Ji bhai, Academic Frameworks & Heuristics section par scroll kardiya gaya hai.'
+      },
+      {
         patterns: ['scroll down', 'scroll neeche', 'neeche jao', 'neeche karo', 'page down', 'scroll', 'down', 'neeche'],
         action: 'scroll-down',
         reply: 'Ji bhai, page ko neeche scroll kardiya gaya hai.'
@@ -248,6 +308,21 @@ Rules:
         reply: 'Zaroor bhai! Yeh 30-Second Guided Tour shuru horaha hai, step by step dekhein ke har feature kaise kaam karta hai.'
       },
       {
+        patterns: ['tour agla step', 'tour next step', 'next tour', 'next step tour', 'tour agay barhao'],
+        action: 'tour-next',
+        reply: 'Guided Tour ka agla step dikhaya ja raha hai.'
+      },
+      {
+        patterns: ['tour pichla step', 'tour back step', 'prev tour', 'tour peeche karo'],
+        action: 'tour-prev',
+        reply: 'Guided Tour ka pichla step dikhaya ja raha hai.'
+      },
+      {
+        patterns: ['tour band karo', 'tour stop karo', 'finish tour', 'tour khatam karo'],
+        action: 'tour-stop',
+        reply: 'Guided Tour band kardiya gaya hai.'
+      },
+      {
         patterns: ['font', 'text bara', 'bara karo', 'zoom text', 'parhne me masla', 'font size'],
         action: 'increase-font',
         reply: 'Ji bhai, font size 150% tak bada kardiya gaya hai taake kamzor nazar wale aasaani se padh sakein.'
@@ -258,9 +333,44 @@ Rules:
         reply: 'WCAG AAA High Contrast mode active kardiya gaya hai, 7:1+ contrast ratio ke sath.'
       },
       {
+        patterns: ['sound mute karo', 'sound band karo chime', 'mute audio', 'sound mute'],
+        action: 'mute-sound',
+        reply: 'Ji bhai, procedural audio chimes mute kardiye gaye hain.'
+      },
+      {
+        patterns: ['sound unmute karo', 'sound on karo chime', 'unmute audio', 'sound on'],
+        action: 'unmute-sound',
+        reply: 'Ji bhai, procedural audio chimes unmute kardiye gaye hain.'
+      },
+      {
+        patterns: ['examiner mode toggle karo', 'examiner highlights', 'examiner mode'],
+        action: 'toggle-examiner-mode',
+        reply: 'Examiner academic highlights mode toggle kardiya gaya hai.'
+      },
+      {
         patterns: ['inspector drawer', 'telemetry drawer', 'contextual integrity telemetry', 'inspector kholo', 'drawer kholo'],
         action: 'open-inspector',
         reply: 'Academic Inspector Drawer khol diya gaya hai, Contextual Integrity telemetry live show horahi hai.'
+      },
+      {
+        patterns: ['inspector band karo', 'drawer band karo', 'close drawer', 'close inspector'],
+        action: 'close-inspector',
+        reply: 'Academic Inspector Drawer band kardiya gaya hai.'
+      },
+      {
+        patterns: ['tracker inject karo', 'fake tracker test', 'simulate tracker'],
+        action: 'inject-tracker',
+        reply: 'Telemetry drawer mein simulated ad tracker inject kardiya gaya hai.'
+      },
+      {
+        patterns: ['breach simulate karo', 'consent breach test', 'simulate breach'],
+        action: 'simulate-breach',
+        reply: 'Contextual Integrity data breach simulate kardiya gaya hai.'
+      },
+      {
+        patterns: ['telemetry reset karo', 'drawer reset', 'reset telemetry'],
+        action: 'reset-telemetry',
+        reply: 'Academic telemetry logs reset kardiye gaye hain.'
       },
       {
         patterns: ['accessibility toolbar', 'single switch access', 'switch keys', 'switch navigation'],
@@ -288,6 +398,26 @@ Rules:
         patterns: ['viva', 'examiner viva dossier', 'viva dossier', 'viva questions', 'theory', 'heuristics', 'dossier kholo'],
         action: 'open-dossier',
         reply: 'Examiner Viva Dossier open kardiya gaya hai, jisme Harry Brignull ke dark patterns, Cavoukian ke 7 PbD principles aur viva questions shamil hain.'
+      },
+      {
+        patterns: ['brignull patterns tab', 'taxonomies tab kholo', 'deceptive patterns tab'],
+        action: 'dossier-tab-patterns',
+        reply: 'Examiner Dossier mein Harry Brignull ke 12 Deceptive Patterns ka tab khol diya gaya hai.'
+      },
+      {
+        patterns: ['cavoukian 7 principles tab', 'pbd tab kholo', 'privacy by design tab'],
+        action: 'dossier-tab-pbd',
+        reply: 'Examiner Dossier mein Dr. Ann Cavoukian ke 7 Privacy by Design Principles ka tab khol diya gaya hai.'
+      },
+      {
+        patterns: ['heuristics tab kholo', 'compliance tab', 'gdpr laws tab'],
+        action: 'dossier-tab-heuristics',
+        reply: 'Examiner Dossier mein Nielsen Heuristics aur GDPR Article 7 compliance ka tab khol diya gaya hai.'
+      },
+      {
+        patterns: ['viva questions tab kholo', 'viva qa tab', 'examiner questions tab'],
+        action: 'dossier-tab-viva',
+        reply: 'Examiner Dossier mein Viva Defense Questions & Answers ka tab khol diya gaya hai.'
       },
       {
         patterns: ['privacy by design kya hai', 'pbd kya hai', 'ann cavoukian', 'privacy by design samjhao'],

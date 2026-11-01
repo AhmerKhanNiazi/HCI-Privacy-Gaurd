@@ -156,6 +156,22 @@ class PrivacyGuardApp {
         this.tourGuide?.startTour(0);
         break;
 
+      case 'tour-next':
+      case 'next-tour':
+        this.tourGuide?.nextStep();
+        break;
+
+      case 'tour-prev':
+      case 'prev-tour':
+        this.tourGuide?.prevStep();
+        break;
+
+      case 'tour-stop':
+      case 'stop-tour':
+      case 'finish-tour':
+        this.tourGuide?.stopTour();
+        break;
+
       // --- ROMAN URDU AI COPILOT ---
       case 'urdu-ai':
       case 'ai-copilot':
@@ -223,6 +239,25 @@ class PrivacyGuardApp {
         this.highlightElement(document.getElementById('simulator-container'), 'ring-4 ring-cyan-400 ring-offset-4 ring-offset-slate-950');
         break;
 
+      case 'sim-toggle-analytics':
+        this.scrollToSection('simulator-section');
+        this.toggleCheckbox('ethical-opt-analytics');
+        break;
+
+      case 'sim-toggle-marketing':
+        this.scrollToSection('simulator-section');
+        this.toggleCheckbox('ethical-opt-marketing');
+        break;
+
+      case 'sim-save-choices':
+        this.scrollToSection('simulator-section');
+        document.getElementById('ethical-save-btn')?.click();
+        break;
+
+      case 'sim-close-settings':
+        document.getElementById('dark-nested-settings')?.classList.add('hidden');
+        break;
+
       // --- 3. DYNAMIC PRIVACY RISK CALCULATOR ---
       case 'show-calculator':
       case 'show-risk':
@@ -284,6 +319,41 @@ class PrivacyGuardApp {
       case 'toggle-fingerprint':
         this.scrollToSection('calculator-section');
         this.toggleCheckbox('calc-fingerprint');
+        this.highlightElement(document.getElementById('calculator-container'));
+        break;
+
+      case 'calc-retention-0':
+      case 'retention-ephemeral':
+        this.scrollToSection('calculator-section');
+        this.calculator?.setRetention(0);
+        this.highlightElement(document.getElementById('calculator-container'));
+        break;
+
+      case 'calc-retention-1':
+      case 'retention-30days':
+        this.scrollToSection('calculator-section');
+        this.calculator?.setRetention(1);
+        this.highlightElement(document.getElementById('calculator-container'));
+        break;
+
+      case 'calc-retention-2':
+      case 'retention-1year':
+        this.scrollToSection('calculator-section');
+        this.calculator?.setRetention(2);
+        this.highlightElement(document.getElementById('calculator-container'));
+        break;
+
+      case 'calc-retention-3':
+      case 'retention-5years':
+        this.scrollToSection('calculator-section');
+        this.calculator?.setRetention(3);
+        this.highlightElement(document.getElementById('calculator-container'));
+        break;
+
+      case 'calc-retention-4':
+      case 'retention-permanent':
+        this.scrollToSection('calculator-section');
+        this.calculator?.setRetention(4);
         this.highlightElement(document.getElementById('calculator-container'));
         break;
 
@@ -369,6 +439,11 @@ class PrivacyGuardApp {
         this.privacyInspectorDrawer?.resetTelemetry();
         break;
 
+      case 'close-inspector':
+      case 'close-drawer':
+        this.privacyInspectorDrawer?.close();
+        break;
+
       // --- 6. EXAMINER DOSSIER & TABS ---
       case 'show-dossier':
       case 'open-dossier':
@@ -428,6 +503,22 @@ class PrivacyGuardApp {
       case 'scroll-up':
         window.scrollBy({ top: -550, behavior: 'smooth' });
         this.audio?.playClick();
+        break;
+
+      case 'scroll-simulator':
+        this.scrollToSection('simulator-section', 'Scrolled to Deceptive Dark Pattern Simulator');
+        break;
+
+      case 'scroll-calculator':
+        this.scrollToSection('calculator-section', 'Scrolled to Privacy Risk Calculator');
+        break;
+
+      case 'scroll-aimatrix':
+        this.scrollToSection('ai-matrix-section', 'Scrolled to Ethical AI Consent Matrix');
+        break;
+
+      case 'scroll-theory':
+        this.scrollToSection('academic-theory-section', 'Scrolled to Academic Frameworks');
         break;
 
       // --- 8. ACCESSIBILITY & AUDIO ---
